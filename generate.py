@@ -4,7 +4,7 @@ import yaml
 # Load config
 # -------------------------------------------------
 def load_config():
-    with open("rack.yaml") as f:
+    with open("demo_system.yaml") as f:
         return yaml.safe_load(f)
 
 # -------------------------------------------------
