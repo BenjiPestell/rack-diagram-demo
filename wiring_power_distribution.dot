@@ -27,6 +27,11 @@ graph "Power Distribution" {
   ];
 
   // Devices by rack
+  subgraph cluster_rack1_front {
+    label="Rack 1 Front";
+    style=dashed;
+    color="#999999";
+
     "Audio___terrain" [
       label="Audio / terrain",
       fillcolor="#ced3db"
@@ -59,38 +64,85 @@ graph "Power Distribution" {
       label="Telemetry PC",
       fillcolor="#ced3db"
     ];
+  }
 
-  // External devices
-  "PDU-A" [
-    label="PDU-A"
-  ];
-  "PDU-B" [
-    label="PDU-B"
-  ];
+  subgraph cluster_rack1_rear {
+    label="Rack 1 Rear";
+    style=dashed;
+    color="#999999";
+
+    "R1-PDU-A" [
+      label="R1-PDU-A",
+      fillcolor="#AAAAAA"
+    ];
+    "R1-PDU-B" [
+      label="R1-PDU-B",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  subgraph cluster_rack2_front {
+    label="Rack 2 Front";
+    style=dashed;
+    color="#999999";
+
+    "IG1" [
+      label="IG1",
+      fillcolor="#ced3db"
+    ];
+    "IG2" [
+      label="IG2",
+      fillcolor="#ced3db"
+    ];
+    "IG3" [
+      label="IG3",
+      fillcolor="#ced3db"
+    ];
+  }
+
+  subgraph cluster_rack2_rear {
+    label="Rack 2 Rear";
+    style=dashed;
+    color="#999999";
+
+    "R2-PDU-A" [
+      label="R2-PDU-A",
+      fillcolor="#AAAAAA"
+    ];
+  }
 
   // Connections
-  "PDU-A" -- "Beckhoff___com_PC" [
+  "R1-PDU-A" -- "Audio___terrain" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-A" -- "Operator_PC" [
+  "R1-PDU-A" -- "Telemetry_PC" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-A" -- "Physics_PC" [
+  "R1-PDU-A" -- "Fibre___network" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-B" -- "Dedi_server" [
+  "R1-PDU-A" -- "Physics_PC" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-B" -- "Speedgoat" [
+  "R1-PDU-B" -- "Speedgoat" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-B" -- "Telemetry_PC" [
+  "R1-PDU-B" -- "Operator_PC" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-B" -- "Audio___terrain" [
+  "R1-PDU-B" -- "Dedi_server" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "PDU-A" -- "Fibre___network" [
+  "R1-PDU-B" -- "Beckhoff___com_PC" [
+    color="#151617", style=solid, penwidth=4.0
+  ];
+  "R2-PDU-A" -- "IG1" [
+    color="#151617", style=solid, penwidth=4.0
+  ];
+  "R2-PDU-A" -- "IG2" [
+    color="#151617", style=solid, penwidth=4.0
+  ];
+  "R2-PDU-A" -- "IG3" [
     color="#151617", style=solid, penwidth=4.0
   ];
 

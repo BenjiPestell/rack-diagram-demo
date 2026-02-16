@@ -1,6 +1,3 @@
-# Multi-rack configuration
-# Add additional racks by copying the rack structure below
-
 racks:
   # Rack 1 - Front
   - rack:
@@ -16,7 +13,6 @@ racks:
       device_font_size: 14
       unit_font_size: 16
       title_font_size: 20
-      # auto_scale_font: false
     
     devices:
       - name: Beckhoff / com PC
@@ -58,11 +54,11 @@ racks:
         start_u: 40
         units: 5
         color: "#ced3db"
-  
-  # Rack 2
+
+  # Rack 1 - Rear
   - rack:
-      id: rack2_front
-      name: Rack 2 front
+      id: rack1_rear
+      name: Rack 1 Rear
       total_u: 40
       
       # Layout tuning
@@ -73,7 +69,32 @@ racks:
       device_font_size: 14
       unit_font_size: 16
       title_font_size: 20
-      # auto_scale_font: false
+
+    devices:
+      - name: R1-PDU-A
+        start_u: 40
+        units: 2
+        color: "#AAAAAA"
+
+      - name: R1-PDU-B
+        start_u: 19
+        units: 2
+        color: "#AAAAAA"
+  
+  # Rack 2
+  - rack:
+      id: rack2_front
+      name: Rack 2 Front
+      total_u: 40
+      
+      # Layout tuning
+      table_width: 300
+      device_width: 260
+      
+      # Font tuning
+      device_font_size: 14
+      unit_font_size: 16
+      title_font_size: 20
     
     devices:
       - name: IG1
@@ -91,6 +112,27 @@ racks:
         units: 5
         color: "#ced3db"
 
+  # Rack 2 - Rear
+  - rack:
+      id: rack2_rear
+      name: Rack 2 Rear
+      total_u: 40
+      
+      # Layout tuning
+      table_width: 300
+      device_width: 260
+      
+      # Font tuning
+      device_font_size: 14
+      unit_font_size: 16
+      title_font_size: 20
+
+    devices:
+      - name: R2-PDU-A
+        start_u: 40
+        units: 2
+        color: "#AAAAAA"
+
 # Wiring layers work across all racks
 wiring_layers:
   # Visuals subnet
@@ -102,6 +144,7 @@ wiring_layers:
     show_rack_labels: true
 
     connections:
+      # Rack 1
       - from: Vis switch
         to: Audio / terrain
 
@@ -123,6 +166,7 @@ wiring_layers:
       - from: Vis switch
         to: Dedi server
 
+      # Rack 2
       - from: Vis switch
         to: IG1
 
@@ -163,27 +207,37 @@ wiring_layers:
     show_rack_labels: true
 
     connections:
-      - from: PDU-A
-        to: Beckhoff / com PC
-      
-      - from: PDU-A
-        to: Operator PC
-      
-      - from: PDU-A
-        to: Physics PC
-      
-      - from: PDU-B
-        to: Dedi server
-      
-      - from: PDU-B
-        to: Speedgoat
-      
-      - from: PDU-B
-        to: Telemetry PC
-      
-      - from: PDU-B
+      # Rack 1
+      - from: R1-PDU-A
         to: Audio / terrain
       
-      - from: PDU-A
+      - from: R1-PDU-A
+        to: Telemetry PC      
+        
+      - from: R1-PDU-A
         to: Fibre / network
+      
+      - from: R1-PDU-A
+        to: Physics PC
+      
+      - from: R1-PDU-B
+        to: Speedgoat
+      
+      - from: R1-PDU-B
+        to: Operator PC
+      
+      - from: R1-PDU-B
+        to: Dedi server
 
+      - from: R1-PDU-B
+        to: Beckhoff / com PC
+
+      # Rack 2
+      - from: R2-PDU-A
+        to: IG1
+
+      - from: R2-PDU-A
+        to: IG2
+
+      - from: R2-PDU-A
+        to: IG3

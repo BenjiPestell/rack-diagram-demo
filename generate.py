@@ -357,10 +357,11 @@ def generate_multi_rack_dot(racks_config):
 # -------------------------------------------------
 # DOT Generator - Wiring Diagram
 # -------------------------------------------------
-def generate_wiring_dot(layer, all_devices):
+def generate_wiring_dot(layer, all_devices, rack_info=None):
     """
     Generate a wiring diagram for a specific layer
     all_devices is a dict mapping device name -> device info (including rack_id)
+    rack_info is a dict mapping rack_id -> rack dict (with name, etc.)
     """
     layer_name = layer["name"]
     connections = layer.get("connections", [])
@@ -438,8 +439,13 @@ def generate_wiring_dot(layer, all_devices):
     
     for rack_id in sorted(devices_by_rack.keys()):
         if show_rack_labels and len(devices_by_rack) > 1:
+            # Get rack name if available, otherwise use rack_id
+            rack_label = rack_id
+            if rack_info and rack_id in rack_info:
+                rack_label = rack_info[rack_id].get("name", rack_id)
+            
             lines.append(f"  subgraph cluster_{rack_id} {{")
-            lines.append(f"    label=\"{rack_id}\";")
+            lines.append(f"    label=\"{rack_label}\";")
             lines.append("    style=dashed;")
             lines.append("    color=\"#999999\";")
             lines.append("")
@@ -529,6 +535,9 @@ def main():
             dev["rack_id"] = rack["id"]
             all_devices[dev["name"]] = dev
         
+        # Build rack_info map
+        rack_info = {rack["id"]: rack}
+        
         # Generate wiring diagrams
         layers = config.get("wiring_layers", [])
         for layer in layers:
@@ -536,7 +545,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_wiring_dot(layer, all_devices)
+            wiring_dot = generate_wiring_dot(layer, all_devices, rack_info)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
@@ -563,12 +572,16 @@ def main():
             f.write(multi_rack_dot)
         print("Generated rack_layout_all.dot")
         
-        # Build combined device map
+        # Build combined device map and rack_info map
         all_devices = {}
+        rack_info = {}
         for rack_config in racks_config:
             rack = rack_config["rack"]
             devices = rack_config["devices"]
             rack_id = rack.get("id", "rack")
+            
+            # Store rack info
+            rack_info[rack_id] = rack
             
             for dev in devices:
                 dev["rack_id"] = rack_id
@@ -581,7 +594,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_wiring_dot(layer, all_devices)
+            wiring_dot = generate_wiring_dot(layer, all_devices, rack_info)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")

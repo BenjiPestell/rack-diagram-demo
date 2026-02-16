@@ -28,7 +28,7 @@ graph "Visual Subnet Ethernet" {
 
   // Devices by rack
   subgraph cluster_rack1_front {
-    label="rack1_front";
+    label="Rack 1 Front";
     style=dashed;
     color="#999999";
 
@@ -59,7 +59,7 @@ graph "Visual Subnet Ethernet" {
   }
 
   subgraph cluster_rack2_front {
-    label="rack2_front";
+    label="Rack 2 Front";
     style=dashed;
     color="#999999";
 
