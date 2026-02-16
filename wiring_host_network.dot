@@ -7,15 +7,15 @@ graph "Host network" {
     bgcolor="white",
     label="Host network",
     labelloc=t,
-    fontsize=15,
+    fontsize=16,
     fontname="Arial Bold"
   ];
 
   node [
     shape=box,
     style="rounded,filled",
-    fillcolor="#F3E5F5",
-    fontsize=11,
+    fillcolor="#E8F4F8",
+    fontsize=12,
     fontname="Arial",
     margin=0.2
   ];
@@ -38,7 +38,7 @@ graph "Host network" {
 
   // Connections
   "Operator_PC" -- "Speedgoat" [
-    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=9
+    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=10
   ];
 
 }

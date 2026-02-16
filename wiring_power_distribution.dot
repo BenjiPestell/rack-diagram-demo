@@ -7,15 +7,15 @@ graph "Power Distribution" {
     bgcolor="white",
     label="Power Distribution",
     labelloc=t,
-    fontsize=15,
+    fontsize=16,
     fontname="Arial Bold"
   ];
 
   node [
     shape=box,
     style="rounded,filled",
-    fillcolor="#FFEBEE",
-    fontsize=11,
+    fillcolor="#E8F4F8",
+    fontsize=12,
     fontname="Arial",
     margin=0.2
   ];

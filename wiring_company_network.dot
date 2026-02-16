@@ -7,7 +7,7 @@ graph "Company network" {
     bgcolor="white",
     label="Company network",
     labelloc=t,
-    fontsize=15,
+    fontsize=16,
     fontname="Arial Bold"
   ];
 
@@ -15,7 +15,7 @@ graph "Company network" {
     shape=box,
     style="rounded,filled",
     fillcolor="#E8F4F8",
-    fontsize=11,
+    fontsize=12,
     fontname="Arial",
     margin=0.2
   ];

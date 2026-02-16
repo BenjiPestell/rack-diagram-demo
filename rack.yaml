@@ -85,10 +85,8 @@ wiring_layers:
 
   # Company network
   - name: Company network
-    node_color: "#E8F4F8"
     edge_color: "#151617"
     edge_width: "2.5"
-    font_size: 11
 
     connections:
       - from: Company switch
@@ -99,10 +97,9 @@ wiring_layers:
   
   # Host network
   - name: Host network
-    node_color: "#F3E5F5"
     edge_color: "#5897fc"
     edge_width: "2.5"
-    font_size: 11
+
     connections:
       - from: Operator PC
         to: Speedgoat
@@ -110,10 +107,9 @@ wiring_layers:
 
   # Power distribution
   - name: Power Distribution
-    node_color: "#FFEBEE"
     edge_color: "#151617"
     edge_width: "4.0"
-    font_size: 11
+
     connections:
       - from: PDU-A
         to: Beckhoff / com PC
