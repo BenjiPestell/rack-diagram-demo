@@ -1,0 +1,50 @@
+graph "Company network" {
+
+  graph [
+    rankdir=TB,
+    nodesep=0.5,
+    ranksep=1.0,
+    bgcolor="white",
+    label="Company network",
+    labelloc=t,
+    fontsize=15,
+    fontname="Arial Bold"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E8F4F8",
+    fontsize=11,
+    fontname="Arial",
+    margin=0.2
+  ];
+
+  edge [
+    color="#151617",
+    style=solid,
+    penwidth=2.5
+  ];
+
+  // Devices
+  "Company_switch" [
+    label="Company switch"
+  ];
+  "Operator_PC" [
+    label="Operator PC",
+    fillcolor="#ced3db"
+  ];
+  "Telemetry_PC" [
+    label="Telemetry PC",
+    fillcolor="#ced3db"
+  ];
+
+  // Connections
+  "Company_switch" -- "Telemetry_PC" [
+    color="#151617", style=solid, penwidth=2.5
+  ];
+  "Company_switch" -- "Operator_PC" [
+    color="#151617", style=solid, penwidth=2.5
+  ];
+
+}

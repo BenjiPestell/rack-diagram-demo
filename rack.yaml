@@ -1,11 +1,11 @@
 rack:
   name: Rack 1 Front
   total_u: 40
-
+  
   # Layout tuning
   table_width: 300
   device_width: 260
-
+  
   # Font tuning
   device_font_size: 14
   unit_font_size: 16
@@ -13,44 +13,129 @@ rack:
   # auto_scale_font: false
 
 devices:
-
   - name: Beckhoff / com PC
     start_u: 5
     units: 5
     color: "#ced3db"
-
+  
   - name: Dedi server
     start_u: 10
     units: 5
     color: "#ced3db"
-
+  
   - name: Operator PC
     start_u: 15
     units: 5
     color: "#ced3db"
-
+  
   - name: Speedgoat
     start_u: 19
     units: 4
     color: "#519AB5"
-
+  
   - name: Physics PC
     start_u: 24
     units: 5
     color: "#ced3db"
-
+  
   - name: Fibre / network
     start_u: 30
     units: 6
     color: "#FFFFFF"
-
+  
   - name: Telemetry PC
     start_u: 35
     units: 5
     color: "#ced3db"
-
+  
   - name: Audio / terrain
     start_u: 40
     units: 5
     color: "#ced3db"
 
+wiring_layers:
+  # Visuals subnet
+  - name: Visual Subnet Ethernet
+    node_color: "#E8F4F8"
+    edge_color: "#7B1FA2"
+    edge_width: "2.5"
+    font_size: 11
+
+    connections:
+      - from: Vis switch
+        to: Audio / terrain
+
+      - from: Vis switch
+        to: Telemetry PC
+
+      - from: Vis switch
+        to: Fibre converter
+
+      - from: Vis switch
+        to: Physics PC
+
+      - from: Vis switch
+        to: Speedgoat
+
+      - from: Vis switch
+        to: Operator PC
+
+      - from: Vis switch
+        to: Dedi server
+
+  # Company network
+  - name: Company network
+    node_color: "#E8F4F8"
+    edge_color: "#151617"
+    edge_width: "2.5"
+    font_size: 11
+
+    connections:
+      - from: Company switch
+        to: Telemetry PC
+
+      - from: Company switch
+        to: Operator PC
+  
+  # Host network
+  - name: Host network
+    node_color: "#F3E5F5"
+    edge_color: "#5897fc"
+    edge_width: "2.5"
+    font_size: 11
+    connections:
+      - from: Operator PC
+        to: Speedgoat
+        label: "Host"
+
+  # Power distribution
+  - name: Power Distribution
+    node_color: "#FFEBEE"
+    edge_color: "#151617"
+    edge_width: "4.0"
+    font_size: 11
+    connections:
+      - from: PDU-A
+        to: Beckhoff / com PC
+      
+      - from: PDU-A
+        to: Operator PC
+      
+      - from: PDU-A
+        to: Physics PC
+      
+      - from: PDU-B
+        to: Dedi server
+      
+      - from: PDU-B
+        to: Speedgoat
+      
+      - from: PDU-B
+        to: Telemetry PC
+      
+      - from: PDU-B
+        to: Audio / terrain
+      
+      - from: PDU-A
+        to: Fibre / network
+      

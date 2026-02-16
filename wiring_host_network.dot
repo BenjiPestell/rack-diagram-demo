@@ -1,0 +1,44 @@
+graph "Host network" {
+
+  graph [
+    rankdir=TB,
+    nodesep=0.5,
+    ranksep=1.0,
+    bgcolor="white",
+    label="Host network",
+    labelloc=t,
+    fontsize=15,
+    fontname="Arial Bold"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#F3E5F5",
+    fontsize=11,
+    fontname="Arial",
+    margin=0.2
+  ];
+
+  edge [
+    color="#5897fc",
+    style=solid,
+    penwidth=2.5
+  ];
+
+  // Devices
+  "Operator_PC" [
+    label="Operator PC",
+    fillcolor="#ced3db"
+  ];
+  "Speedgoat" [
+    label="Speedgoat",
+    fillcolor="#519AB5"
+  ];
+
+  // Connections
+  "Operator_PC" -- "Speedgoat" [
+    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=9
+  ];
+
+}
