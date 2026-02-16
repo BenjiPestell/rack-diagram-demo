@@ -26,44 +26,46 @@ graph "Power Distribution" {
     penwidth=4.0
   ];
 
-  // Devices
-  "Audio___terrain" [
-    label="Audio / terrain",
-    fillcolor="#ced3db"
-  ];
-  "Beckhoff___com_PC" [
-    label="Beckhoff / com PC",
-    fillcolor="#ced3db"
-  ];
-  "Dedi_server" [
-    label="Dedi server",
-    fillcolor="#ced3db"
-  ];
-  "Fibre___network" [
-    label="Fibre / network",
-    fillcolor="#FFFFFF"
-  ];
-  "Operator_PC" [
-    label="Operator PC",
-    fillcolor="#ced3db"
-  ];
+  // Devices by rack
+    "Audio___terrain" [
+      label="Audio / terrain",
+      fillcolor="#ced3db"
+    ];
+    "Beckhoff___com_PC" [
+      label="Beckhoff / com PC",
+      fillcolor="#ced3db"
+    ];
+    "Dedi_server" [
+      label="Dedi server",
+      fillcolor="#ced3db"
+    ];
+    "Fibre___network" [
+      label="Fibre / network",
+      fillcolor="#FFFFFF"
+    ];
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#ced3db"
+    ];
+    "Physics_PC" [
+      label="Physics PC",
+      fillcolor="#ced3db"
+    ];
+    "Speedgoat" [
+      label="Speedgoat",
+      fillcolor="#519AB5"
+    ];
+    "Telemetry_PC" [
+      label="Telemetry PC",
+      fillcolor="#ced3db"
+    ];
+
+  // External devices
   "PDU-A" [
     label="PDU-A"
   ];
   "PDU-B" [
     label="PDU-B"
-  ];
-  "Physics_PC" [
-    label="Physics PC",
-    fillcolor="#ced3db"
-  ];
-  "Speedgoat" [
-    label="Speedgoat",
-    fillcolor="#519AB5"
-  ];
-  "Telemetry_PC" [
-    label="Telemetry PC",
-    fillcolor="#ced3db"
   ];
 
   // Connections

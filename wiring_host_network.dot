@@ -26,15 +26,15 @@ graph "Host network" {
     penwidth=2.5
   ];
 
-  // Devices
-  "Operator_PC" [
-    label="Operator PC",
-    fillcolor="#ced3db"
-  ];
-  "Speedgoat" [
-    label="Speedgoat",
-    fillcolor="#519AB5"
-  ];
+  // Devices by rack
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#ced3db"
+    ];
+    "Speedgoat" [
+      label="Speedgoat",
+      fillcolor="#519AB5"
+    ];
 
   // Connections
   "Operator_PC" -- "Speedgoat" [

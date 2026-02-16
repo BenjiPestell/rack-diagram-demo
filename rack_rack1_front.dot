@@ -1,4 +1,4 @@
-digraph rack {
+digraph "rack1_front" {
 
   graph [
     rankdir=TB,
@@ -12,7 +12,7 @@ digraph rack {
     fontname="Arial"
   ];
 
-  rack [
+  rack1_front [
     label=<
 
 <TABLE

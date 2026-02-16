@@ -1,58 +1,97 @@
-rack:
-  name: Rack 1 Front
-  total_u: 40
-  
-  # Layout tuning
-  table_width: 300
-  device_width: 260
-  
-  # Font tuning
-  device_font_size: 14
-  unit_font_size: 16
-  title_font_size: 20
-  # auto_scale_font: false
+# Multi-rack configuration
+# Add additional racks by copying the rack structure below
 
-devices:
-  - name: Beckhoff / com PC
-    start_u: 5
-    units: 5
-    color: "#ced3db"
+racks:
+  # Rack 1 - Front
+  - rack:
+      id: rack1_front
+      name: Rack 1 Front
+      total_u: 40
+      
+      # Layout tuning
+      table_width: 300
+      device_width: 260
+      
+      # Font tuning
+      device_font_size: 14
+      unit_font_size: 16
+      title_font_size: 20
+      # auto_scale_font: false
+    
+    devices:
+      - name: Beckhoff / com PC
+        start_u: 5
+        units: 5
+        color: "#ced3db"
+      
+      - name: Dedi server
+        start_u: 10
+        units: 5
+        color: "#ced3db"
+      
+      - name: Operator PC
+        start_u: 15
+        units: 5
+        color: "#ced3db"
+      
+      - name: Speedgoat
+        start_u: 19
+        units: 4
+        color: "#519AB5"
+      
+      - name: Physics PC
+        start_u: 24
+        units: 5
+        color: "#ced3db"
+      
+      - name: Fibre / network
+        start_u: 30
+        units: 6
+        color: "#FFFFFF"
+      
+      - name: Telemetry PC
+        start_u: 35
+        units: 5
+        color: "#ced3db"
+      
+      - name: Audio / terrain
+        start_u: 40
+        units: 5
+        color: "#ced3db"
   
-  - name: Dedi server
-    start_u: 10
-    units: 5
-    color: "#ced3db"
-  
-  - name: Operator PC
-    start_u: 15
-    units: 5
-    color: "#ced3db"
-  
-  - name: Speedgoat
-    start_u: 19
-    units: 4
-    color: "#519AB5"
-  
-  - name: Physics PC
-    start_u: 24
-    units: 5
-    color: "#ced3db"
-  
-  - name: Fibre / network
-    start_u: 30
-    units: 6
-    color: "#FFFFFF"
-  
-  - name: Telemetry PC
-    start_u: 35
-    units: 5
-    color: "#ced3db"
-  
-  - name: Audio / terrain
-    start_u: 40
-    units: 5
-    color: "#ced3db"
+  # Rack 2
+  - rack:
+      id: rack2_front
+      name: Rack 2 front
+      total_u: 40
+      
+      # Layout tuning
+      table_width: 300
+      device_width: 260
+      
+      # Font tuning
+      device_font_size: 14
+      unit_font_size: 16
+      title_font_size: 20
+      # auto_scale_font: false
+    
+    devices:
+      - name: IG1
+        start_u: 40
+        units: 5
+        color: "#ced3db"
 
+      - name: IG2
+        start_u: 35
+        units: 5
+        color: "#ced3db"
+
+      - name: IG3
+        start_u: 30
+        units: 5
+        color: "#ced3db"
+
+# Wiring layers work across all racks
 wiring_layers:
   # Visuals subnet
   - name: Visual Subnet Ethernet
@@ -60,6 +99,7 @@ wiring_layers:
     edge_color: "#7B1FA2"
     edge_width: "2.5"
     font_size: 11
+    show_rack_labels: true
 
     connections:
       - from: Vis switch
@@ -83,10 +123,20 @@ wiring_layers:
       - from: Vis switch
         to: Dedi server
 
+      - from: Vis switch
+        to: IG1
+
+      - from: Vis switch
+        to: IG2
+
+      - from: Vis switch
+        to: IG3
+
   # Company network
   - name: Company network
     edge_color: "#151617"
     edge_width: "2.5"
+    show_rack_labels: true
 
     connections:
       - from: Company switch
@@ -99,6 +149,7 @@ wiring_layers:
   - name: Host network
     edge_color: "#5897fc"
     edge_width: "2.5"
+    show_rack_labels: true
 
     connections:
       - from: Operator PC
@@ -109,7 +160,7 @@ wiring_layers:
   - name: Power Distribution
     edge_color: "#151617"
     edge_width: "4.0"
-
+    show_rack_labels: true
 
     connections:
       - from: PDU-A
@@ -135,4 +186,4 @@ wiring_layers:
       
       - from: PDU-A
         to: Fibre / network
-      
+

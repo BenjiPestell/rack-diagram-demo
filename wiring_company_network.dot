@@ -26,17 +26,19 @@ graph "Company network" {
     penwidth=2.5
   ];
 
-  // Devices
+  // Devices by rack
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#ced3db"
+    ];
+    "Telemetry_PC" [
+      label="Telemetry PC",
+      fillcolor="#ced3db"
+    ];
+
+  // External devices
   "Company_switch" [
     label="Company switch"
-  ];
-  "Operator_PC" [
-    label="Operator PC",
-    fillcolor="#ced3db"
-  ];
-  "Telemetry_PC" [
-    label="Telemetry PC",
-    fillcolor="#ced3db"
   ];
 
   // Connections
