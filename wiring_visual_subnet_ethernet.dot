@@ -1,0 +1,120 @@
+graph "Visual Subnet Ethernet" {
+
+  graph [
+    rankdir=TB,
+    nodesep=0.5,
+    ranksep=1.0,
+    bgcolor="white",
+    label="Visual Subnet Ethernet",
+    labelloc=t,
+    fontsize=15,
+    fontname="Arial Bold"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E8F4F8",
+    fontsize=11,
+    fontname="Arial",
+    margin=0.2
+  ];
+
+  edge [
+    color="#7B1FA2",
+    style=solid,
+    penwidth=2.5
+  ];
+
+  // Devices by rack
+  subgraph cluster_rack1_front {
+    label="Rack 1 Front";
+    style=dashed;
+    color="#999999";
+
+    "Audio___terrain" [
+      label="Audio / terrain",
+      fillcolor="#ced3db"
+    ];
+    "Dedi_server" [
+      label="Dedi server",
+      fillcolor="#ced3db"
+    ];
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#ced3db"
+    ];
+    "Physics_PC" [
+      label="Physics PC",
+      fillcolor="#ced3db"
+    ];
+    "Speedgoat" [
+      label="Speedgoat",
+      fillcolor="#519AB5"
+    ];
+    "Telemetry_PC" [
+      label="Telemetry PC",
+      fillcolor="#ced3db"
+    ];
+  }
+
+  subgraph cluster_rack2_front {
+    label="Rack 2 Front";
+    style=dashed;
+    color="#999999";
+
+    "IG1" [
+      label="IG1",
+      fillcolor="#ced3db"
+    ];
+    "IG2" [
+      label="IG2",
+      fillcolor="#ced3db"
+    ];
+    "IG3" [
+      label="IG3",
+      fillcolor="#ced3db"
+    ];
+  }
+
+  // External devices
+  "Fibre_converter" [
+    label="Fibre converter"
+  ];
+  "Vis_switch" [
+    label="Vis switch"
+  ];
+
+  // Connections
+  "Vis_switch" -- "Audio___terrain" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Telemetry_PC" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Fibre_converter" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Physics_PC" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Speedgoat" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Operator_PC" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "Dedi_server" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "IG1" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "IG2" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+  "Vis_switch" -- "IG3" [
+    color="#7B1FA2", style=solid, penwidth=2.5
+  ];
+
+}
