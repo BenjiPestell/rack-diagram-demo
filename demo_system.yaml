@@ -15,18 +15,24 @@ racks:
       title_font_size: 20
     
     devices:
-      - name: Beckhoff / com PC
-        start_u: 5
+      
+      - name: Audio / terrain
+        start_u: 40
         units: 5
         color: "#ced3db"
-      
-      - name: Dedi server
-        start_u: 10
+
+      - name: Telemetry PC
+        start_u: 35
         units: 5
         color: "#ced3db"
+
+      - name: Fibre / network
+        start_u: 30
+        units: 6
+        color: "#FFFFFF"
       
-      - name: Operator PC
-        start_u: 15
+      - name: Physics PC
+        start_u: 24
         units: 5
         color: "#ced3db"
       
@@ -35,26 +41,21 @@ racks:
         units: 4
         color: "#519AB5"
       
-      - name: Physics PC
-        start_u: 24
+      - name: Operator PC
+        start_u: 15
         units: 5
         color: "#ced3db"
       
-      - name: Fibre / network
-        start_u: 30
-        units: 6
-        color: "#FFFFFF"
-      
-      - name: Telemetry PC
-        start_u: 35
+      - name: Dedi server
+        start_u: 10
         units: 5
         color: "#ced3db"
       
-      - name: Audio / terrain
-        start_u: 40
+      - name: Beckhoff / com PC
+        start_u: 5
         units: 5
         color: "#ced3db"
-
+      
   # Rack 1 - Rear
   - rack:
       id: rack1_rear
