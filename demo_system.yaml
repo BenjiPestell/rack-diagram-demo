@@ -14,8 +14,7 @@ racks:
       unit_font_size: 16
       title_font_size: 20
     
-    devices:
-      
+    devices:      
       - name: Audio / terrain
         start_u: 40
         units: 5
@@ -26,7 +25,7 @@ racks:
         units: 5
         color: "#ced3db"
 
-      - name: Fibre / network
+      - name: Fibre / Network shelf
         start_u: 30
         units: 6
         color: "#FFFFFF"
@@ -76,6 +75,11 @@ racks:
         start_u: 40
         units: 2
         color: "#AAAAAA"
+
+      - name: Fibre / Network shelf
+        start_u: 30
+        units: 6
+        color: "#FFFFFF"
 
       - name: R1-PDU-B
         start_u: 19
