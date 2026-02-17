@@ -584,9 +584,9 @@ def main():
         #     print(f"Generated {filename}")
         
         multi_rack_dot = generate_multi_rack_dot(racks_config)
-        with open("rack_layout_all.dot", "w") as f:
+        with open("rack_layout.dot", "w") as f:
             f.write(multi_rack_dot)
-        print("Generated rack_layout_all.dot")
+        print("Generated rack_layout.dot")
         
         all_devices = {}
         rack_info = {}
