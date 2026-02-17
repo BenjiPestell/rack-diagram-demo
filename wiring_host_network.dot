@@ -2,13 +2,13 @@ graph "Host network" {
 
   graph [
     rankdir=TB,
-    nodesep=0.5,
-    ranksep=1.0,
+    nodesep=0.8,
+    ranksep=1.5,
     bgcolor="white",
     label="Host network",
     labelloc=t,
     fontsize=16,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans 400 Regular"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Host network" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=12,
-    fontname="Arial",
+    fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
 
@@ -26,7 +26,13 @@ graph "Host network" {
     penwidth=2.5
   ];
 
-  // Devices by rack
+  // Compute
+  subgraph cluster_tier1_rack1_front {
+    label="Rack 1 Front";
+    style=dashed;
+    color="#999999";
+    fontname="Sinkin Sans 400 Regular";
+
     "Operator_PC" [
       label="Operator PC",
       fillcolor="#ced3db"
@@ -35,10 +41,13 @@ graph "Host network" {
       label="Speedgoat",
       fillcolor="#519AB5"
     ];
+  }
+
+  { rank=same; "Operator_PC"; "Speedgoat"; }
 
   // Connections
   "Operator_PC" -- "Speedgoat" [
-    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=10
+    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=10, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

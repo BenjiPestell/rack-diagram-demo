@@ -2,13 +2,13 @@ graph "Visual Subnet Ethernet" {
 
   graph [
     rankdir=TB,
-    nodesep=0.5,
-    ranksep=1.0,
+    nodesep=0.8,
+    ranksep=1.5,
     bgcolor="white",
     label="Visual Subnet Ethernet",
     labelloc=t,
     fontsize=15,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans 400 Regular"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Visual Subnet Ethernet" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=11,
-    fontname="Arial",
+    fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
 
@@ -26,16 +26,19 @@ graph "Visual Subnet Ethernet" {
     penwidth=2.5
   ];
 
-  // Devices by rack
-  subgraph cluster_rack1_front {
+  // Sources
+  // Sources - External
+  "Vis_switch" [
+    label="Vis switch"
+  ];
+
+  // Compute
+  subgraph cluster_tier1_rack1_front {
     label="Rack 1 Front";
     style=dashed;
     color="#999999";
+    fontname="Sinkin Sans 400 Regular";
 
-    "Audio___terrain" [
-      label="Audio / terrain",
-      fillcolor="#ced3db"
-    ];
     "Dedi_server" [
       label="Dedi server",
       fillcolor="#ced3db"
@@ -58,10 +61,11 @@ graph "Visual Subnet Ethernet" {
     ];
   }
 
-  subgraph cluster_rack2_front {
+  subgraph cluster_tier1_rack2_front {
     label="Rack 2 Front";
     style=dashed;
     color="#999999";
+    fontname="Sinkin Sans 400 Regular";
 
     "IG1" [
       label="IG1",
@@ -77,13 +81,27 @@ graph "Visual Subnet Ethernet" {
     ];
   }
 
-  // External devices
+  // Infrastructure
+  subgraph cluster_tier2_rack1_front {
+    label="Rack 1 Front";
+    style=dashed;
+    color="#999999";
+    fontname="Sinkin Sans 400 Regular";
+
+    "Audio___terrain" [
+      label="Audio / terrain",
+      fillcolor="#ced3db"
+    ];
+  }
+
+  // Infrastructure - External
   "Fibre_converter" [
     label="Fibre converter"
   ];
-  "Vis_switch" [
-    label="Vis switch"
-  ];
+
+  { rank=same; "Vis_switch"; }
+  { rank=same; "Telemetry_PC"; "Physics_PC"; "Speedgoat"; "Operator_PC"; "Dedi_server"; "IG1"; "IG2"; "IG3"; }
+  { rank=same; "Audio___terrain"; "Fibre_converter"; }
 
   // Connections
   "Vis_switch" -- "Audio___terrain" [

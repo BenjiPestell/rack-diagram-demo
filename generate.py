@@ -572,16 +572,16 @@ def main():
         # Multi-rack mode
         racks_config = config["racks"]
         
-        for rack_config in racks_config:
-            rack = rack_config["rack"]
-            devices = rack_config["devices"]
-            rack_id = rack.get("id", "rack")
+        # for rack_config in racks_config:
+        #     rack = rack_config["rack"]
+        #     devices = rack_config["devices"]
+        #     rack_id = rack.get("id", "rack")
             
-            rack_dot = generate_rack_dot(rack, devices)
-            filename = f"rack_{rack_id}.dot"
-            with open(filename, "w") as f:
-                f.write(rack_dot)
-            print(f"Generated {filename}")
+        #     rack_dot = generate_rack_dot(rack, devices)
+        #     filename = f"rack_{rack_id}.dot"
+        #     with open(filename, "w") as f:
+        #         f.write(rack_dot)
+        #     print(f"Generated {filename}")
         
         multi_rack_dot = generate_multi_rack_dot(racks_config)
         with open("rack_layout_all.dot", "w") as f:

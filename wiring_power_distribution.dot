@@ -2,13 +2,13 @@ graph "Power Distribution" {
 
   graph [
     rankdir=TB,
-    nodesep=0.5,
-    ranksep=1.0,
+    nodesep=0.8,
+    ranksep=1.5,
     bgcolor="white",
     label="Power Distribution",
     labelloc=t,
     fontsize=16,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans 400 Regular"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Power Distribution" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=12,
-    fontname="Arial",
+    fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
 
@@ -26,16 +26,42 @@ graph "Power Distribution" {
     penwidth=4.0
   ];
 
-  // Devices by rack
-  subgraph cluster_rack1_front {
+  // Sources
+  subgraph cluster_tier0_rack1_rear {
+    label="Rack 1 Rear";
+    style=dashed;
+    color="#999999";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R1-PDU-A" [
+      label="R1-PDU-A",
+      fillcolor="#AAAAAA"
+    ];
+    "R1-PDU-B" [
+      label="R1-PDU-B",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  subgraph cluster_tier0_rack2_rear {
+    label="Rack 2 Rear";
+    style=dashed;
+    color="#999999";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R2-PDU-A" [
+      label="R2-PDU-A",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  // Compute
+  subgraph cluster_tier1_rack1_front {
     label="Rack 1 Front";
     style=dashed;
     color="#999999";
+    fontname="Sinkin Sans 400 Regular";
 
-    "Audio___terrain" [
-      label="Audio / terrain",
-      fillcolor="#ced3db"
-    ];
     "Beckhoff___com_PC" [
       label="Beckhoff / com PC",
       fillcolor="#ced3db"
@@ -43,10 +69,6 @@ graph "Power Distribution" {
     "Dedi_server" [
       label="Dedi server",
       fillcolor="#ced3db"
-    ];
-    "Fibre___network" [
-      label="Fibre / network",
-      fillcolor="#FFFFFF"
     ];
     "Operator_PC" [
       label="Operator PC",
@@ -66,25 +88,11 @@ graph "Power Distribution" {
     ];
   }
 
-  subgraph cluster_rack1_rear {
-    label="Rack 1 Rear";
-    style=dashed;
-    color="#999999";
-
-    "R1-PDU-A" [
-      label="R1-PDU-A",
-      fillcolor="#AAAAAA"
-    ];
-    "R1-PDU-B" [
-      label="R1-PDU-B",
-      fillcolor="#AAAAAA"
-    ];
-  }
-
-  subgraph cluster_rack2_front {
+  subgraph cluster_tier1_rack2_front {
     label="Rack 2 Front";
     style=dashed;
     color="#999999";
+    fontname="Sinkin Sans 400 Regular";
 
     "IG1" [
       label="IG1",
@@ -100,16 +108,27 @@ graph "Power Distribution" {
     ];
   }
 
-  subgraph cluster_rack2_rear {
-    label="Rack 2 Rear";
+  // Infrastructure
+  subgraph cluster_tier2_rack1_front {
+    label="Rack 1 Front";
     style=dashed;
     color="#999999";
+    fontname="Sinkin Sans 400 Regular";
 
-    "R2-PDU-A" [
-      label="R2-PDU-A",
-      fillcolor="#AAAAAA"
+    "Audio___terrain" [
+      label="Audio / terrain",
+      fillcolor="#ced3db"
     ];
   }
+
+  // Infrastructure - External
+  "Fibre___network" [
+    label="Fibre / network"
+  ];
+
+  { rank=same; "R1-PDU-A"; "R1-PDU-B"; "R2-PDU-A"; }
+  { rank=same; "Telemetry_PC"; "Physics_PC"; "Speedgoat"; "Operator_PC"; "Dedi_server"; "Beckhoff___com_PC"; "IG1"; "IG2"; "IG3"; }
+  { rank=same; "Audio___terrain"; "Fibre___network"; }
 
   // Connections
   "R1-PDU-A" -- "Audio___terrain" [

@@ -2,13 +2,13 @@ graph "Company network" {
 
   graph [
     rankdir=TB,
-    nodesep=0.5,
-    ranksep=1.0,
+    nodesep=0.8,
+    ranksep=1.5,
     bgcolor="white",
     label="Company network",
     labelloc=t,
     fontsize=16,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans 400 Regular"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Company network" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=12,
-    fontname="Arial",
+    fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
 
@@ -26,7 +26,19 @@ graph "Company network" {
     penwidth=2.5
   ];
 
-  // Devices by rack
+  // Sources
+  // Sources - External
+  "Company_switch" [
+    label="Company switch"
+  ];
+
+  // Compute
+  subgraph cluster_tier1_rack1_front {
+    label="Rack 1 Front";
+    style=dashed;
+    color="#999999";
+    fontname="Sinkin Sans 400 Regular";
+
     "Operator_PC" [
       label="Operator PC",
       fillcolor="#ced3db"
@@ -35,11 +47,10 @@ graph "Company network" {
       label="Telemetry PC",
       fillcolor="#ced3db"
     ];
+  }
 
-  // External devices
-  "Company_switch" [
-    label="Company switch"
-  ];
+  { rank=same; "Company_switch"; }
+  { rank=same; "Telemetry_PC"; "Operator_PC"; }
 
   // Connections
   "Company_switch" -- "Telemetry_PC" [
