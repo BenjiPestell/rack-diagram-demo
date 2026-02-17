@@ -4,7 +4,7 @@ import yaml
 # Load config
 # -------------------------------------------------
 def load_config():
-    with open("demo_system.yaml") as f:
+    with open("checkers.yaml") as f:
         return yaml.safe_load(f)
 
 # -------------------------------------------------
