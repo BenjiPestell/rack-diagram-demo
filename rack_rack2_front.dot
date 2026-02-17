@@ -9,7 +9,7 @@ digraph "rack2_front" {
 
   node [
     shape=plain,
-    fontname="Arial"
+    fontname="Sinkin Sans"
   ];
 
   rack2_front [
@@ -24,154 +24,154 @@ digraph "rack2_front" {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="20"><B>Rack 2 Front (40U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="20" FACE="Sinkin Sans"><B>Rack 2 Front (40U)</B></FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">40</TD>
-<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19"><B>IG1</B></FONT><BR/><FONT POINT-SIZE="16">5U</FONT></TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">40</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19" FACE="Sinkin Sans"><B>IG1</B></FONT><BR/><FONT POINT-SIZE="16" FACE="Sinkin Sans">5U</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">39</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">39</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">38</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">38</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">37</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">37</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">36</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">36</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">35</TD>
-<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19"><B>IG2</B></FONT><BR/><FONT POINT-SIZE="16">5U</FONT></TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">35</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19" FACE="Sinkin Sans"><B>IG2</B></FONT><BR/><FONT POINT-SIZE="16" FACE="Sinkin Sans">5U</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">34</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">34</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">33</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">33</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">32</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">32</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">31</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">31</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">30</TD>
-<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19"><B>IG3</B></FONT><BR/><FONT POINT-SIZE="16">5U</FONT></TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">30</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="5" BGCOLOR="#ced3db" WIDTH="260"><FONT POINT-SIZE="19" FACE="Sinkin Sans"><B>IG3</B></FONT><BR/><FONT POINT-SIZE="16" FACE="Sinkin Sans">5U</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">29</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">29</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">28</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">28</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">27</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">27</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">26</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">26</FONT></TD>
 </TR>
 <TR>
-<TD WIDTH="28">25</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">25</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">24</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">24</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">23</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">23</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">22</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">22</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">21</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">21</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">20</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">20</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">19</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">19</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">18</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">18</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">17</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">17</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">16</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">16</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">15</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">15</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">14</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">14</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">13</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">13</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">12</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">12</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">11</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">11</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">10</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">10</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">9</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">9</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">8</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">8</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">7</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">7</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">6</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">6</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">5</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">5</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">4</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">4</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">3</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">3</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">2</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">2</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 <TR>
-<TD WIDTH="28">1</TD>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans">1</FONT></TD>
 <TD COLSPAN="2"></TD>
 </TR>
 

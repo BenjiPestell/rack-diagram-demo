@@ -8,7 +8,7 @@ graph "Power Distribution" {
     label="Power Distribution",
     labelloc=t,
     fontsize=16,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Power Distribution" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=12,
-    fontname="Arial",
+    fontname="Sinkin Sans",
     margin=0.2
   ];
 
@@ -26,11 +26,14 @@ graph "Power Distribution" {
     penwidth=4.0
   ];
 
-  // Devices by rack
+  // Devices organized by rack
+
   subgraph cluster_rack1_front {
     label="Rack 1 Front";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "Audio___terrain" [
       label="Audio / terrain",
@@ -44,8 +47,8 @@ graph "Power Distribution" {
       label="Dedi server",
       fillcolor="#ced3db"
     ];
-    "Fibre___network" [
-      label="Fibre / network",
+    "Fibre___Network_shelf" [
+      label="Fibre / Network shelf",
       fillcolor="#FFFFFF"
     ];
     "Operator_PC" [
@@ -64,12 +67,23 @@ graph "Power Distribution" {
       label="Telemetry PC",
       fillcolor="#ced3db"
     ];
+
+    // Vertical stacking within rack
+    "Audio___terrain" -- "Beckhoff___com_PC" [style=invis];
+    "Beckhoff___com_PC" -- "Dedi_server" [style=invis];
+    "Dedi_server" -- "Fibre___Network_shelf" [style=invis];
+    "Fibre___Network_shelf" -- "Operator_PC" [style=invis];
+    "Operator_PC" -- "Physics_PC" [style=invis];
+    "Physics_PC" -- "Speedgoat" [style=invis];
+    "Speedgoat" -- "Telemetry_PC" [style=invis];
   }
 
   subgraph cluster_rack1_rear {
     label="Rack 1 Rear";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "R1-PDU-A" [
       label="R1-PDU-A",
@@ -79,12 +93,17 @@ graph "Power Distribution" {
       label="R1-PDU-B",
       fillcolor="#AAAAAA"
     ];
+
+    // Vertical stacking within rack
+    "R1-PDU-A" -- "R1-PDU-B" [style=invis];
   }
 
   subgraph cluster_rack2_front {
     label="Rack 2 Front";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "IG1" [
       label="IG1",
@@ -98,12 +117,18 @@ graph "Power Distribution" {
       label="IG3",
       fillcolor="#ced3db"
     ];
+
+    // Vertical stacking within rack
+    "IG1" -- "IG2" [style=invis];
+    "IG2" -- "IG3" [style=invis];
   }
 
   subgraph cluster_rack2_rear {
     label="Rack 2 Rear";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "R2-PDU-A" [
       label="R2-PDU-A",
@@ -111,14 +136,18 @@ graph "Power Distribution" {
     ];
   }
 
-  // Connections
+  // Vertical ordering of racks
+  { rank=same; cluster_rack1_front; cluster_rack1_rear; cluster_rack2_front; cluster_rack2_rear; }
+
+  // Connections between devices
+
   "R1-PDU-A" -- "Audio___terrain" [
     color="#151617", style=solid, penwidth=4.0
   ];
   "R1-PDU-A" -- "Telemetry_PC" [
     color="#151617", style=solid, penwidth=4.0
   ];
-  "R1-PDU-A" -- "Fibre___network" [
+  "R1-PDU-A" -- "Fibre___Network_shelf" [
     color="#151617", style=solid, penwidth=4.0
   ];
   "R1-PDU-A" -- "Physics_PC" [

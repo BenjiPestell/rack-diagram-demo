@@ -8,7 +8,7 @@ graph "Host network" {
     label="Host network",
     labelloc=t,
     fontsize=16,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Host network" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=12,
-    fontname="Arial",
+    fontname="Sinkin Sans",
     margin=0.2
   ];
 
@@ -26,7 +26,15 @@ graph "Host network" {
     penwidth=2.5
   ];
 
-  // Devices by rack
+  // Devices organized by rack
+
+  subgraph cluster_rack1_front {
+    label="Rack 1 Front";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
+
     "Operator_PC" [
       label="Operator PC",
       fillcolor="#ced3db"
@@ -36,9 +44,14 @@ graph "Host network" {
       fillcolor="#519AB5"
     ];
 
-  // Connections
+    // Vertical stacking within rack
+    "Operator_PC" -- "Speedgoat" [style=invis];
+  }
+
+  // Connections between devices
+
   "Operator_PC" -- "Speedgoat" [
-    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=10
+    color="#5897fc", style=solid, penwidth=2.5, label="  Host  ", fontsize=10, fontname="Sinkin Sans"
   ];
 
 }

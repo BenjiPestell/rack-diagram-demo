@@ -69,7 +69,7 @@ def generate_rack_dot(rack, devices):
     lines.append("")
     lines.append("  node [")
     lines.append("    shape=plain,")
-    lines.append("    fontname=\"Sinkin Sans 400 Regular\"")
+    lines.append("    fontname=\"Arial\"")
     lines.append("  ];")
     lines.append("")
     
@@ -92,7 +92,7 @@ def generate_rack_dot(rack, devices):
     lines.append("<TR>")
     lines.append(
         f"<TD COLSPAN=\"3\" BGCOLOR=\"#DDDDDD\">"
-        f"<FONT POINT-SIZE=\"{title_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+        f"<FONT POINT-SIZE=\"{title_font}\">"
         f"<B>{rack['name']} ({total_u}U)</B>"
         f"</FONT></TD>"
     )
@@ -111,7 +111,7 @@ def generate_rack_dot(rack, devices):
         if not dev:
             lines.append("<TR>")
             lines.append(
-                f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
+                f"<TD WIDTH=\"{u_col_width}\">{u}</TD>"
             )
             lines.append("<TD COLSPAN=\"2\"></TD>")
             lines.append("</TR>")
@@ -131,18 +131,18 @@ def generate_rack_dot(rack, devices):
         # First row
         lines.append("<TR>")
         lines.append(
-            f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
+            f"<TD WIDTH=\"{u_col_width}\">{u}</TD>"
         )
         lines.append(
             f"<TD COLSPAN=\"2\" "
             f"ROWSPAN=\"{units}\" "
             f"BGCOLOR=\"{color}\" "
             f"WIDTH=\"{device_width}\">"
-            f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+            f"<FONT POINT-SIZE=\"{device_font}\">"
             f"<B>{name}</B>"
             f"</FONT>"
             f"<BR/>"
-            f"<FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+            f"<FONT POINT-SIZE=\"{unit_font}\">"
             f"{units}U"
             f"</FONT>"
             f"</TD>"
@@ -157,7 +157,7 @@ def generate_rack_dot(rack, devices):
         for i in range(1, units):
             lines.append("<TR>")
             lines.append(
-                f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u - i}</FONT></TD>"
+                f"<TD WIDTH=\"{u_col_width}\">{u - i}</TD>"
             )
             lines.append("</TR>")
     
@@ -193,7 +193,7 @@ def generate_multi_rack_dot(racks_config):
     lines.append("")
     lines.append("  node [")
     lines.append("    shape=plain,")
-    lines.append("    fontname=\"Sinkin Sans 400 Regular\"")
+    lines.append("    fontname=\"Arial\"")
     lines.append("  ];")
     lines.append("")
     
@@ -233,7 +233,7 @@ def generate_multi_rack_dot(racks_config):
         lines.append("<TR>")
         lines.append(
             f"<TD COLSPAN=\"3\" BGCOLOR=\"#DDDDDD\">"
-            f"<FONT POINT-SIZE=\"{title_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+            f"<FONT POINT-SIZE=\"{title_font}\">"
             f"<B>{rack['name']} ({total_u}U)</B>"
             f"</FONT></TD>"
         )
@@ -252,7 +252,7 @@ def generate_multi_rack_dot(racks_config):
             if not dev:
                 lines.append("<TR>")
                 lines.append(
-                    f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
+                    f"<TD WIDTH=\"{u_col_width}\">{u}</TD>"
                 )
                 lines.append("<TD COLSPAN=\"2\"></TD>")
                 lines.append("</TR>")
@@ -272,18 +272,18 @@ def generate_multi_rack_dot(racks_config):
             # First row
             lines.append("<TR>")
             lines.append(
-                f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
+                f"<TD WIDTH=\"{u_col_width}\">{u}</TD>"
             )
             lines.append(
                 f"<TD COLSPAN=\"2\" "
                 f"ROWSPAN=\"{units}\" "
                 f"BGCOLOR=\"{color}\" "
                 f"WIDTH=\"{device_width}\">"
-                f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+                f"<FONT POINT-SIZE=\"{device_font}\">"
                 f"<B>{name}</B>"
                 f"</FONT>"
                 f"<BR/>"
-                f"<FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">"
+                f"<FONT POINT-SIZE=\"{unit_font}\">"
                 f"{units}U"
                 f"</FONT>"
                 f"</TD>"
@@ -298,7 +298,7 @@ def generate_multi_rack_dot(racks_config):
             for i in range(1, units):
                 lines.append("<TR>")
                 lines.append(
-                    f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u - i}</FONT></TD>"
+                    f"<TD WIDTH=\"{u_col_width}\">{u - i}</TD>"
                 )
                 lines.append("</TR>")
         
@@ -321,23 +321,13 @@ def generate_multi_rack_dot(racks_config):
     return "\n".join(lines)
 
 # -------------------------------------------------
-# Hierarchical Wiring Diagram Generator
+# DOT Generator - Wiring Diagram
 # -------------------------------------------------
-def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
+def generate_wiring_dot(layer, all_devices, rack_info=None):
     """
-    Generate a hierarchical/layered wiring diagram.
-    
-    Devices are organized by "tier" (function/role) to create a cleaner,
-    more vertical layout instead of spreading horizontally.
-    
-    Default tier assignments:
-    - Tier 0 (Sources): PDUs, switches, external devices
-    - Tier 1 (Compute): PCs, servers, processing units
-    - Tier 2 (I/O): Shelves, converters, specialized devices
-    
-    Can be customized via layer config:
-      tier_mapping:
-        "device_name": 0  # Custom tier assignment
+    Generate a wiring diagram for a specific layer
+    all_devices is a dict mapping device name -> device info (including rack_id)
+    rack_info is a dict mapping rack_id -> rack dict (with name, etc.)
     """
     layer_name = layer["name"]
     connections = layer.get("connections", [])
@@ -368,7 +358,7 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
     lines.append(f"    label=\"{layer_name}\",")
     lines.append(f"    labelloc=t,")
     lines.append(f"    fontsize={font_size + 4},")
-    lines.append("    fontname=\"Sinkin Sans 400 Regular\"")
+    lines.append("    fontname=\"Arial Bold\"")
     lines.append("  ];")
     lines.append("")
     lines.append("  node [")
@@ -376,7 +366,7 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
     lines.append(f"    style=\"{node_style}\",")
     lines.append(f"    fillcolor=\"{node_color}\",")
     lines.append(f"    fontsize={font_size},")
-    lines.append("    fontname=\"Sinkin Sans 400 Regular\",")
+    lines.append("    fontname=\"Arial\",")
     lines.append("    margin=0.2")
     lines.append("  ];")
     lines.append("")
@@ -387,8 +377,10 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
     lines.append("  ];")
     lines.append("")
     
-    # Collect all devices and assign tiers
-    devices_in_layer = {}
+    # -----------------------------
+    # Collect all devices in this layer
+    # -----------------------------
+    devices_in_layer = set()
     for conn in connections:
         devices_in_layer[conn["from"]] = None
         devices_in_layer[conn["to"]] = None
@@ -431,76 +423,50 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
         else:
             tiers[tier]["external"].append(dev_name)
     
-    # Define nodes grouped by tier and rack
-    tier_names = {
-        0: "Sources",
-        1: "Compute",
-        2: "Infrastructure"
-    }
+    # -----------------------------
+    # Define nodes grouped by rack
+    # -----------------------------
+    lines.append("  // Devices by rack")
     
-    for tier_num in sorted(tiers.keys()):
-        tier_data = tiers[tier_num]
-        tier_name = tier_names.get(tier_num, f"Tier {tier_num}")
-        
-        lines.append(f"  // {tier_name}")
-        
-        # Racks in this tier
-        for rack_id in sorted(tier_data["by_rack"].keys()):
-            if show_rack_labels:
-                rack_label = rack_id
-                if rack_info and rack_id in rack_info:
-                    rack_label = rack_info[rack_id].get("name", rack_id)
-                
-                lines.append(f"  subgraph cluster_tier{tier_num}_{rack_id} {{")
-                lines.append(f"    label=\"{rack_label}\";")
-                lines.append("    style=dashed;")
-                lines.append("    color=\"#999999\";")
-                lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
-                lines.append("")
+    for rack_id in sorted(devices_by_rack.keys()):
+        if show_rack_labels and len(devices_by_rack) > 1:
+            # Get rack name if available, otherwise use rack_id
+            rack_label = rack_id
+            if rack_info and rack_id in rack_info:
+                rack_label = rack_info[rack_id].get("name", rack_id)
             
-            for dev_name, dev in sorted(tier_data["by_rack"][rack_id]):
-                color = dev.get("color", node_color)
-                node_id = dev_name.replace(" ", "_").replace("/", "_")
-                lines.append(f"    \"{node_id}\" [")
-                lines.append(f"      label=\"{dev_name}\",")
-                lines.append(f"      fillcolor=\"{color}\"")
-                lines.append("    ];")
-            
-            if show_rack_labels:
-                lines.append("  }")
-            
+            lines.append(f"  subgraph cluster_{rack_id} {{")
+            lines.append(f"    label=\"{rack_label}\";")
+            lines.append("    style=dashed;")
+            lines.append("    color=\"#999999\";")
             lines.append("")
         
-        # External devices in this tier
-        if tier_data["external"]:
-            lines.append(f"  // {tier_name} - External")
-            for dev_name in sorted(tier_data["external"]):
-                node_id = dev_name.replace(" ", "_").replace("/", "_")
-                lines.append(f"  \"{node_id}\" [")
-                lines.append(f"    label=\"{dev_name}\"")
-                lines.append("  ];")
-            lines.append("")
-    
-    # Enforce tier ranks
-    for tier_num in sorted(tiers.keys()):
-        tier_data = tiers[tier_num]
-        tier_nodes = []
-        
-        for rack_id in tier_data["by_rack"]:
-            for dev_name, _ in tier_data["by_rack"][rack_id]:
-                node_id = dev_name.replace(" ", "_").replace("/", "_")
-                tier_nodes.append(f"\"{node_id}\"")
-        
-        for dev_name in tier_data["external"]:
+        for dev_name, dev in sorted(devices_by_rack[rack_id]):
+            color = dev.get("color", node_color)
             node_id = dev_name.replace(" ", "_").replace("/", "_")
-            tier_nodes.append(f"\"{node_id}\"")
+            lines.append(f"    \"{node_id}\" [")
+            lines.append(f"      label=\"{dev_name}\",")
+            lines.append(f"      fillcolor=\"{color}\"")
+            lines.append("    ];")
         
-        if tier_nodes:
-            lines.append(f"  {{ rank=same; {'; '.join(tier_nodes)}; }}")
+        if show_rack_labels and len(devices_by_rack) > 1:
+            lines.append("  }")
+        
+        lines.append("")
     
-    lines.append("")
+    # External devices
+    if external_devices:
+        lines.append("  // External devices")
+        for dev_name in sorted(external_devices):
+            node_id = dev_name.replace(" ", "_").replace("/", "_")
+            lines.append(f"  \"{node_id}\" [")
+            lines.append(f"    label=\"{dev_name}\"")
+            lines.append("  ];")
+        lines.append("")
     
+    # -----------------------------
     # Define connections
+    # -----------------------------
     lines.append("  // Connections")
     for conn in connections:
         from_id = conn["from"].replace(" ", "_").replace("/", "_")
@@ -520,7 +486,6 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
         if label:
             edge_attrs.append(f"label=\"  {label}  \"")
             edge_attrs.append(f"fontsize={font_size - 2}")
-            edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
         
         lines.append(f"  \"{from_id}\" -- \"{to_id}\" [")
         lines.append(f"    {', '.join(edge_attrs)}")
@@ -563,7 +528,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info)
+            wiring_dot = generate_wiring_dot(layer, all_devices, rack_info)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
@@ -607,7 +572,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info)
+            wiring_dot = generate_wiring_dot(layer, all_devices, rack_info)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")

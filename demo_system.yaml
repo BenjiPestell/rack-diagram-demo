@@ -76,10 +76,10 @@ racks:
         units: 2
         color: "#AAAAAA"
 
-      - name: Fibre / Network shelf
-        start_u: 30
-        units: 6
-        color: "#FFFFFF"
+      # - name: Fibre / Network shelf
+      #   start_u: 30
+      #   units: 6
+      #   color: "#FFFFFF"
 
       - name: R1-PDU-B
         start_u: 19
@@ -157,7 +157,7 @@ wiring_layers:
         to: Telemetry PC
 
       - from: Vis switch
-        to: Fibre converter
+        to: Fibre / Network shelf
 
       - from: Vis switch
         to: Physics PC
@@ -220,7 +220,7 @@ wiring_layers:
         to: Telemetry PC      
         
       - from: R1-PDU-A
-        to: Fibre / network
+        to: Fibre / Network shelf
       
       - from: R1-PDU-A
         to: Physics PC

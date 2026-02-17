@@ -8,7 +8,7 @@ graph "Visual Subnet Ethernet" {
     label="Visual Subnet Ethernet",
     labelloc=t,
     fontsize=15,
-    fontname="Arial Bold"
+    fontname="Sinkin Sans"
   ];
 
   node [
@@ -16,7 +16,7 @@ graph "Visual Subnet Ethernet" {
     style="rounded,filled",
     fillcolor="#E8F4F8",
     fontsize=11,
-    fontname="Arial",
+    fontname="Sinkin Sans",
     margin=0.2
   ];
 
@@ -26,11 +26,14 @@ graph "Visual Subnet Ethernet" {
     penwidth=2.5
   ];
 
-  // Devices by rack
+  // Devices organized by rack
+
   subgraph cluster_rack1_front {
     label="Rack 1 Front";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "Audio___terrain" [
       label="Audio / terrain",
@@ -39,6 +42,10 @@ graph "Visual Subnet Ethernet" {
     "Dedi_server" [
       label="Dedi server",
       fillcolor="#ced3db"
+    ];
+    "Fibre___Network_shelf" [
+      label="Fibre / Network shelf",
+      fillcolor="#FFFFFF"
     ];
     "Operator_PC" [
       label="Operator PC",
@@ -56,12 +63,22 @@ graph "Visual Subnet Ethernet" {
       label="Telemetry PC",
       fillcolor="#ced3db"
     ];
+
+    // Vertical stacking within rack
+    "Audio___terrain" -- "Dedi_server" [style=invis];
+    "Dedi_server" -- "Fibre___Network_shelf" [style=invis];
+    "Fibre___Network_shelf" -- "Operator_PC" [style=invis];
+    "Operator_PC" -- "Physics_PC" [style=invis];
+    "Physics_PC" -- "Speedgoat" [style=invis];
+    "Speedgoat" -- "Telemetry_PC" [style=invis];
   }
 
   subgraph cluster_rack2_front {
     label="Rack 2 Front";
-    style=dashed;
-    color="#999999";
+    style=filled;
+    color="#F0F0F0";
+    fontname="Sinkin Sans";
+    margin=15;
 
     "IG1" [
       label="IG1",
@@ -75,24 +92,29 @@ graph "Visual Subnet Ethernet" {
       label="IG3",
       fillcolor="#ced3db"
     ];
+
+    // Vertical stacking within rack
+    "IG1" -- "IG2" [style=invis];
+    "IG2" -- "IG3" [style=invis];
   }
 
   // External devices
-  "Fibre_converter" [
-    label="Fibre converter"
-  ];
   "Vis_switch" [
     label="Vis switch"
   ];
 
-  // Connections
+  // Vertical ordering of racks
+  { rank=same; cluster_rack1_front; cluster_rack2_front; }
+
+  // Connections between devices
+
   "Vis_switch" -- "Audio___terrain" [
     color="#7B1FA2", style=solid, penwidth=2.5
   ];
   "Vis_switch" -- "Telemetry_PC" [
     color="#7B1FA2", style=solid, penwidth=2.5
   ];
-  "Vis_switch" -- "Fibre_converter" [
+  "Vis_switch" -- "Fibre___Network_shelf" [
     color="#7B1FA2", style=solid, penwidth=2.5
   ];
   "Vis_switch" -- "Physics_PC" [
