@@ -1,4 +1,5 @@
 import yaml
+import os
 from collections import defaultdict
 
 # -------------------------------------------------
@@ -445,9 +446,10 @@ def main():
         
         # Generate single comprehensive layout
         layout_dot = generate_rack_layout_dot(racks_config, type_colors)
-        with open("rack_layout.dot", "w") as f:
+        os.mkdir("output")
+        with open("output/rack_layout.dot", "w") as f:
             f.write(layout_dot)
-        print("Generated rack_layout.dot")
+        print("Generated output/rack_layout.dot")
         
         # Build device map for wiring (from both front and rear)
         all_devices = {}
@@ -466,7 +468,7 @@ def main():
         for layer in layers:
             layer_name = layer["name"]
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
-            filename = f"{safe_name}.dot"
+            filename = f"output/{safe_name}.dot"
             
             wiring_dot = generate_wiring_diagram(layer, all_devices, type_colors)
             with open(filename, "w") as f:
