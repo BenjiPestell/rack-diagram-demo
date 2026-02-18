@@ -60,10 +60,10 @@ racks:
         units: 3
         type: realtime
 
-      - name: Telemetry
+      - name: dSPACE
         start_u: 6
         units: 6
-        type: pc
+        type: realtime
 
     rear:
       - name: R1 16A PDU A
@@ -121,7 +121,7 @@ racks:
         units: 1
         type: cable management
 
-      - name: Graphics Switch
+      - name: Graphics Switch 1
         start_u: 3
         units: 1
         type: switch
@@ -189,7 +189,7 @@ racks:
         units: 1
         type: cable management
 
-      - name: Graphics Switch
+      - name: Graphics Switch 2
         start_u: 3
         units: 1
         type: switch
@@ -257,7 +257,7 @@ racks:
         units: 1
         type: cable management
 
-      - name: Graphics Switch
+      - name: Graphics Switch 3
         start_u: 3
         units: 1
         type: switch
@@ -330,7 +330,7 @@ racks:
         units: 1
         type: cable management
 
-      - name: Graphics Switch
+      - name: Graphics Switch 4
         start_u: 3
         units: 1
         type: switch
@@ -340,111 +340,74 @@ racks:
         units: 1
         type: pdu
 
-# Wiring layers work across all racks
 wiring_layers:
+
   # Visuals subnet
   - name: Visual Subnet Ethernet
-    node_color: "#E8F4F8"
-    edge_color: "#7B1FA2"
-    edge_width: "2.5"
-    font_size: 11
-    show_rack_labels: true
-
     connections:
       # Rack 1
-      - from: Vis switch
-        to: Audio / terrain
+      - from: Graphics Switch 1
+        to: Operator PC
 
-      - from: Vis switch
-        to: Telemetry PC
-
-      - from: Vis switch
-        to: Fibre converter
-
-      - from: Vis switch
+      - from: Graphics Switch 1
         to: Physics PC
 
-      - from: Vis switch
-        to: Speedgoat
+      - from: Graphics Switch 1
+        to: Spectator IG
 
-      - from: Vis switch
-        to: Operator PC
+      - from: Graphics Switch 1
+        to: Telemetry
 
-      - from: Vis switch
-        to: Dedi server
+      - from: Graphics Switch 1
+        to: dSPACE
 
-      # Rack 2
-      - from: Vis switch
-        to: IG1
+      # Rack 2      
+      - from: Graphics Switch 2
+        to: RVD 1
 
-      - from: Vis switch
-        to: IG2
+      - from: Graphics Switch 2
+        to: RVD 2
 
-      - from: Vis switch
-        to: IG3
-
-  # Company network
-  - name: Company network
-    edge_color: "#151617"
-    edge_width: "2.5"
-    show_rack_labels: true
-
-    connections:
-      - from: Company switch
-        to: Telemetry PC
-
-      - from: Company switch
-        to: Operator PC
-  
-  # Host network
-  - name: Host network
-    edge_color: "#5897fc"
-    edge_width: "2.5"
-    show_rack_labels: true
-
-    connections:
-      - from: Operator PC
-        to: Speedgoat
-        label: "Host"
-
-  # PDU distribution
-  - name: PDU Distribution
-    edge_color: "#151617"
-    edge_width: "4.0"
-    show_rack_labels: true
-
-    connections:
-      # Rack 1
-      - from: R1-PDU-A
-        to: Audio / terrain
-      
-      - from: R1-PDU-A
-        to: Telemetry PC      
+      - from: Graphics Switch 2
+        to: RVD 3
         
-      - from: R1-PDU-A
-        to: Fibre / network
-      
-      - from: R1-PDU-A
-        to: Physics PC
-      
-      - from: R1-PDU-B
-        to: Speedgoat
-      
-      - from: R1-PDU-B
-        to: Operator PC
-      
-      - from: R1-PDU-B
-        to: Dedi server
+      - from: Graphics Switch 2
+        to: IG 1
+        
+      - from: Graphics Switch 2
+        to: IG 2
 
-      - from: R1-PDU-B
-        to: Beckhoff / com PC
+      # Rack 3
+      - from: Graphics Switch 3
+        to: IG 3
 
-      # Rack 2
-      - from: R2-PDU-A
-        to: IG1
+      - from: Graphics Switch 3
+        to: IG 4
 
-      - from: R2-PDU-A
-        to: IG2
+      - from: Graphics Switch 3
+        to: IG 5
+        
+      - from: Graphics Switch 3
+        to: IG 6
+        
+      - from: Graphics Switch 3
+        to: IG 7
 
-      - from: R2-PDU-A
-        to: IG3
+      # Rack 4
+      - from: Graphics Switch 4
+        to: IG 8
+
+      - from: Graphics Switch 4
+        to: IG 9
+
+      - from: Graphics Switch 4
+        to: IG 10
+        
+      - from: Graphics Switch 4
+        to: IG 11
+        
+      - from: Graphics Switch 4
+        to: IG 12
+
+      - from: Graphics Switch 4
+        to: IG 13

@@ -157,7 +157,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="6" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="19.5" FACE="Sinkin Sans 400 Regular"><B>Telemetry</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">6U</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="6" BGCOLOR="#FFE8D8" WIDTH="200"><FONT POINT-SIZE="19.5" FACE="Sinkin Sans 400 Regular"><B>dSPACE</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">6U</FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
@@ -348,7 +348,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch 1</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
@@ -695,7 +695,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch 2</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
@@ -1042,7 +1042,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch 3</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
@@ -1400,7 +1400,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch 4</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
