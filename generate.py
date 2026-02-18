@@ -120,7 +120,7 @@ def generate_rack_layout_dot(racks_config, type_colors):
             side_label = side.capitalize()
             lines.append("<TR>")
             lines.append(
-                f"<TD COLSPAN=\"3\" BGCOLOR=\"#DDDDDD\">"
+                f"<TD COLSPAN=\"3\" BGCOLOR=\"#5af282\">"
                 f"<FONT POINT-SIZE=\"{title_font}\" FACE=\"Sinkin Sans 400 Regular\">"
                 f"<B>{rack['name']} {side_label}</B>"
                 f"</FONT></TD>"
