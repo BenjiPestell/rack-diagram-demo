@@ -8,13 +8,13 @@ type_colors:
   customer: "#ffd9d6"
 
 racks:
-  # Rack 1 - Front
+  # Rack 1
   - rack:
-      id: rack1_front
-      name: Rack 1 Front
+      id: rack1
+      name: Rack 1
       total_u: 42
     
-    devices:      
+    front:
       - name: UPS
         start_u: 42
         units: 3
@@ -65,15 +65,7 @@ racks:
         units: 6
         type: pc
 
-      
-      
-  # Rack 1 - Rear
-  - rack:
-      id: rack1_rear
-      name: Rack 1 Rear
-      total_u: 42
-
-    devices:
+    rear:
       - name: R1 16A PDU A
         start_u: 42
         units: 1
@@ -138,14 +130,14 @@ racks:
         start_u: 1
         units: 1
         type: pdu
-  
-  # Rack 2 - Front
+
+  # Rack 2
   - rack:
-      id: rack2_front
-      name: Rack 2 Front
+      id: rack2
+      name: Rack 2
       total_u: 42
     
-    devices:
+    front:
       - name: Customer
         start_u: 42
         units: 15
@@ -176,13 +168,7 @@ racks:
         units: 4
         type: pc
 
-  # Rack 2 - Rear
-  - rack:
-      id: rack2_rear
-      name: Rack 2 Rear
-      total_u: 42
-
-    devices:
+    rear:
       - name: R2 16A PDU A
         start_u: 42
         units: 1
@@ -213,13 +199,13 @@ racks:
         units: 1
         type: pdu
 
-  # Rack 3 - Front
+  # Rack 3
   - rack:
-      id: rack3_front
-      name: Rack 3 Front
+      id: rack3
+      name: Rack 3
       total_u: 42
     
-    devices:      
+    front:
       - name: Customer
         start_u: 42
         units: 15
@@ -250,13 +236,7 @@ racks:
         units: 4
         type: pc
 
-  # Rack 3 - Rear
-  - rack:
-      id: rack3_rear
-      name: Rack 3 Rear
-      total_u: 42
-
-    devices:
+    rear:
       - name: R3 16A PDU A
         start_u: 42
         units: 1
@@ -287,13 +267,13 @@ racks:
         units: 1
         type: pdu
 
-  # Rack 4 - Front
+  # Rack 4
   - rack:
-      id: rack4_front
-      name: Rack 4 Front
+      id: rack4
+      name: Rack 4
       total_u: 42
     
-    devices:      
+    front:
       - name: Customer
         start_u: 39
         units: 1
@@ -329,13 +309,7 @@ racks:
         units: 4
         type: pc
 
-  # Rack 4 - Rear
-  - rack:
-      id: rack4_rear
-      name: Rack 4 Rear
-      total_u: 42
-
-    devices:
+    rear:
       - name: R4 16A PDU A
         start_u: 42
         units: 1
@@ -365,8 +339,7 @@ racks:
         start_u: 1
         units: 1
         type: pdu
-      
-      
+
 # Wiring layers work across all racks
 wiring_layers:
   # Visuals subnet
@@ -434,8 +407,8 @@ wiring_layers:
         to: Speedgoat
         label: "Host"
 
-  # pdu distribution
-  - name: pdu Distribution
+  # PDU distribution
+  - name: PDU Distribution
     edge_color: "#151617"
     edge_width: "4.0"
     show_rack_labels: true

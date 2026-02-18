@@ -1,4 +1,4 @@
-digraph multi_rack {
+digraph rack_layout {
 
   graph [
     rankdir=TB,
@@ -24,7 +24,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Front (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Front</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -192,7 +192,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Rear (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Rear</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -376,7 +376,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Front (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Front</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -535,7 +535,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Rear (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Rear</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -723,7 +723,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Front (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Front</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -882,7 +882,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Rear (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Rear</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -1070,7 +1070,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Front (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Front</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -1240,7 +1240,7 @@ digraph multi_rack {
 >
 
 <TR>
-<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Rear (42U)</B></FONT></TD>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Rear</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
@@ -1416,6 +1416,20 @@ digraph multi_rack {
 >
   ];
 
-  { rank=same; rack1_front; rack1_rear; rack2_front; rack2_rear; rack3_front; rack3_rear; rack4_front; rack4_rear; }
+  // Spacing between rack pairs
+  spacer_0 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
+  spacer_1 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
+  spacer_2 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
+
+  // Horizontal layout with spacing
+  { rank=same; "rack1_front"; "rack1_rear"; spacer_0; "rack2_front"; "rack2_rear"; spacer_1; "rack3_front"; "rack3_rear"; spacer_2; "rack4_front"; "rack4_rear"; }
+
+  // Invisible edges to enforce spacing
+  rack1_rear -> spacer_0 [style=invis, minlen=1];
+  spacer_0 -> rack2_front [style=invis, minlen=1];
+  rack2_rear -> spacer_1 [style=invis, minlen=1];
+  spacer_1 -> rack3_front [style=invis, minlen=1];
+  rack3_rear -> spacer_2 [style=invis, minlen=1];
+  spacer_2 -> rack4_front [style=invis, minlen=1];
 
 }
