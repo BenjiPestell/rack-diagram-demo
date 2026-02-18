@@ -1,8 +1,8 @@
 - Make rack U order switchable
-- Font consistency
 - Add support for power adapters for LV devices
 - Graph inter-rack connections serperately
 - Support for patch panel (some ethernet connections)
 - Define PC ethernet port availability & usage
 - Add PC metadata / notes (Maybe even IPs?)
 - Add arena PNs (display / in metadata)
+

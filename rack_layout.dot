@@ -264,7 +264,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager A</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
@@ -336,7 +336,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager B</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
