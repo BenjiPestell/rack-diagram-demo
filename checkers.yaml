@@ -131,6 +131,12 @@ racks:
         units: 1
         type: pdu
 
+      - name: Vertical PDU 1
+        type: pdu
+
+      - name: Mains in 1
+        type: pdu
+
   # Rack 2
   - rack:
       id: rack2
@@ -343,7 +349,8 @@ racks:
 wiring_layers:
 
   # Visuals subnet
-  - name: Visual Subnet Ethernet
+  - name: Visuals Subnet
+    edge_color: "#b551a9"
     connections:
       # Inter-rack connections
       - from: Graphics Switch 1
@@ -421,3 +428,59 @@ wiring_layers:
 
       - from: Graphics Switch 4
         to: IG 13
+
+  # Power 
+  - name: Power distrubution
+    connections:
+      # Rack 1 front
+      - from: UPS
+        to: KVM shelf 1
+
+      - from: UPS
+        to: KVM shelf 2
+        
+      - from: UPS
+        to: KVM shelf 3
+
+      - from: R1 16A PDU B
+        to: Operator PC 
+        
+      - from: R1 16A PDU B
+        to: Physics PC
+
+      - from: R1 16A PDU B
+        to: Spectator IG
+        
+      - from: R1 16A PDU C
+        to: Telemetry
+        
+      - from: R1 16A PDU C
+        to: dSPACE Controller
+        
+      - from: R1 16A PDU C
+        to: dSPACE
+
+      # Rack 1 rear
+      - from: Mains in 1
+        to: Vertical PDU 1
+
+      - from: Vertical PDU 1
+        to: R1 16A PDU A 
+
+      - from: Vertical PDU 1
+        to: R1 16A PDU B 
+
+      - from: Vertical PDU 1
+        to: R1 16A PDU C 
+
+      - from: Vertical PDU 1
+        to: UPS
+
+      - from: R1 16A PDU A
+        to: Company Network Switch
+
+      - from: R1 16A PDU A
+        to: CCTV Switch
+        
+      - from: R1 16A PDU A
+        to: Audio Switch

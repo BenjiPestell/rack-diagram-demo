@@ -57,18 +57,21 @@ def build_occupancy(devices, total_u):
     slots = {}
     for dev in devices:
         name = dev["name"]
-        start = dev["start_u"]
-        units = dev["units"]
-        
-        if units < 1:
-            raise ValueError(f"{name} has invalid unit size")
-        
-        for u in range(start, start - units, -1):
-            if u < 1:
-                raise ValueError(f"{name} exceeds bottom of rack")
-            if u in slots:
-                raise ValueError(f"U{u} conflict between {slots[u]['name']} and {name}")
-            slots[u] = dev
+        try:
+            start = dev["start_u"]
+            units = dev["units"]
+            
+            if units < 1:
+                raise ValueError(f"{name} has invalid unit size")
+            
+            for u in range(start, start - units, -1):
+                if u < 1:
+                    raise ValueError(f"{name} exceeds bottom of rack")
+                if u in slots:
+                    raise ValueError(f"U{u} conflict between {slots[u]['name']} and {name}")
+                slots[u] = dev
+        except:
+            print(f"Skipping layout for device '{name}'. Missing properties.")
     
     return slots
 
@@ -266,8 +269,10 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     
     Structure:
     - Connections are organized by rack
-    - Each rack has a central hub (switch) with peripheral devices in a circle
+    - Each rack has central hubs (devices with >1 connection) with peripheral devices in a circle
     - Inter-rack connections shown as edges between central nodes
+    
+    Central nodes are any device with more than 1 connection.
     """
     layer_name = layer["name"]
     connections = layer.get("connections", [])
@@ -284,14 +289,13 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     lines.append(f"graph \"{layer_name}\" {{")
     lines.append("")
     lines.append("  graph [")
-    lines.append("    rankdir=TB,")
-    lines.append("    nodesep=1.0,")
-    lines.append("    ranksep=1.5,")
     lines.append("    bgcolor=\"white\",")
     lines.append(f"    label=\"{layer_name}\",")
     lines.append(f"    labelloc=t,")
     lines.append(f"    fontsize={font_size + 4},")
-    lines.append("    fontname=\"Sinkin Sans 400 Regular\"")
+    lines.append("    fontname=\"Sinkin Sans 400 Regular\",")
+    lines.append("    overlap=false,")
+    lines.append("    sep=0.5")
     lines.append("  ];")
     lines.append("")
     
@@ -313,7 +317,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     
     # Collect devices and connections per rack
     rack_devices = defaultdict(set)
-    rack_central = defaultdict(list)  # Central nodes (switches) per rack
+    rack_connection_count = defaultdict(lambda: defaultdict(int))  # Count connections per device per rack
     inter_rack_connections = []
     
     for conn in connections:
@@ -332,17 +336,22 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
             rack_devices[from_rack].add(from_dev)
             rack_devices[to_rack].add(to_dev)
             
-            # Inter-rack connection
-            if from_rack != to_rack:
-                inter_rack_connections.append((from_dev, to_dev, from_rack, to_rack))
-            # Intra-rack: determine if from_dev is central (switch)
+            # Count connections
+            if from_rack == to_rack:
+                rack_connection_count[from_rack][from_dev] += 1
+                rack_connection_count[from_rack][to_dev] += 1
             else:
-                if "switch" in from_dev.lower():
-                    rack_central[from_rack].append(from_dev)
+                # Inter-rack connection
+                inter_rack_connections.append((from_dev, to_dev, from_rack, to_rack))
+                rack_connection_count[from_rack][from_dev] += 1
+                rack_connection_count[to_rack][to_dev] += 1
     
-    # Ensure unique central nodes
-    for rack_id in rack_central:
-        rack_central[rack_id] = list(set(rack_central[rack_id]))
+    # Find central nodes per rack (any device with >1 connection)
+    rack_central = defaultdict(list)
+    for rack_id in rack_devices:
+        for dev_name, conn_count in rack_connection_count[rack_id].items():
+            if conn_count > 1:
+                rack_central[rack_id].append(dev_name)
     
     # Create nodes grouped by rack
     lines.append("  // Devices grouped by rack")
@@ -352,21 +361,23 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         devices = rack_devices[rack_id]
         
         lines.append(f"  subgraph cluster_{rack_id} {{")
-        lines.append(f"    label=\"Rack {rack_id.replace('rack', '').replace('_front', '').replace('_rear', '')}\";")
+        rack_label = rack_id.replace('rack', '').replace('_front', '').replace('_rear', '').strip('_')
+        lines.append(f"    label=\"Rack {rack_label}\";")
         lines.append("    style=filled;")
         lines.append("    color=\"#F5F5F5\";")
         lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
         lines.append("")
         
-        # Central nodes (switches) - larger, prominent
+        # Central nodes - larger, prominent
         central_nodes = rack_central.get(rack_id, [])
         for dev_name in sorted(central_nodes):
             node_id = dev_name.replace(" ", "_").replace("/", "_")
             dev_info = all_devices.get(dev_name)
             color = get_device_color(dev_info, type_colors)
+            connection_count = rack_connection_count[rack_id][dev_name]
             
             lines.append(f"    \"{node_id}\" [")
-            lines.append(f"      label=\"{dev_name}\",")
+            lines.append(f"      label=\"{dev_name}\\n({connection_count} conn)\",")
             lines.append(f"      fillcolor=\"{color}\",")
             lines.append("      penwidth=2.5")
             lines.append("    ];")
@@ -385,19 +396,6 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         
         lines.append("  }")
         lines.append("")
-    
-    # Force peripheral devices in each rack to be on same rank (radial effect)
-    lines.append("  // Radial arrangement within each rack")
-    for rack_id in sorted(rack_devices.keys()):
-        devices = rack_devices[rack_id]
-        central_nodes = set(rack_central.get(rack_id, []))
-        peripheral = devices - central_nodes
-        
-        if peripheral:
-            peripheral_ids = [f"\"{dev.replace(' ', '_').replace('/', '_')}\"" for dev in sorted(peripheral)]
-            lines.append(f"  {{ rank=same; {'; '.join(peripheral_ids)}; }}")
-    
-    lines.append("")
     
     # Create connections
     lines.append("  // Connections")
@@ -468,7 +466,7 @@ def main():
         for layer in layers:
             layer_name = layer["name"]
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
-            filename = f"wiring_{safe_name}.dot"
+            filename = f"{safe_name}.dot"
             
             wiring_dot = generate_wiring_diagram(layer, all_devices, type_colors)
             with open(filename, "w") as f:

@@ -1,0 +1,167 @@
+graph "Power distrubution" {
+
+  graph [
+    bgcolor="white",
+    label="Power distrubution",
+    labelloc=t,
+    fontsize=16,
+    fontname="Sinkin Sans 400 Regular",
+    overlap=false,
+    sep=0.5
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontsize=12,
+    fontname="Sinkin Sans 400 Regular",
+    margin=0.2
+  ];
+
+  edge [
+    color="#333333",
+    style=solid,
+    penwidth=2.0
+  ];
+
+  // Devices grouped by rack
+
+  subgraph cluster_rack1 {
+    label="Rack 1";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R1_16A_PDU_A" [
+      label="R1 16A PDU A\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R1_16A_PDU_B" [
+      label="R1 16A PDU B\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R1_16A_PDU_C" [
+      label="R1 16A PDU C\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "UPS" [
+      label="UPS\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Vertical_PDU_1" [
+      label="Vertical PDU 1\n(5 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Audio_Switch" [
+      label="Audio Switch",
+      fillcolor="#B8D6D6"
+    ];
+    "CCTV_Switch" [
+      label="CCTV Switch",
+      fillcolor="#B8D6D6"
+    ];
+    "Company_Network_Switch" [
+      label="Company Network Switch",
+      fillcolor="#B8D6D6"
+    ];
+    "KVM_shelf_1" [
+      label="KVM shelf 1",
+      fillcolor="#ced3db"
+    ];
+    "KVM_shelf_2" [
+      label="KVM shelf 2",
+      fillcolor="#ced3db"
+    ];
+    "KVM_shelf_3" [
+      label="KVM shelf 3",
+      fillcolor="#ced3db"
+    ];
+    "Mains_in_1" [
+      label="Mains in 1",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#E8F4F8"
+    ];
+    "Physics_PC" [
+      label="Physics PC",
+      fillcolor="#E8F4F8"
+    ];
+    "Spectator_IG" [
+      label="Spectator IG",
+      fillcolor="#E8F4F8"
+    ];
+    "Telemetry" [
+      label="Telemetry",
+      fillcolor="#E8F4F8"
+    ];
+    "dSPACE" [
+      label="dSPACE",
+      fillcolor="#FFE8D8"
+    ];
+    "dSPACE_Controller" [
+      label="dSPACE Controller",
+      fillcolor="#FFE8D8"
+    ];
+  }
+
+  // Connections
+  UPS -- KVM_shelf_1 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  UPS -- KVM_shelf_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  UPS -- KVM_shelf_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_B -- Operator_PC [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_B -- Physics_PC [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_B -- Spectator_IG [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_C -- Telemetry [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_C -- dSPACE_Controller [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_C -- dSPACE [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Mains_in_1 -- Vertical_PDU_1 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_1 -- R1_16A_PDU_A [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_1 -- R1_16A_PDU_B [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_1 -- R1_16A_PDU_C [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_1 -- UPS [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_A -- Company_Network_Switch [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_A -- CCTV_Switch [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_A -- Audio_Switch [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+
+}

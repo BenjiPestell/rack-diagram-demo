@@ -1,14 +1,13 @@
-graph "Visual Subnet Ethernet" {
+graph "Visuals Subnet" {
 
   graph [
-    rankdir=TB,
-    nodesep=1.0,
-    ranksep=1.5,
     bgcolor="white",
-    label="Visual Subnet Ethernet",
+    label="Visuals Subnet",
     labelloc=t,
     fontsize=16,
-    fontname="Sinkin Sans 400 Regular"
+    fontname="Sinkin Sans 400 Regular",
+    overlap=false,
+    sep=0.5
   ];
 
   node [
@@ -20,7 +19,7 @@ graph "Visual Subnet Ethernet" {
   ];
 
   edge [
-    color="#333333",
+    color="#b551a9",
     style=solid,
     penwidth=2.0
   ];
@@ -34,7 +33,7 @@ graph "Visual Subnet Ethernet" {
     fontname="Sinkin Sans 400 Regular";
 
     "Graphics_Switch_1" [
-      label="Graphics Switch 1",
+      label="Graphics Switch 1\n(6 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -67,7 +66,7 @@ graph "Visual Subnet Ethernet" {
     fontname="Sinkin Sans 400 Regular";
 
     "Graphics_Switch_2" [
-      label="Graphics Switch 2",
+      label="Graphics Switch 2\n(7 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -100,7 +99,7 @@ graph "Visual Subnet Ethernet" {
     fontname="Sinkin Sans 400 Regular";
 
     "Graphics_Switch_3" [
-      label="Graphics Switch 3",
+      label="Graphics Switch 3\n(7 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -133,7 +132,7 @@ graph "Visual Subnet Ethernet" {
     fontname="Sinkin Sans 400 Regular";
 
     "Graphics_Switch_4" [
-      label="Graphics Switch 4",
+      label="Graphics Switch 4\n(7 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -163,84 +162,78 @@ graph "Visual Subnet Ethernet" {
     ];
   }
 
-  // Radial arrangement within each rack
-  { rank=same; "Operator_PC"; "Physics_PC"; "Spectator_IG"; "Telemetry"; "dSPACE"; }
-  { rank=same; "IG_1"; "IG_2"; "RVD_1"; "RVD_2"; "RVD_3"; }
-  { rank=same; "IG_3"; "IG_4"; "IG_5"; "IG_6"; "IG_7"; }
-  { rank=same; "IG_10"; "IG_11"; "IG_12"; "IG_13"; "IG_8"; "IG_9"; }
-
   // Connections
   Graphics_Switch_1 -- Graphics_Switch_2 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- Graphics_Switch_3 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- Graphics_Switch_4 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_1 -- Operator_PC [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_1 -- Physics_PC [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_1 -- Spectator_IG [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_1 -- Telemetry [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_1 -- dSPACE [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- RVD_1 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- RVD_2 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- RVD_3 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- IG_1 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_2 -- IG_2 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- IG_3 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- IG_4 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- IG_5 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- IG_6 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_3 -- IG_7 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_8 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_9 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_10 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_11 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_12 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch_4 -- IG_13 [
-    color="#333333", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0
   ];
 
 }
