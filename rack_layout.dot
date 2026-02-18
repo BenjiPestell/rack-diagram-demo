@@ -380,7 +380,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer 2</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
@@ -727,7 +727,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer 3</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
@@ -1086,7 +1086,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Customer 4</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>

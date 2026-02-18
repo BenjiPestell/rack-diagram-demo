@@ -43,7 +43,7 @@ graph "Power distrubution" {
       penwidth=2.5
     ];
     "R1_16A_PDU_C" [
-      label="R1 16A PDU C\n(4 conn)",
+      label="R1 16A PDU C\n(5 conn)",
       fillcolor="#AAAAAA",
       penwidth=2.5
     ];
@@ -67,6 +67,10 @@ graph "Power distrubution" {
     ];
     "Company_Network_Switch" [
       label="Company Network Switch",
+      fillcolor="#B8D6D6"
+    ];
+    "Graphics_Switch_1" [
+      label="Graphics Switch 1",
       fillcolor="#B8D6D6"
     ];
     "KVM_shelf_1" [
@@ -108,6 +112,190 @@ graph "Power distrubution" {
     "dSPACE_Controller" [
       label="dSPACE Controller",
       fillcolor="#FFE8D8"
+    ];
+  }
+
+  subgraph cluster_rack2 {
+    label="Rack 2";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R2_16A_PDU_A" [
+      label="R2 16A PDU A\n(2 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R2_16A_PDU_B" [
+      label="R2 16A PDU B\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R2_16A_PDU_C" [
+      label="R2 16A PDU C\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Vertical_PDU_2" [
+      label="Vertical PDU 2\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Customer_2" [
+      label="Customer 2",
+      fillcolor="#ffd9d6"
+    ];
+    "Graphics_Switch_2" [
+      label="Graphics Switch 2",
+      fillcolor="#B8D6D6"
+    ];
+    "IG_1" [
+      label="IG 1",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_2" [
+      label="IG 2",
+      fillcolor="#E8F4F8"
+    ];
+    "Mains_in_2" [
+      label="Mains in 2",
+      fillcolor="#AAAAAA"
+    ];
+    "RVD_1" [
+      label="RVD 1",
+      fillcolor="#E8F4F8"
+    ];
+    "RVD_2" [
+      label="RVD 2",
+      fillcolor="#E8F4F8"
+    ];
+    "RVD_3" [
+      label="RVD 3",
+      fillcolor="#E8F4F8"
+    ];
+  }
+
+  subgraph cluster_rack3 {
+    label="Rack 3";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R3_16A_PDU_A" [
+      label="R3 16A PDU A\n(2 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R3_16A_PDU_B" [
+      label="R3 16A PDU B\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R3_16A_PDU_C" [
+      label="R3 16A PDU C\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Vertical_PDU_3" [
+      label="Vertical PDU 3\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Customer_3" [
+      label="Customer 3",
+      fillcolor="#ffd9d6"
+    ];
+    "Graphics_Switch_3" [
+      label="Graphics Switch 3",
+      fillcolor="#B8D6D6"
+    ];
+    "IG_3" [
+      label="IG 3",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_4" [
+      label="IG 4",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_5" [
+      label="IG 5",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_6" [
+      label="IG 6",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_7" [
+      label="IG 7",
+      fillcolor="#E8F4F8"
+    ];
+    "Mains_in_3" [
+      label="Mains in 3",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  subgraph cluster_rack4 {
+    label="Rack 4";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "R4_16A_PDU_A" [
+      label="R4 16A PDU A\n(2 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R4_16A_PDU_B" [
+      label="R4 16A PDU B\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "R4_16A_PDU_C" [
+      label="R4 16A PDU C\n(5 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Vertical_PDU_4" [
+      label="Vertical PDU 4\n(4 conn)",
+      fillcolor="#AAAAAA",
+      penwidth=2.5
+    ];
+    "Customer_4" [
+      label="Customer 4",
+      fillcolor="#ffd9d6"
+    ];
+    "Graphics_Switch_4" [
+      label="Graphics Switch 4",
+      fillcolor="#B8D6D6"
+    ];
+    "IG_10" [
+      label="IG 10",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_11" [
+      label="IG 11",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_12" [
+      label="IG 12",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_13" [
+      label="IG 13",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_8" [
+      label="IG 8",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_9" [
+      label="IG 9",
+      fillcolor="#E8F4F8"
+    ];
+    "Mains_in_4" [
+      label="Mains in 4",
+      fillcolor="#AAAAAA"
     ];
   }
 
@@ -161,6 +349,111 @@ graph "Power distrubution" {
     color="#333333", style=solid, penwidth=2.0
   ];
   R1_16A_PDU_A -- Audio_Switch [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R1_16A_PDU_C -- Graphics_Switch_1 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_A -- Customer_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_B -- RVD_1 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_B -- RVD_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_B -- RVD_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_C -- IG_1 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_C -- IG_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Mains_in_2 -- Vertical_PDU_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_2 -- R2_16A_PDU_A [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_2 -- R2_16A_PDU_B [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_2 -- R2_16A_PDU_C [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R2_16A_PDU_C -- Graphics_Switch_2 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_A -- Customer_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_B -- IG_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_B -- IG_4 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_B -- IG_5 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_C -- IG_6 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_C -- IG_7 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Mains_in_3 -- Vertical_PDU_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_3 -- R3_16A_PDU_A [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_3 -- R3_16A_PDU_B [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_3 -- R3_16A_PDU_C [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R3_16A_PDU_C -- Graphics_Switch_3 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_A -- Customer_4 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_B -- IG_8 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_B -- IG_9 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_B -- IG_10 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_C -- IG_11 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_C -- IG_12 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_C -- IG_13 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Mains_in_4 -- Vertical_PDU_4 [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_4 -- R4_16A_PDU_A [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_4 -- R4_16A_PDU_B [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Vertical_PDU_4 -- R4_16A_PDU_C [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  R4_16A_PDU_C -- Graphics_Switch_4 [
     color="#333333", style=solid, penwidth=2.0
   ];
 

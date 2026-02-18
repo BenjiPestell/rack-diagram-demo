@@ -144,7 +144,7 @@ racks:
       total_u: 42
     
     front:
-      - name: Customer
+      - name: Customer 2
         start_u: 42
         units: 15
         type: customer
@@ -205,6 +205,12 @@ racks:
         units: 1
         type: pdu
 
+      - name: Vertical PDU 2
+        type: pdu
+
+      - name: Mains in 2
+        type: pdu
+
   # Rack 3
   - rack:
       id: rack3
@@ -212,7 +218,7 @@ racks:
       total_u: 42
     
     front:
-      - name: Customer
+      - name: Customer 3
         start_u: 42
         units: 15
         type: customer
@@ -273,6 +279,12 @@ racks:
         units: 1
         type: pdu
 
+      - name: Vertical PDU 3
+        type: pdu
+
+      - name: Mains in 3
+        type: pdu
+
   # Rack 4
   - rack:
       id: rack4
@@ -280,7 +292,7 @@ racks:
       total_u: 42
     
     front:
-      - name: Customer
+      - name: Customer 4
         start_u: 39
         units: 1
         type: customer
@@ -344,6 +356,12 @@ racks:
       - name: R4 16A PDU C
         start_u: 1
         units: 1
+        type: pdu
+
+      - name: Vertical PDU 4
+        type: pdu
+
+      - name: Mains in 4
         type: pdu
 
 wiring_layers:
@@ -432,7 +450,7 @@ wiring_layers:
   # Power 
   - name: Power distrubution
     connections:
-      # Rack 1 front
+      # Rack 1 Front
       - from: UPS
         to: KVM shelf 1
 
@@ -460,7 +478,7 @@ wiring_layers:
       - from: R1 16A PDU C
         to: dSPACE
 
-      # Rack 1 rear
+      # Rack 1 Rear
       - from: Mains in 1
         to: Vertical PDU 1
 
@@ -484,3 +502,133 @@ wiring_layers:
         
       - from: R1 16A PDU A
         to: Audio Switch
+
+      - from: R1 16A PDU C
+        to: Graphics Switch 1
+
+      # Rack 2 Front  
+      - from: R2 16A PDU A
+        to: Customer 2
+
+      - from: R2 16A PDU B
+        to: RVD 1
+        
+      - from: R2 16A PDU B
+        to: RVD 2
+
+      - from: R2 16A PDU B
+        to: RVD 3
+      
+      - from: R2 16A PDU C
+        to: IG 1
+      
+      - from: R2 16A PDU C
+        to: IG 2
+
+      # Rack 2 Rear
+      - from: Mains in 2
+        to: Vertical PDU 2 
+
+      - from: Vertical PDU 2
+        to: R2 16A PDU A
+
+      - from: Vertical PDU 2
+        to: R2 16A PDU B
+
+      - from: Vertical PDU 2
+        to: R2 16A PDU C
+
+      - from: R2 16A PDU C
+        to: Graphics Switch 2
+
+      # Rack 3 Front  
+      - from: R3 16A PDU A
+        to: Customer 3
+
+      - from: R3 16A PDU B
+        to: IG 3
+        
+      - from: R3 16A PDU B
+        to: IG 4
+
+      - from: R3 16A PDU B
+        to: IG 5
+      
+      - from: R3 16A PDU C
+        to: IG 6
+      
+      - from: R3 16A PDU C
+        to: IG 7
+
+      # Rack 3 Rear
+      - from: Mains in 3
+        to: Vertical PDU 3 
+
+      - from: Vertical PDU 3
+        to: R3 16A PDU A
+
+      - from: Vertical PDU 3
+        to: R3 16A PDU B
+
+      - from: Vertical PDU 3
+        to: R3 16A PDU C
+
+      - from: R3 16A PDU C
+        to: Graphics Switch 3
+
+      # Rack 4 Front  
+      - from: R4 16A PDU A
+        to: Customer 4
+
+      - from: R4 16A PDU B
+        to: IG 8
+        
+      - from: R4 16A PDU B
+        to: IG 9
+
+      - from: R4 16A PDU B
+        to: IG 10
+      
+      - from: R4 16A PDU C
+        to: IG 11
+      
+      - from: R4 16A PDU C
+        to: IG 12
+        
+      - from: R4 16A PDU C
+        to: IG 13
+
+      # Rack 4 Rear
+      - from: Mains in 4
+        to: Vertical PDU 4
+
+      - from: Vertical PDU 4
+        to: R4 16A PDU A
+
+      - from: Vertical PDU 4
+        to: R4 16A PDU B
+
+      - from: Vertical PDU 4
+        to: R4 16A PDU C
+
+      - from: R4 16A PDU C
+        to: Graphics Switch 4
+
+  # Host network
+  - name: Host Subnet
+    edge_color: "#5192b5"
+    connections:
+      - from: Operator PC
+        to: dSPACE Controller
+
+      - from: dSPACE Controller
+        to: dSPACE
+
+  # Company network
+  - name: Company Network
+    connections:
+      - from: Company Network Switch
+        to: Operator PC
+
+      - from: Company Network Switch
+        to: Telemetry
