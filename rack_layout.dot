@@ -1417,9 +1417,9 @@ digraph rack_layout {
   ];
 
   // Spacing between rack pairs
-  spacer_0 [shape=point, style=invis, width=6.4, height=0, fixedsize=true];
-  spacer_1 [shape=point, style=invis, width=6.4, height=0, fixedsize=true];
-  spacer_2 [shape=point, style=invis, width=6.4, height=0, fixedsize=true];
+  spacer_0 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
+  spacer_1 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
+  spacer_2 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
 
   // Horizontal layout with spacing
   { rank=same; "rack1_front"; "rack1_rear"; spacer_0; "rack2_front"; "rack2_rear"; spacer_1; "rack3_front"; "rack3_rear"; spacer_2; "rack4_front"; "rack4_rear"; }

@@ -1,4 +1,5 @@
 import yaml
+from collections import defaultdict
 
 # -------------------------------------------------
 # Load config
@@ -6,6 +7,25 @@ import yaml
 def load_config():
     with open("checkers.yaml") as f:
         return yaml.safe_load(f)
+        
+# -------------------------------------------------
+# Build device map
+# -------------------------------------------------
+def build_device_map(racks_config):
+    """
+    Build a map of device name -> {rack_id, device_info}
+    """
+    all_devices = {}
+    for rack_config in racks_config:
+        rack_id = rack_config["rack"].get("id", "rack")
+        
+        for side in ['front', 'rear']:
+            if side in rack_config:
+                for dev in rack_config[side]:
+                    dev_copy = dev.copy()
+                    dev_copy["rack_id"] = rack_id
+                    dev_copy["side"] = side
+                    all_devices[dev["name"]] = dev_copy
 
 # -------------------------------------------------
 # Get device color based on type or explicit color
@@ -238,6 +258,181 @@ def generate_rack_layout_dot(racks_config, type_colors):
     return "\n".join(lines)
 
 # -------------------------------------------------
+# Generate Wiring Diagram with Radial Layout
+# -------------------------------------------------
+def generate_wiring_diagram(layer, all_devices, type_colors):
+    """
+    Generate a radial wiring diagram grouped by rack.
+    
+    Structure:
+    - Connections are organized by rack
+    - Each rack has a central hub (switch) with peripheral devices in a circle
+    - Inter-rack connections shown as edges between central nodes
+    """
+    layer_name = layer["name"]
+    connections = layer.get("connections", [])
+    
+    # Styling
+    edge_color = layer.get("edge_color", "#333333")
+    edge_style = layer.get("edge_style", "solid")
+    edge_width = layer.get("edge_width", "2.0")
+    font_size = layer.get("font_size", 12)
+    
+    lines = []
+    
+    # Graph header
+    lines.append(f"graph \"{layer_name}\" {{")
+    lines.append("")
+    lines.append("  graph [")
+    lines.append("    rankdir=TB,")
+    lines.append("    nodesep=1.0,")
+    lines.append("    ranksep=1.5,")
+    lines.append("    bgcolor=\"white\",")
+    lines.append(f"    label=\"{layer_name}\",")
+    lines.append(f"    labelloc=t,")
+    lines.append(f"    fontsize={font_size + 4},")
+    lines.append("    fontname=\"Sinkin Sans 400 Regular\"")
+    lines.append("  ];")
+    lines.append("")
+    
+    lines.append("  node [")
+    lines.append("    shape=box,")
+    lines.append("    style=\"rounded,filled\",")
+    lines.append(f"    fontsize={font_size},")
+    lines.append("    fontname=\"Sinkin Sans 400 Regular\",")
+    lines.append("    margin=0.2")
+    lines.append("  ];")
+    lines.append("")
+    
+    lines.append("  edge [")
+    lines.append(f"    color=\"{edge_color}\",")
+    lines.append(f"    style={edge_style},")
+    lines.append(f"    penwidth={edge_width}")
+    lines.append("  ];")
+    lines.append("")
+    
+    # Collect devices and connections per rack
+    rack_devices = defaultdict(set)
+    rack_central = defaultdict(list)  # Central nodes (switches) per rack
+    inter_rack_connections = []
+    
+    for conn in connections:
+        from_dev = conn["from"]
+        to_dev = conn["to"]
+        
+        # Get device info
+        from_info = all_devices.get(from_dev)
+        to_info = all_devices.get(to_dev)
+        
+        if from_info and to_info:
+            from_rack = from_info.get("rack_id")
+            to_rack = to_info.get("rack_id")
+            
+            # Track which devices belong to which rack
+            rack_devices[from_rack].add(from_dev)
+            rack_devices[to_rack].add(to_dev)
+            
+            # Inter-rack connection
+            if from_rack != to_rack:
+                inter_rack_connections.append((from_dev, to_dev, from_rack, to_rack))
+            # Intra-rack: determine if from_dev is central (switch)
+            else:
+                if "switch" in from_dev.lower():
+                    rack_central[from_rack].append(from_dev)
+    
+    # Ensure unique central nodes
+    for rack_id in rack_central:
+        rack_central[rack_id] = list(set(rack_central[rack_id]))
+    
+    # Create nodes grouped by rack
+    lines.append("  // Devices grouped by rack")
+    lines.append("")
+    
+    for rack_id in sorted(rack_devices.keys()):
+        devices = rack_devices[rack_id]
+        
+        lines.append(f"  subgraph cluster_{rack_id} {{")
+        lines.append(f"    label=\"Rack {rack_id.replace('rack', '').replace('_front', '').replace('_rear', '')}\";")
+        lines.append("    style=filled;")
+        lines.append("    color=\"#F5F5F5\";")
+        lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
+        lines.append("")
+        
+        # Central nodes (switches) - larger, prominent
+        central_nodes = rack_central.get(rack_id, [])
+        for dev_name in sorted(central_nodes):
+            node_id = dev_name.replace(" ", "_").replace("/", "_")
+            dev_info = all_devices.get(dev_name)
+            color = get_device_color(dev_info, type_colors)
+            
+            lines.append(f"    \"{node_id}\" [")
+            lines.append(f"      label=\"{dev_name}\",")
+            lines.append(f"      fillcolor=\"{color}\",")
+            lines.append("      penwidth=2.5")
+            lines.append("    ];")
+        
+        # Peripheral nodes
+        peripheral = devices - set(central_nodes)
+        for dev_name in sorted(peripheral):
+            node_id = dev_name.replace(" ", "_").replace("/", "_")
+            dev_info = all_devices.get(dev_name)
+            color = get_device_color(dev_info, type_colors)
+            
+            lines.append(f"    \"{node_id}\" [")
+            lines.append(f"      label=\"{dev_name}\",")
+            lines.append(f"      fillcolor=\"{color}\"")
+            lines.append("    ];")
+        
+        lines.append("  }")
+        lines.append("")
+    
+    # Force peripheral devices in each rack to be on same rank (radial effect)
+    lines.append("  // Radial arrangement within each rack")
+    for rack_id in sorted(rack_devices.keys()):
+        devices = rack_devices[rack_id]
+        central_nodes = set(rack_central.get(rack_id, []))
+        peripheral = devices - central_nodes
+        
+        if peripheral:
+            peripheral_ids = [f"\"{dev.replace(' ', '_').replace('/', '_')}\"" for dev in sorted(peripheral)]
+            lines.append(f"  {{ rank=same; {'; '.join(peripheral_ids)}; }}")
+    
+    lines.append("")
+    
+    # Create connections
+    lines.append("  // Connections")
+    for conn in connections:
+        from_dev = conn["from"]
+        to_dev = conn["to"]
+        from_id = from_dev.replace(" ", "_").replace("/", "_")
+        to_id = to_dev.replace(" ", "_").replace("/", "_")
+        
+        label = conn.get("label", "")
+        conn_color = conn.get("color", edge_color)
+        conn_style = conn.get("style", edge_style)
+        conn_width = conn.get("width", edge_width)
+        
+        edge_attrs = [
+            f"color=\"{conn_color}\"",
+            f"style={conn_style}",
+            f"penwidth={conn_width}"
+        ]
+        
+        if label:
+            edge_attrs.append(f"label=\"{label}\"")
+            edge_attrs.append(f"fontsize={font_size - 2}")
+            edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
+        
+        lines.append(f"  {from_id} -- {to_id} [")
+        lines.append(f"    {', '.join(edge_attrs)}")
+        lines.append("  ];")
+    
+    lines.append("")
+    lines.append("}")
+    
+    return "\n".join(lines)
+
+# -------------------------------------------------
 # Main
 # -------------------------------------------------
 def main():
@@ -248,6 +443,7 @@ def main():
     
     if "racks" in config:
         racks_config = config["racks"]
+        all_devices = build_device_map(racks_config)
         
         # Generate single comprehensive layout
         layout_dot = generate_rack_layout_dot(racks_config, type_colors)
@@ -267,6 +463,17 @@ def main():
                         all_devices[dev["name"]] = dev
         
         print(f"Device map built with {len(all_devices)} devices")
+
+        layers = config.get("wiring_layers", [])
+        for layer in layers:
+            layer_name = layer["name"]
+            safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
+            filename = f"wiring_{safe_name}.dot"
+            
+            wiring_dot = generate_wiring_diagram(layer, all_devices, type_colors)
+            with open(filename, "w") as f:
+                f.write(wiring_dot)
+            print(f"Generated {filename}")
     
     else:
         print("Error: Configuration must have 'racks' with consolidated front/rear")
