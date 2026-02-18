@@ -2,10 +2,9 @@ type_colors:
   pc: "#E8F4F8"
   pdu: "#AAAAAA"
   shelf: "#ced3db"
-  realtime: "#FFE8D8"
   cable management: "#C4C4C4"
   switch: "#B8D6D6"
-  customer: "#ffd9d6"
+  patch: "#ecf0aa"
 
 racks:
   # Rack 1
@@ -15,354 +14,81 @@ racks:
       total_u: 42
     
     front:
-      - name: UPS
-        start_u: 42
-        units: 3
-        type: pdu
-
-      - name: KVM shelf 1
-        start_u: 39
-        units: 1
-        type: shelf
-
-      - name: KVM shelf 2
-        start_u: 38
-        units: 1
-        type: shelf
-
-      - name: KVM shelf 3
-        start_u: 37
-        units: 1
-        type: shelf
-
       - name: Operator PC
-        start_u: 27
+        start_u: 29
         units: 4
         type: pc
 
-      - name: Physics PC
-        start_u: 23
+      - name: Physics
+        start_u: 25
         units: 4
         type: pc
-
-      - name: Spectator IG
-        start_u: 19
-        units: 4
-        type: pc
-
-      - name: Telemetry
-        start_u: 12
-        units: 3
-        type: pc
-
-      - name: dSPACE Controller
-        start_u: 9
-        units: 3
-        type: realtime
-
-      - name: dSPACE
-        start_u: 6
-        units: 6
-        type: realtime
-
-    rear:
-      - name: R1 16A PDU A
-        start_u: 42
-        units: 1
-        type: pdu
-
-      - name: Company Network Switch
-        start_u: 41
-        units: 1
-        type: switch
         
-      - name: CCTV Switch
-        start_u: 40
-        units: 1
-        type: switch
-        
-      - name: KVM Switch
-        start_u: 39
-        units: 1
-        type: switch
-        
-      - name: Audio Switch
-        start_u: 38
-        units: 1
-        type: switch
-      
-      - name: R1 EU PDU
-        start_u: 37
-        units: 1
-        type: pdu
-
-      - name: RME Digiface
-        start_u: 36
+      - name: Terrain Server
+        start_u: 18
         units: 2
-        type: shelf
-
-      - name: Media Converters
-        start_u: 34
-        units: 4
-        type: shelf
-      
-      - name: Cable Manager
-        start_u: 24
-        units: 1
-        type: cable management
-
-      - name: R1 16A PDU B
-        start_u: 22
-        units: 1
-        type: pdu
-
-      - name: Cable Manager
-        start_u: 6
-        units: 1
-        type: cable management
-
-      - name: Graphics Switch 1
-        start_u: 3
-        units: 1
-        type: switch
-
-      - name: R1 16A PDU C
-        start_u: 1
-        units: 1
-        type: pdu
-
-      - name: Vertical PDU 1
-        type: pdu
-
-      - name: Mains in 1
-        type: pdu
-
-  # Rack 2
-  - rack:
-      id: rack2
-      name: Rack 2
-      total_u: 42
-    
-    front:
-      - name: Customer 2
-        start_u: 42
-        units: 15
-        type: customer
-
-      - name: RVD 1
-        start_u: 20
-        units: 4
-        type: pc
-
-      - name: RVD 2
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: RVD 3
-        start_u: 12
-        units: 4
         type: pc
         
       - name: IG 1
-        start_u: 8
-        units: 4
+        start_u: 16
+        units: 5
         type: pc
         
       - name: IG 2
-        start_u: 4
-        units: 4
+        start_u: 11
+        units: 5
         type: pc
-
-    rear:
-      - name: R2 16A PDU A
-        start_u: 42
-        units: 1
-        type: pdu
-
-      - name: Cable manager
-        start_u: 24
-        units: 1
-        type: cable management
-
-      - name: R2 16A PDU B
-        start_u: 21
-        units: 1
-        type: pdu
-
-      - name: Cable manager
-        start_u: 6
-        units: 1
-        type: cable management
-
-      - name: Graphics Switch 2
-        start_u: 3
-        units: 1
-        type: switch
-
-      - name: R2 16A PDU C
-        start_u: 1
-        units: 1
-        type: pdu
-
-      - name: Vertical PDU 2
-        type: pdu
-
-      - name: Mains in 2
-        type: pdu
-
-  # Rack 3
-  - rack:
-      id: rack3
-      name: Rack 3
-      total_u: 42
-    
-    front:
-      - name: Customer 3
-        start_u: 42
-        units: 15
-        type: customer
         
       - name: IG 3
-        start_u: 20
-        units: 4
-        type: pc
-  
-      - name: IG 4
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: IG 5
-        start_u: 12
-        units: 4
-        type: pc
-        
-      - name: IG 6
-        start_u: 8
-        units: 4
-        type: pc
-        
-      - name: IG 7
-        start_u: 4
-        units: 4
+        start_u: 6
+        units: 5
         type: pc
 
     rear:
-      - name: R3 16A PDU A
-        start_u: 42
+      - name: Company Network Switch
+        start_u: 29
+        units: 1
+        type: switch
+        
+      - name: KVM Shelf
+        start_u: 26
+        units: 1
+        type: shelf
+      
+      - name: R1 EU PDU A
+        start_u: 25
         units: 1
         type: pdu
 
-      - name: Cable manager
-        start_u: 24
+      - name: Disp Shelf
+        start_u: 21
+        units: 1
+        type: shelf
+
+      - name: R1 EU PDU B
+        start_u: 20
+        units: 1
+        type: pdu
+      
+      - name: Cable Manager
+        start_u: 19
         units: 1
         type: cable management
 
-      - name: R3 16A PDU B
-        start_u: 21
+      - name: Graphics Switch
+        start_u: 16
         units: 1
-        type: pdu
+        type: switch
 
-      - name: Cable manager
+      - name: Cable Manager
         start_u: 6
         units: 1
         type: cable management
 
-      - name: Graphics Switch 3
-        start_u: 3
-        units: 1
-        type: switch
-
-      - name: R3 16A PDU C
+      - name: Patch Pannel
         start_u: 1
         units: 1
-        type: pdu
-
-      - name: Vertical PDU 3
-        type: pdu
-
-      - name: Mains in 3
-        type: pdu
-
-  # Rack 4
-  - rack:
-      id: rack4
-      name: Rack 4
-      total_u: 42
-    
-    front:
-      - name: Customer 4
-        start_u: 39
-        units: 1
-        type: customer
-
-      - name: IG 8
-        start_u: 24
-        units: 4
-        type: pc
-      
-      - name: IG 9
-        start_u: 20
-        units: 4
-        type: pc
-
-      - name: IG 10
-        start_u: 16
-        units: 4
-        type: pc
-      
-      - name: IG 11
-        start_u: 12
-        units: 4
-        type: pc
-              
-      - name: IG 12
-        start_u: 8
-        units: 4
-        type: pc
-              
-      - name: IG 13
-        start_u: 4
-        units: 4
-        type: pc
-
-    rear:
-      - name: R4 16A PDU A
-        start_u: 42
-        units: 1
-        type: pdu
-
-      - name: Cable manager
-        start_u: 24
-        units: 1
-        type: cable management
-
-      - name: R4 16A PDU B
-        start_u: 21
-        units: 1
-        type: pdu
-
-      - name: Cable manager
-        start_u: 6
-        units: 1
-        type: cable management
-
-      - name: Graphics Switch 4
-        start_u: 3
-        units: 1
-        type: switch
-
-      - name: R4 16A PDU C
-        start_u: 1
-        units: 1
-        type: pdu
-
-      - name: Vertical PDU 4
-        type: pdu
-
-      - name: Mains in 4
-        type: pdu
+        type: patch
 
 wiring_layers:
 
@@ -370,265 +96,20 @@ wiring_layers:
   - name: Visuals Subnet
     edge_color: "#b551a9"
     connections:
-      # Inter-rack connections
-      - from: Graphics Switch 1
-        to: Graphics Switch 2
-
-      - from: Graphics Switch 2
-        to: Graphics Switch 3
-
-      - from: Graphics Switch 3
-        to: Graphics Switch 4
-
-      # Rack 1
-      - from: Graphics Switch 1
+      - from: Graphics Switch
         to: Operator PC
 
-      - from: Graphics Switch 1
-        to: Physics PC
+      - from: Graphics Switch
+        to: Physics
 
-      - from: Graphics Switch 1
-        to: Spectator IG
+      - from: Graphics Switch
+        to: Terrain Server
 
-      - from: Graphics Switch 1
-        to: Telemetry
-
-      - from: Graphics Switch 1
-        to: dSPACE
-
-      # Rack 2      
-      - from: Graphics Switch 2
-        to: RVD 1
-
-      - from: Graphics Switch 2
-        to: RVD 2
-
-      - from: Graphics Switch 2
-        to: RVD 3
-        
-      - from: Graphics Switch 2
+      - from: Graphics Switch
         to: IG 1
-        
-      - from: Graphics Switch 2
+
+      - from: Graphics Switch
         to: IG 2
-
-      # Rack 3
-      - from: Graphics Switch 3
+        
+      - from: Graphics Switch
         to: IG 3
-
-      - from: Graphics Switch 3
-        to: IG 4
-
-      - from: Graphics Switch 3
-        to: IG 5
-        
-      - from: Graphics Switch 3
-        to: IG 6
-        
-      - from: Graphics Switch 3
-        to: IG 7
-
-      # Rack 4
-      - from: Graphics Switch 4
-        to: IG 8
-
-      - from: Graphics Switch 4
-        to: IG 9
-
-      - from: Graphics Switch 4
-        to: IG 10
-        
-      - from: Graphics Switch 4
-        to: IG 11
-        
-      - from: Graphics Switch 4
-        to: IG 12
-
-      - from: Graphics Switch 4
-        to: IG 13
-
-  # Power 
-  - name: Power distrubution
-    connections:
-      # Rack 1 Front
-      - from: UPS
-        to: KVM shelf 1
-
-      - from: UPS
-        to: KVM shelf 2
-        
-      - from: UPS
-        to: KVM shelf 3
-
-      - from: R1 16A PDU B
-        to: Operator PC 
-        
-      - from: R1 16A PDU B
-        to: Physics PC
-
-      - from: R1 16A PDU B
-        to: Spectator IG
-        
-      - from: R1 16A PDU C
-        to: Telemetry
-        
-      - from: R1 16A PDU C
-        to: dSPACE Controller
-        
-      - from: R1 16A PDU C
-        to: dSPACE
-
-      # Rack 1 Rear
-      - from: Mains in 1
-        to: Vertical PDU 1
-
-      - from: Vertical PDU 1
-        to: R1 16A PDU A 
-
-      - from: Vertical PDU 1
-        to: R1 16A PDU B 
-
-      - from: Vertical PDU 1
-        to: R1 16A PDU C 
-
-      - from: Vertical PDU 1
-        to: UPS
-
-      - from: R1 16A PDU A
-        to: Company Network Switch
-
-      - from: R1 16A PDU A
-        to: CCTV Switch
-        
-      - from: R1 16A PDU A
-        to: Audio Switch
-
-      - from: R1 16A PDU C
-        to: Graphics Switch 1
-
-      # Rack 2 Front  
-      - from: R2 16A PDU A
-        to: Customer 2
-
-      - from: R2 16A PDU B
-        to: RVD 1
-        
-      - from: R2 16A PDU B
-        to: RVD 2
-
-      - from: R2 16A PDU B
-        to: RVD 3
-      
-      - from: R2 16A PDU C
-        to: IG 1
-      
-      - from: R2 16A PDU C
-        to: IG 2
-
-      # Rack 2 Rear
-      - from: Mains in 2
-        to: Vertical PDU 2 
-
-      - from: Vertical PDU 2
-        to: R2 16A PDU A
-
-      - from: Vertical PDU 2
-        to: R2 16A PDU B
-
-      - from: Vertical PDU 2
-        to: R2 16A PDU C
-
-      - from: R2 16A PDU C
-        to: Graphics Switch 2
-
-      # Rack 3 Front  
-      - from: R3 16A PDU A
-        to: Customer 3
-
-      - from: R3 16A PDU B
-        to: IG 3
-        
-      - from: R3 16A PDU B
-        to: IG 4
-
-      - from: R3 16A PDU B
-        to: IG 5
-      
-      - from: R3 16A PDU C
-        to: IG 6
-      
-      - from: R3 16A PDU C
-        to: IG 7
-
-      # Rack 3 Rear
-      - from: Mains in 3
-        to: Vertical PDU 3 
-
-      - from: Vertical PDU 3
-        to: R3 16A PDU A
-
-      - from: Vertical PDU 3
-        to: R3 16A PDU B
-
-      - from: Vertical PDU 3
-        to: R3 16A PDU C
-
-      - from: R3 16A PDU C
-        to: Graphics Switch 3
-
-      # Rack 4 Front  
-      - from: R4 16A PDU A
-        to: Customer 4
-
-      - from: R4 16A PDU B
-        to: IG 8
-        
-      - from: R4 16A PDU B
-        to: IG 9
-
-      - from: R4 16A PDU B
-        to: IG 10
-      
-      - from: R4 16A PDU C
-        to: IG 11
-      
-      - from: R4 16A PDU C
-        to: IG 12
-        
-      - from: R4 16A PDU C
-        to: IG 13
-
-      # Rack 4 Rear
-      - from: Mains in 4
-        to: Vertical PDU 4
-
-      - from: Vertical PDU 4
-        to: R4 16A PDU A
-
-      - from: Vertical PDU 4
-        to: R4 16A PDU B
-
-      - from: Vertical PDU 4
-        to: R4 16A PDU C
-
-      - from: R4 16A PDU C
-        to: Graphics Switch 4
-
-  # Host network
-  - name: Host Subnet
-    edge_color: "#5192b5"
-    connections:
-      - from: Operator PC
-        to: dSPACE Controller
-
-      - from: dSPACE Controller
-        to: dSPACE
-
-  # Company network
-  - name: Company Network
-    connections:
-      - from: Company Network Switch
-        to: Operator PC
-
-      - from: Company Network Switch
-        to: Telemetry

@@ -32,41 +32,8 @@ graph "Visuals Subnet" {
     color="#F5F5F5";
     fontname="Sinkin Sans 400 Regular";
 
-    "Graphics_Switch_1" [
-      label="Graphics Switch 1\n(6 conn)",
-      fillcolor="#B8D6D6",
-      penwidth=2.5
-    ];
-    "Operator_PC" [
-      label="Operator PC",
-      fillcolor="#E8F4F8"
-    ];
-    "Physics_PC" [
-      label="Physics PC",
-      fillcolor="#E8F4F8"
-    ];
-    "Spectator_IG" [
-      label="Spectator IG",
-      fillcolor="#E8F4F8"
-    ];
-    "Telemetry" [
-      label="Telemetry",
-      fillcolor="#E8F4F8"
-    ];
-    "dSPACE" [
-      label="dSPACE",
-      fillcolor="#FFE8D8"
-    ];
-  }
-
-  subgraph cluster_rack2 {
-    label="Rack 2";
-    style=filled;
-    color="#F5F5F5";
-    fontname="Sinkin Sans 400 Regular";
-
-    "Graphics_Switch_2" [
-      label="Graphics Switch 2\n(7 conn)",
+    "Graphics_Switch" [
+      label="Graphics Switch\n(6 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -78,161 +45,41 @@ graph "Visuals Subnet" {
       label="IG 2",
       fillcolor="#E8F4F8"
     ];
-    "RVD_1" [
-      label="RVD 1",
-      fillcolor="#E8F4F8"
-    ];
-    "RVD_2" [
-      label="RVD 2",
-      fillcolor="#E8F4F8"
-    ];
-    "RVD_3" [
-      label="RVD 3",
-      fillcolor="#E8F4F8"
-    ];
-  }
-
-  subgraph cluster_rack3 {
-    label="Rack 3";
-    style=filled;
-    color="#F5F5F5";
-    fontname="Sinkin Sans 400 Regular";
-
-    "Graphics_Switch_3" [
-      label="Graphics Switch 3\n(7 conn)",
-      fillcolor="#B8D6D6",
-      penwidth=2.5
-    ];
     "IG_3" [
       label="IG 3",
       fillcolor="#E8F4F8"
     ];
-    "IG_4" [
-      label="IG 4",
+    "Operator_PC" [
+      label="Operator PC",
       fillcolor="#E8F4F8"
     ];
-    "IG_5" [
-      label="IG 5",
+    "Physics" [
+      label="Physics",
       fillcolor="#E8F4F8"
     ];
-    "IG_6" [
-      label="IG 6",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_7" [
-      label="IG 7",
-      fillcolor="#E8F4F8"
-    ];
-  }
-
-  subgraph cluster_rack4 {
-    label="Rack 4";
-    style=filled;
-    color="#F5F5F5";
-    fontname="Sinkin Sans 400 Regular";
-
-    "Graphics_Switch_4" [
-      label="Graphics Switch 4\n(7 conn)",
-      fillcolor="#B8D6D6",
-      penwidth=2.5
-    ];
-    "IG_10" [
-      label="IG 10",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_11" [
-      label="IG 11",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_12" [
-      label="IG 12",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_13" [
-      label="IG 13",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_8" [
-      label="IG 8",
-      fillcolor="#E8F4F8"
-    ];
-    "IG_9" [
-      label="IG 9",
+    "Terrain_Server" [
+      label="Terrain Server",
       fillcolor="#E8F4F8"
     ];
   }
 
   // Connections
-  Graphics_Switch_1 -- Graphics_Switch_2 [
+  Graphics_Switch -- Operator_PC [
     color="#b551a9", style=solid, penwidth=2.0
   ];
-  Graphics_Switch_2 -- Graphics_Switch_3 [
+  Graphics_Switch -- Physics [
     color="#b551a9", style=solid, penwidth=2.0
   ];
-  Graphics_Switch_3 -- Graphics_Switch_4 [
+  Graphics_Switch -- Terrain_Server [
     color="#b551a9", style=solid, penwidth=2.0
   ];
-  Graphics_Switch_1 -- Operator_PC [
+  Graphics_Switch -- IG_1 [
     color="#b551a9", style=solid, penwidth=2.0
   ];
-  Graphics_Switch_1 -- Physics_PC [
+  Graphics_Switch -- IG_2 [
     color="#b551a9", style=solid, penwidth=2.0
   ];
-  Graphics_Switch_1 -- Spectator_IG [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_1 -- Telemetry [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_1 -- dSPACE [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_2 -- RVD_1 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_2 -- RVD_2 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_2 -- RVD_3 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_2 -- IG_1 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_2 -- IG_2 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_3 -- IG_3 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_3 -- IG_4 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_3 -- IG_5 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_3 -- IG_6 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_3 -- IG_7 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_8 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_9 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_10 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_11 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_12 [
-    color="#b551a9", style=solid, penwidth=2.0
-  ];
-  Graphics_Switch_4 -- IG_13 [
+  Graphics_Switch -- IG_3 [
     color="#b551a9", style=solid, penwidth=2.0
   ];
 
