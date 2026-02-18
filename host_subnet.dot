@@ -1,0 +1,58 @@
+graph "Host Subnet" {
+
+  graph [
+    bgcolor="white",
+    label="Host Subnet",
+    labelloc=t,
+    fontsize=16,
+    fontname="Sinkin Sans 400 Regular",
+    overlap=false,
+    sep=0.5
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontsize=12,
+    fontname="Sinkin Sans 400 Regular",
+    margin=0.2
+  ];
+
+  edge [
+    color="#5192b5",
+    style=solid,
+    penwidth=2.0
+  ];
+
+  // Devices grouped by rack
+
+  subgraph cluster_rack1 {
+    label="Rack 1";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "dSPACE_Controller" [
+      label="dSPACE Controller\n(2 conn)",
+      fillcolor="#FFE8D8",
+      penwidth=2.5
+    ];
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#E8F4F8"
+    ];
+    "dSPACE" [
+      label="dSPACE",
+      fillcolor="#FFE8D8"
+    ];
+  }
+
+  // Connections
+  Operator_PC -- dSPACE_Controller [
+    color="#5192b5", style=solid, penwidth=2.0
+  ];
+  dSPACE_Controller -- dSPACE [
+    color="#5192b5", style=solid, penwidth=2.0
+  ];
+
+}
