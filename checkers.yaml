@@ -345,6 +345,16 @@ wiring_layers:
   # Visuals subnet
   - name: Visual Subnet Ethernet
     connections:
+      # Inter-rack connections
+      - from: Graphics Switch 1
+        to: Graphics Switch 2
+
+      - from: Graphics Switch 2
+        to: Graphics Switch 3
+
+      - from: Graphics Switch 3
+        to: Graphics Switch 4
+
       # Rack 1
       - from: Graphics Switch 1
         to: Operator PC
