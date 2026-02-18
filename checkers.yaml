@@ -185,7 +185,7 @@ racks:
     devices:
       - name: R2 16A PDU A
         start_u: 42
-        units: 2
+        units: 1
         type: pdu
 
       - name: Cable manager
@@ -259,7 +259,7 @@ racks:
     devices:
       - name: R3 16A PDU A
         start_u: 42
-        units: 2
+        units: 1
         type: pdu
 
       - name: Cable manager
@@ -287,14 +287,86 @@ racks:
         units: 1
         type: pdu
 
+  # Rack 4 - Front
+  - rack:
+      id: rack4_front
+      name: Rack 4 Front
+      total_u: 42
+    
+    devices:      
+      - name: Customer
+        start_u: 39
+        units: 1
+        type: customer
+
+      - name: IG 8
+        start_u: 24
+        units: 4
+        type: pc
+      
+      - name: IG 9
+        start_u: 20
+        units: 4
+        type: pc
+
+      - name: IG 10
+        start_u: 16
+        units: 4
+        type: pc
+      
+      - name: IG 11
+        start_u: 12
+        units: 4
+        type: pc
+              
+      - name: IG 12
+        start_u: 8
+        units: 4
+        type: pc
+              
+      - name: IG 13
+        start_u: 4
+        units: 4
+        type: pc
+
+  # Rack 4 - Rear
+  - rack:
+      id: rack4_rear
+      name: Rack 4 Rear
+      total_u: 42
+
+    devices:
+      - name: R4 16A PDU A
+        start_u: 42
+        units: 1
+        type: pdu
+
+      - name: Cable manager
+        start_u: 24
+        units: 1
+        type: cable management
+
+      - name: R4 16A PDU B
+        start_u: 21
+        units: 1
+        type: pdu
+
+      - name: Cable manager
+        start_u: 6
+        units: 1
+        type: cable management
+
+      - name: Graphics Switch
+        start_u: 3
+        units: 1
+        type: switch
+
+      - name: R4 16A PDU C
+        start_u: 1
+        units: 1
+        type: pdu
       
       
-
-
-
-
-
-
 # Wiring layers work across all racks
 wiring_layers:
   # Visuals subnet

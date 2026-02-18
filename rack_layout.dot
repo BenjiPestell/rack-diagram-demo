@@ -1,0 +1,1421 @@
+digraph multi_rack {
+
+  graph [
+    rankdir=TB,
+    nodesep=0.3,
+    ranksep=0,
+    bgcolor="white"
+  ];
+
+  node [
+    shape=plain,
+    fontname="Sinkin Sans 400 Regular"
+  ];
+
+  rack1_front [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Front (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="3" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="16.5" FACE="Sinkin Sans 400 Regular"><B>UPS</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">3U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 1</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 2</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 3</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>Operator PC</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>Physics PC</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>Spectator IG</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="3" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="16.5" FACE="Sinkin Sans 400 Regular"><B>Telemetry</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">3U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="3" BGCOLOR="#FFE8D8" WIDTH="200"><FONT POINT-SIZE="16.5" FACE="Sinkin Sans 400 Regular"><B>dSPACE Controller</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">3U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="6" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="19.5" FACE="Sinkin Sans 400 Regular"><B>Telemetry</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">6U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack1_rear [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 1 Rear (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 16A PDU A</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Company Network Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>CCTV Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Audio Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 EU PDU</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="2" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="15.5" FACE="Sinkin Sans 400 Regular"><B>RME Digiface</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">2U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>Media Converters</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager A</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 16A PDU B</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable Manager B</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 16A PDU C</B></FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack2_front [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Front (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>RVD 1</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>RVD 2</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>RVD 3</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 1</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 2</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack2_rear [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Rear (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R2 16A PDU A</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R2 16A PDU B</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R2 16A PDU C</B></FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack3_front [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Front (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="15" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="20" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">15U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 3</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 4</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 5</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 6</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 7</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack3_rear [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 3 Rear (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R3 16A PDU A</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R3 16A PDU B</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R3 16A PDU C</B></FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack4_front [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Front (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ffd9d6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Customer</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 8</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 9</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 10</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 11</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 12</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 13</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack4_rear [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#DDDDDD"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 4 Rear (42U)</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">42</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R4 16A PDU A</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">41</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">40</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R4 16A PDU B</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#C4C4C4" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Cable manager</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#B8D6D6" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Graphics Switch</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R4 16A PDU C</B></FONT></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  { rank=same; rack1_front; rack1_rear; rack2_front; rack2_rear; rack3_front; rack3_rear; rack4_front; rack4_rear; }
+
+}
