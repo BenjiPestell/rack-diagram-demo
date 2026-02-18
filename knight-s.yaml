@@ -91,7 +91,6 @@ racks:
         type: patch
 
 wiring_layers:
-
   # Visuals subnet
   - name: Visuals Subnet
     edge_color: "#b551a9"
