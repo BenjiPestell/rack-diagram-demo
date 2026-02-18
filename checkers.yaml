@@ -1,69 +1,69 @@
+type_colors:
+  pc: "#E8F4F8"
+  pdu: "#AAAAAA"
+  shelf: "#ced3db"
+  realtime: "#FFE8D8"
+  cable management: "#C4C4C4"
+  switch: "#B8D6D6"
+  customer: "#ffd9d6"
+
 racks:
   # Rack 1 - Front
   - rack:
       id: rack1_front
       name: Rack 1 Front
       total_u: 42
-      
-      # Layout tuning
-      table_width: 300
-      device_width: 260
-      
-      # Font tuning
-      device_font_size: 14
-      unit_font_size: 16
-      title_font_size: 20
     
     devices:      
       - name: UPS
         start_u: 42
         units: 3
-        color: "#ced3db"
+        type: pdu
 
       - name: KVM shelf 1
         start_u: 39
         units: 1
-        color: "#ced3db"
+        type: shelf
 
       - name: KVM shelf 2
         start_u: 38
         units: 1
-        color: "#ced3db"
+        type: shelf
 
       - name: KVM shelf 3
         start_u: 37
         units: 1
-        color: "#ced3db"
+        type: shelf
 
       - name: Operator PC
         start_u: 27
         units: 4
-        color: "#ced3db"
+        type: pc
 
       - name: Physics PC
         start_u: 23
         units: 4
-        color: "#ced3db"
+        type: pc
 
       - name: Spectator IG
         start_u: 19
         units: 4
-        color: "#ced3db"
+        type: pc
 
       - name: Telemetry
         start_u: 12
         units: 3
-        color: "#ced3db"
+        type: pc
 
       - name: dSPACE Controller
         start_u: 9
         units: 3
-        color: "#ced3db"
+        type: realtime
 
       - name: Telemetry
         start_u: 6
         units: 6
-        color: "#ced3db"
+        type: pc
 
       
       
@@ -72,133 +72,228 @@ racks:
       id: rack1_rear
       name: Rack 1 Rear
       total_u: 42
-      
-      # Layout tuning
-      table_width: 300
-      device_width: 260
-      
-      # Font tuning
-      device_font_size: 14
-      unit_font_size: 16
-      title_font_size: 20
 
     devices:
-      - name: R1-16A-PDU-A
+      - name: R1 16A PDU A
         start_u: 42
         units: 1
-        color: "#AAAAAA"
+        type: pdu
 
       - name: Company Network Switch
         start_u: 41
         units: 1
-        color: "#ced3db"
+        type: switch
         
       - name: CCTV Switch
         start_u: 40
         units: 1
-        color: "#ced3db"
+        type: switch
         
       - name: KVM Switch
         start_u: 39
         units: 1
-        color: "#ced3db"
+        type: switch
         
       - name: Audio Switch
         start_u: 38
         units: 1
-        color: "#ced3db"
+        type: switch
       
-      - name: R1-EU-PDU
+      - name: R1 EU PDU
         start_u: 37
         units: 1
-        color: "#AAAAAA"
+        type: pdu
 
       - name: RME Digiface
         start_u: 36
         units: 2
-        color: "#ced3db"
+        type: shelf
 
       - name: Media Converters
         start_u: 34
         units: 4
-        color: "#ced3db"
+        type: shelf
       
       - name: Cable Manager A
         start_u: 24
         units: 1
-        color: "#AAAAAA"   
+        type: cable management
 
-      - name: R1-16A-PDU-B
+      - name: R1 16A PDU B
         start_u: 22
         units: 1
-        color: "#AAAAAA" 
+        type: pdu
 
       - name: Cable Manager B
         start_u: 6
         units: 1
-        color: "#AAAAAA" 
+        type: cable management
 
       - name: Graphics Switch
         start_u: 3
         units: 1
-        color: "#ced3db"
+        type: switch
 
-      - name: R1-16A-PDU-C
+      - name: R1 16A PDU C
         start_u: 1
         units: 1
-        color: "#AAAAAA"
+        type: pdu
   
-  # Rack 2
+  # Rack 2 - Front
   - rack:
       id: rack2_front
       name: Rack 2 Front
-      total_u: 40
-      
-      # Layout tuning
-      table_width: 300
-      device_width: 260
-      
-      # Font tuning
-      device_font_size: 14
-      unit_font_size: 16
-      title_font_size: 20
+      total_u: 42
     
     devices:
-      - name: IG1
-        start_u: 40
-        units: 5
-        color: "#ced3db"
+      - name: Customer
+        start_u: 42
+        units: 15
+        type: customer
 
-      - name: IG2
-        start_u: 35
-        units: 5
-        color: "#ced3db"
+      - name: RVD 1
+        start_u: 20
+        units: 4
+        type: pc
 
-      - name: IG3
-        start_u: 30
-        units: 5
-        color: "#ced3db"
+      - name: RVD 2
+        start_u: 16
+        units: 4
+        type: pc
+        
+      - name: RVD 3
+        start_u: 12
+        units: 4
+        type: pc
+        
+      - name: IG 1
+        start_u: 8
+        units: 4
+        type: pc
+        
+      - name: IG 2
+        start_u: 4
+        units: 4
+        type: pc
 
   # Rack 2 - Rear
   - rack:
       id: rack2_rear
       name: Rack 2 Rear
-      total_u: 40
-      
-      # Layout tuning
-      table_width: 300
-      device_width: 260
-      
-      # Font tuning
-      device_font_size: 14
-      unit_font_size: 16
-      title_font_size: 20
+      total_u: 42
 
     devices:
-      - name: R2-PDU-A
-        start_u: 40
+      - name: R2 16A PDU A
+        start_u: 42
         units: 2
-        color: "#AAAAAA"
+        type: pdu
+
+      - name: Cable manager
+        start_u: 24
+        units: 1
+        type: cable management
+
+      - name: R2 16A PDU B
+        start_u: 21
+        units: 1
+        type: pdu
+
+      - name: Cable manager
+        start_u: 6
+        units: 1
+        type: cable management
+
+      - name: Graphics Switch
+        start_u: 3
+        units: 1
+        type: switch
+
+      - name: R2 16A PDU C
+        start_u: 1
+        units: 1
+        type: pdu
+
+  # Rack 3 - Front
+  - rack:
+      id: rack3_front
+      name: Rack 3 Front
+      total_u: 42
+    
+    devices:      
+      - name: Customer
+        start_u: 42
+        units: 15
+        type: customer
+        
+      - name: IG 3
+        start_u: 20
+        units: 4
+        type: pc
+  
+      - name: IG 4
+        start_u: 16
+        units: 4
+        type: pc
+        
+      - name: IG 5
+        start_u: 12
+        units: 4
+        type: pc
+        
+      - name: IG 6
+        start_u: 8
+        units: 4
+        type: pc
+        
+      - name: IG 7
+        start_u: 4
+        units: 4
+        type: pc
+
+  # Rack 3 - Rear
+  - rack:
+      id: rack3_rear
+      name: Rack 3 Rear
+      total_u: 42
+
+    devices:
+      - name: R3 16A PDU A
+        start_u: 42
+        units: 2
+        type: pdu
+
+      - name: Cable manager
+        start_u: 24
+        units: 1
+        type: cable management
+
+      - name: R3 16A PDU B
+        start_u: 21
+        units: 1
+        type: pdu
+
+      - name: Cable manager
+        start_u: 6
+        units: 1
+        type: cable management
+
+      - name: Graphics Switch
+        start_u: 3
+        units: 1
+        type: switch
+
+      - name: R3 16A PDU C
+        start_u: 1
+        units: 1
+        type: pdu
+
+      
+      
+
+
+
+
+
 
 # Wiring layers work across all racks
 wiring_layers:
@@ -267,8 +362,8 @@ wiring_layers:
         to: Speedgoat
         label: "Host"
 
-  # Power distribution
-  - name: Power Distribution
+  # pdu distribution
+  - name: pdu Distribution
     edge_color: "#151617"
     edge_width: "4.0"
     show_rack_labels: true

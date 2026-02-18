@@ -8,6 +8,29 @@ def load_config():
         return yaml.safe_load(f)
 
 # -------------------------------------------------
+# Get device color based on type or explicit color
+# -------------------------------------------------
+def get_device_color(device, type_colors):
+    """
+    Determine device color with priority:
+    1. Explicit 'color' attribute in device
+    2. Color based on device 'type' from type_colors mapping
+    3. Default white if neither specified
+    """
+    # Explicit color takes precedence
+    if "color" in device:
+        return device["color"]
+    
+    # Try to get color from type
+    if "type" in device:
+        device_type = device["type"]
+        if device_type in type_colors:
+            return type_colors[device_type]
+    
+    # Default fallback
+    return "#FFFFFF"
+
+# -------------------------------------------------
 # Validation / occupancy
 # -------------------------------------------------
 def build_occupancy(devices, total_u):
@@ -40,7 +63,7 @@ def build_occupancy(devices, total_u):
 # -------------------------------------------------
 # DOT Generator - Single Rack Layout
 # -------------------------------------------------
-def generate_rack_dot(rack, devices):
+def generate_rack_dot(rack, devices, type_colors):
     total_u = rack["total_u"]
     rack_id = rack.get("id", "rack")
     
@@ -48,8 +71,8 @@ def generate_rack_dot(rack, devices):
     table_width = rack.get("table_width", 240)
     device_width = rack.get("device_width", 200)
     u_col_width = rack.get("u_col_width", 28)
-    base_device_font = rack.get("device_font_size", 14)
-    unit_font = rack.get("unit_font_size", 10)
+    base_device_font = rack.get("device_font_size", 13.5)
+    unit_font = rack.get("unit_font_size", 15)
     title_font = rack.get("title_font_size", 16)
     auto_scale = rack.get("auto_scale_font", True)
     
@@ -120,7 +143,7 @@ def generate_rack_dot(rack, devices):
         # Device slot
         name = dev["name"]
         units = dev["units"]
-        color = dev.get("color", "#FFFFFF")
+        color = get_device_color(dev, type_colors)
         
         # Auto-scale font for big devices
         if auto_scale:
@@ -133,18 +156,20 @@ def generate_rack_dot(rack, devices):
         lines.append(
             f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
         )
+        
+        # Build device cell content
+        device_content = f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\">{name}</FONT>"
+        
+        # Only add units label if device is not 1U
+        if units > 1:
+            device_content += f"<BR/><FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">{units}U</FONT>"
+        
         lines.append(
             f"<TD COLSPAN=\"2\" "
             f"ROWSPAN=\"{units}\" "
             f"BGCOLOR=\"{color}\" "
             f"WIDTH=\"{device_width}\">"
-            f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\">"
-            f"<B>{name}</B>"
-            f"</FONT>"
-            f"<BR/>"
-            f"<FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">"
-            f"{units}U"
-            f"</FONT>"
+            f"{device_content}"
             f"</TD>"
         )
         lines.append("</TR>")
@@ -175,7 +200,7 @@ def generate_rack_dot(rack, devices):
 # -------------------------------------------------
 # DOT Generator - Multi-Rack Layout
 # -------------------------------------------------
-def generate_multi_rack_dot(racks_config):
+def generate_multi_rack_dot(racks_config, type_colors):
     """
     Generate a diagram showing multiple racks side by side
     """
@@ -207,8 +232,8 @@ def generate_multi_rack_dot(racks_config):
         table_width = rack.get("table_width", 240)
         device_width = rack.get("device_width", 200)
         u_col_width = rack.get("u_col_width", 28)
-        base_device_font = rack.get("device_font_size", 14)
-        unit_font = rack.get("unit_font_size", 10)
+        base_device_font = rack.get("device_font_size", 13.5)
+        unit_font = rack.get("unit_font_size", 15)
         title_font = rack.get("title_font_size", 16)
         auto_scale = rack.get("auto_scale_font", True)
         
@@ -261,7 +286,7 @@ def generate_multi_rack_dot(racks_config):
             # Device slot
             name = dev["name"]
             units = dev["units"]
-            color = dev.get("color", "#FFFFFF")
+            color = get_device_color(dev, type_colors)
             
             # Auto-scale font for big devices
             if auto_scale:
@@ -274,18 +299,20 @@ def generate_multi_rack_dot(racks_config):
             lines.append(
                 f"<TD WIDTH=\"{u_col_width}\"><FONT FACE=\"Sinkin Sans 400 Regular\">{u}</FONT></TD>"
             )
+            
+            # Build device cell content
+            device_content = f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\"><B>{name}</B></FONT>"
+            
+            # Only add units label if device is not 1U
+            if units > 1:
+                device_content += f"<BR/><FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">{units}U</FONT>"
+            
             lines.append(
                 f"<TD COLSPAN=\"2\" "
                 f"ROWSPAN=\"{units}\" "
                 f"BGCOLOR=\"{color}\" "
                 f"WIDTH=\"{device_width}\">"
-                f"<FONT POINT-SIZE=\"{device_font}\" FACE=\"Sinkin Sans 400 Regular\">"
-                f"<B>{name}</B>"
-                f"</FONT>"
-                f"<BR/>"
-                f"<FONT POINT-SIZE=\"{unit_font}\" FACE=\"Sinkin Sans 400 Regular\">"
-                f"{units}U"
-                f"</FONT>"
+                f"{device_content}"
                 f"</TD>"
             )
             lines.append("</TR>")
@@ -323,7 +350,7 @@ def generate_multi_rack_dot(racks_config):
 # -------------------------------------------------
 # Hierarchical Wiring Diagram Generator
 # -------------------------------------------------
-def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
+def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None, type_colors=None):
     """
     Generate a hierarchical/layered wiring diagram.
     
@@ -339,6 +366,9 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
       tier_mapping:
         "device_name": 0  # Custom tier assignment
     """
+    if type_colors is None:
+        type_colors = {}
+    
     layer_name = layer["name"]
     connections = layer.get("connections", [])
     
@@ -459,7 +489,7 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
                 lines.append("")
             
             for dev_name, dev in sorted(tier_data["by_rack"][rack_id]):
-                color = dev.get("color", node_color)
+                color = get_device_color(dev, type_colors)
                 node_id = dev_name.replace(" ", "_").replace("/", "_")
                 lines.append(f"    \"{node_id}\" [")
                 lines.append(f"      label=\"{dev_name}\",")
@@ -476,8 +506,11 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
             lines.append(f"  // {tier_name} - External")
             for dev_name in sorted(tier_data["external"]):
                 node_id = dev_name.replace(" ", "_").replace("/", "_")
+                dev = all_devices.get(dev_name)
+                color = get_device_color(dev, type_colors) if dev else node_color
                 lines.append(f"  \"{node_id}\" [")
-                lines.append(f"    label=\"{dev_name}\"")
+                lines.append(f"    label=\"{dev_name}\",")
+                lines.append(f"    fillcolor=\"{color}\"")
                 lines.append("  ];")
             lines.append("")
     
@@ -537,6 +570,9 @@ def generate_hierarchical_wiring_dot(layer, all_devices, rack_info=None):
 def main():
     config = load_config()
     
+    # Extract type color mappings from config (if defined)
+    type_colors = config.get("type_colors", {})
+    
     # Check if this is single rack or multi-rack config
     if "rack" in config and "devices" in config:
         # Single rack mode (backward compatible)
@@ -545,7 +581,7 @@ def main():
         
         rack.setdefault("id", "rack")
         
-        rack_dot = generate_rack_dot(rack, devices)
+        rack_dot = generate_rack_dot(rack, devices, type_colors)
         with open("rack_layout.dot", "w") as f:
             f.write(rack_dot)
         print("Generated rack_layout.dot")
@@ -563,7 +599,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info)
+            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info, type_colors)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
@@ -572,18 +608,7 @@ def main():
         # Multi-rack mode
         racks_config = config["racks"]
         
-        # for rack_config in racks_config:
-        #     rack = rack_config["rack"]
-        #     devices = rack_config["devices"]
-        #     rack_id = rack.get("id", "rack")
-            
-        #     rack_dot = generate_rack_dot(rack, devices)
-        #     filename = f"rack_{rack_id}.dot"
-        #     with open(filename, "w") as f:
-        #         f.write(rack_dot)
-        #     print(f"Generated {filename}")
-        
-        multi_rack_dot = generate_multi_rack_dot(racks_config)
+        multi_rack_dot = generate_multi_rack_dot(racks_config, type_colors)
         with open("rack_layout.dot", "w") as f:
             f.write(multi_rack_dot)
         print("Generated rack_layout.dot")
@@ -607,7 +632,7 @@ def main():
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"wiring_{safe_name}.dot"
             
-            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info)
+            wiring_dot = generate_hierarchical_wiring_dot(layer, all_devices, rack_info, type_colors)
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
