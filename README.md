@@ -1,280 +1,437 @@
-# Rack Visualization System
+# Rack Infrastructure and Wiring Diagram Generator
 
-A Python-based system for generating professional rack layout diagrams and network wiring diagrams from YAML configuration files using Graphviz.
+This tool parses a single system definition file (`system.yaml`) to
+produce:
 
-## Overview
+-   Physical rack elevation diagrams (front and rear)
+-   Logical network and power wiring diagrams
+-   Detailed device inventory exports
 
-This system generates two types of diagrams:
+All system information is maintained in one structured configuration
+file, ensuring consistency between documentation, wiring, and hardware
+deployment.
 
-1. **Rack Layout Diagrams** - Horizontal visualization of all racks showing front and rear panels with devices
-2. **Wiring Diagrams** - Radial network topology diagrams showing device interconnections grouped by rack
+------------------------------------------------------------------------
 
-## Configuration
+## Features
 
-### Basic Structure
+-   **Automated Rack Elevations**\
+    Generates Graphviz DOT files for multi-rack layouts with color-coded
+    devices.
 
-```yaml
+-   **Layered Wiring Diagrams**\
+    Produces logical connection maps for power, visuals, host, and
+    corporate networks.
+
+-   **Dynamic Cluster Expansion**\
+    Uses `{N}` placeholders to define ranges of devices, connections,
+    and IP addresses.
+
+-   **Inventory Export**\
+    Creates CSV and HTML reports containing part numbers and network
+    details.
+
+-   **Single Source of Truth**\
+    Rack layout, wiring, and inventory are all derived from
+    `system.yaml`.
+
+------------------------------------------------------------------------
+
+## Prerequisites
+
+To run the generator, you will need:
+
+-   Python 3.x
+-   PyYAML
+-   Graphviz
+
+Graphviz is required to render `.dot` files into PNG or PDF images.
+
+------------------------------------------------------------------------
+
+## Project Structure
+
+Typical layout:
+
+``` text
+project/
+├── system.yaml
+├── generate.py
+└── output/
+```
+
+Generated files are written to the `output/` directory.
+
+------------------------------------------------------------------------
+
+## Configuration (`system.yaml`)
+
+All configuration is stored in `system.yaml`.\
+The main sections are:
+
+-   `type_colors` --- Device styling
+-   `racks` --- Physical rack layout
+-   `wiring_layers` --- Logical connections
+-   `computer_info` --- Inventory data
+
+------------------------------------------------------------------------
+
+## 1. Device Type Colors (`type_colors`)
+
+Each device type maps to a color used in diagrams.
+
+Example:
+
+``` yaml
 type_colors:
   pc: "#E8F4F8"
   pdu: "#AAAAAA"
+  Shelf: "#ced3db"
+  realtime: "#FFE8D8"
+  cable management: "#C4C4C4"
   switch: "#B8D6D6"
-
-racks:
-  - rack:
-      id: rack1
-      name: Rack 1
-      total_u: 42
-    
-    front:
-      - name: Device Name
-        start_u: 42
-        units: 3
-        type: pdu
-    
-    rear:
-      - name: Switch
-        start_u: 42
-        units: 1
-        type: switch
-
-wiring_layers:
-  - name: Visual Subnet Ethernet
-    edge_color: "#7B1FA2"
-    edge_width: "2.5"
-    connections:
-      - from: Switch
-        to: PC
-      - from: Switch
-        to: Server
+  customer: "#ffd9d6"
 ```
 
-### Rack Configuration
+These names must match the `type` field used in rack definitions.
 
-**Top-level fields:**
-- `type_colors` (optional) - Map of device types to hex colors
-- `racks` (required) - List of rack definitions
+Example:
 
-**Rack object:**
-- `id` - Unique identifier (e.g., "rack1", "rack2_rear")
-- `name` - Display name (e.g., "Rack 1", "Rack 2 Rear")
-- `total_u` - Total rack units (typically 42)
-- `table_width` (optional) - SVG table width, default 240
-- `device_width` (optional) - Device cell width, default 200
-- `u_col_width` (optional) - Unit number column width, default 28
-- `device_font_size` (optional) - Device name font size, default 13.5
-- `unit_font_size` (optional) - Unit count font size, default 15
-- `title_font_size` (optional) - Rack title font size, default 16
-- `auto_scale_font` (optional) - Scale font for large devices, default true
+``` yaml
+- name: Operator PC
+  type: pc
+```
 
-**Device object:**
-- `name` - Device name
-- `start_u` - Starting unit (from top, e.g., 42)
-- `units` - Number of rack units occupied
-- `type` - Device type (used for color lookup in type_colors)
-- `color` (optional) - Explicit hex color (overrides type color)
+------------------------------------------------------------------------
 
-### Wiring Layer Configuration
+## 2. Rack Definitions (`racks`)
 
-**Layer fields:**
-- `name` - Network name/title (e.g., "Visual Subnet Ethernet")
-- `edge_color` (optional) - Connection line color, default "#333333"
-- `edge_style` (optional) - Connection style (solid, dashed, dotted), default "solid"
-- `edge_width` (optional) - Connection line width, default "2.0"
-- `font_size` (optional) - Label font size, default 12
-- `connections` (required) - List of connections
+Each rack is defined as an entry in the `racks` list.
 
-**Connection object:**
-- `from` - Source device name
-- `to` - Destination device name
-- `label` (optional) - Connection label (e.g., port number)
-- `color` (optional) - Per-connection color override
-- `style` (optional) - Per-connection style override
-- `width` (optional) - Per-connection width override
+### 2.1 Basic Rack Definition
+
+``` yaml
+- rack:
+    id: rack1
+    name: Rack 1
+    total_u: 42
+```
+
+  Field     Description
+  --------- --------------------------
+  id        Unique rack identifier
+  name      Display name
+  total_u   Rack height in units (U)
+
+Each rack may contain:
+
+-   `front` --- Front-mounted devices
+-   `rear` --- Rear-mounted devices
+
+------------------------------------------------------------------------
+
+### 2.2 Standard Devices
+
+Devices occupying rack space define their position and size.
+
+Example:
+
+``` yaml
+- name: Operator PC
+  start_u: 27
+  units: 4
+  type: pc
+```
+
+  Field     Description
+  --------- -----------------------------
+  name      Device name
+  start_u   Topmost rack unit
+  units     Height in rack units
+  type      Device type (color mapping)
+
+Rack units count downward from the top.
+
+------------------------------------------------------------------------
+
+### 2.3 Clustered Devices (`{N}` Expansion)
+
+Repeated devices can be defined using placeholders.
+
+Example:
+
+``` yaml
+- name: "IG {N}"
+  start_u: 8
+  start: 1
+  end: 2
+  units: 4
+  spacing: 0
+  type: pc
+```
+
+Expands to:
+
+``` text
+IG 1
+IG 2
+```
+
+  Field     Description
+  --------- -----------------------
+  start     First index
+  end       Last index
+  spacing   Gap between units (U)
+
+Clusters simplify configuration for large identical systems.
+
+------------------------------------------------------------------------
+
+### 2.4 Non-Positioned Devices
+
+Some devices are logical only and do not occupy rack space.
+
+Example:
+
+``` yaml
+- name: Vertical PDU 1
+  type: pdu
+
+- name: Mains in 1
+  type: pdu
+```
+
+These appear in wiring diagrams but not in rack elevations.
+
+------------------------------------------------------------------------
+
+## 3. Wiring Layers (`wiring_layers`)
+
+Wiring layers define logical connections between devices.
+
+Each layer becomes a separate diagram.
+
+Example:
+
+``` yaml
+- name: Visuals Subnet
+  edge_color: "#b551a9"
+  connections:
+```
+
+  Field         Description
+  ------------- -----------------------
+  name          Layer name
+  edge_color    Link color (optional)
+  connections   Connection list
+
+------------------------------------------------------------------------
+
+### 3.1 Simple Connections
+
+``` yaml
+- from: Graphics Switch 1
+  to: Operator PC
+```
+
+Creates a direct link between two devices.
+
+------------------------------------------------------------------------
+
+### 3.2 Cluster Connections
+
+``` yaml
+- from: Graphics Switch 2
+  to: "RVD {N}"
+  start: 1
+  end: 3
+```
+
+Expands to:
+
+``` text
+Graphics Switch 2 → RVD 1
+Graphics Switch 2 → RVD 2
+Graphics Switch 2 → RVD 3
+```
+
+------------------------------------------------------------------------
+
+### 3.3 Offset and Daisy-Chain Connections
+
+Arithmetic expressions may be used.
+
+Example:
+
+``` yaml
+- from: "Graphics Switch {N}"
+  to: "Graphics Switch {N+1}"
+  start: 1
+  end: 3
+```
+
+Expands to:
+
+``` text
+GS1 → GS2 → GS3 → GS4
+```
+
+This is useful for stacked switches and serial links.
+
+------------------------------------------------------------------------
+
+### 3.4 Power Distribution Example
+
+``` yaml
+- from: Vertical PDU 1
+  to: R1 16A PDU A
+
+- from: R1 16A PDU C
+  to: Graphics Switch 1
+```
+
+Models:
+
+``` text
+Mains → Vertical PDU → Rack PDUs → Devices
+```
+
+Allowing complete power-path tracing.
+
+------------------------------------------------------------------------
+
+## 4. Computer Inventory (`computer_info`)
+
+Defines technical metadata for devices.
+
+Example:
+
+``` yaml
+- device_name: "Operator PC"
+  arena_part_number: "902-00008"
+  ethernet_ports:
+```
+
+  Field               Description
+  ------------------- ----------------------
+  device_name         Must match rack name
+  arena_part_number   Internal part number
+  ethernet_ports      NIC definitions
+
+------------------------------------------------------------------------
+
+### 4.1 Ethernet Ports
+
+``` yaml
+ethernet_ports:
+  - adapter: "rFpro"
+    ip: "192.168.2.80"
+    mac: "00-14-5E-EA-4C-DC"
+```
+
+  Field     Description
+  --------- ----------------
+  adapter   Interface name
+  ip        IP address
+  mac       MAC address
+
+------------------------------------------------------------------------
+
+### 4.2 Clustered Inventory Entries
+
+Inventory also supports `{N}` expansion.
+
+``` yaml
+- device_name: "IG {N}"
+  start: 1
+  end: 13
+  ethernet_ports:
+    - adapter: "rFpro"
+      ip: "192.168.2.{N+10}"
+```
+
+Expands to:
+
+``` text
+IG 1 → 192.168.2.11
+IG 2 → 192.168.2.12
+...
+IG 13 → 192.168.2.23
+```
+
+This keeps naming, wiring, and IP addressing synchronized.
+
+------------------------------------------------------------------------
+
+## 5. Naming Consistency (Critical)
+
+All references are matched by device name.
+
+Example:
+
+``` yaml
+- name: Operator PC
+- device_name: "Operator PC"
+- to: Operator PC
+```
+
+If names differ, wiring and inventory links will fail.
+
+------------------------------------------------------------------------
 
 ## Usage
 
-### Generate Diagrams
+1.  Create or edit `system.yaml`.
 
-```bash
-python generate.py
-```
+2.  Run the generator:
 
-This reads `checkers.yaml` and generates:
-- `rack_layout.dot` - Horizontal rack layout diagram
-- `{network_name}.dot` - One wiring diagram per network layer
+    ``` bash
+    python generate.py
+    ```
 
-### Render Diagrams
+3.  View results in the `output/` directory.
 
-**Rack Layout (dot format):**
-```bash
-dot -Tpng rack_layout.dot -o rack_layout.png
-```
-
-**Wiring Diagrams (neato format for radial layout):**
-```bash
-neato -Tpng visual_subnet_ethernet.dot -o visual_subnet_ethernet.png
-```
-
-Use `dot` if you prefer hierarchical layout, but `neato` produces better radial/circular arrangements for wiring diagrams.
-
-## Device Type Colors
-
-Default type colors can be overridden in the YAML:
-
-```yaml
-type_colors:
-  pc: "#E8F4F8"              # Light blue
-  pdu: "#AAAAAA"             # Gray
-  switch: "#B8D6D6"          # Teal
-  shelf: "#ced3db"           # Light gray
-  realtime: "#FFE8D8"        # Peach
-  cable management: "#C4C4C4" # Medium gray
-  customer: "#ffd9d6"        # Light pink
-```
-
-Devices can also have explicit colors that override type colors:
-
-```yaml
-- name: Special Device
-  start_u: 10
-  units: 2
-  type: pc
-  color: "#FF0000"  # Red, overrides type color
-```
-
-## Font
-
-All diagrams use **Sinkin Sans 400 Regular** font throughout for consistency.
-
-## Example YAML Structure
-
-```yaml
-type_colors:
-  pc: "#E8F4F8"
-  pdu: "#AAAAAA"
-  switch: "#B8D6D6"
-
-racks:
-  - rack:
-      id: rack1
-      name: Rack 1
-      total_u: 42
-    
-    front:
-      - name: UPS
-        start_u: 42
-        units: 3
-        type: pdu
-      
-      - name: Operator PC
-        start_u: 27
-        units: 4
-        type: pc
-      
-      - name: Graphics Switch
-        start_u: 3
-        units: 1
-        type: switch
-    
-    rear:
-      - name: PDU A
-        start_u: 42
-        units: 1
-        type: pdu
-      
-      - name: Network Switch
-        start_u: 41
-        units: 1
-        type: switch
-
-  - rack:
-      id: rack2
-      name: Rack 2
-      total_u: 42
-    
-    front:
-      - name: IG 1
-        start_u: 20
-        units: 4
-        type: pc
-    
-    rear:
-      - name: PDU B
-        start_u: 42
-        units: 1
-        type: pdu
-
-wiring_layers:
-  - name: Graphics Network
-    edge_color: "#7B1FA2"
-    edge_width: "2.5"
-    connections:
-      - from: Graphics Switch 1
-        to: Graphics Switch 2
-      
-      - from: Graphics Switch 1
-        to: Operator PC
-      
-      - from: Graphics Switch 2
-        to: IG 1
-```
+------------------------------------------------------------------------
 
 ## Output Files
 
-### rack_layout.dot
-Graphviz diagram showing all racks horizontally with front and rear panels visible.
+Typical outputs:
 
-### {network_name}.dot
-Graphviz diagram showing network topology for a specific wiring layer.
+-   `output/rack_layout.dot`\
+    Full rack elevation diagram
 
-Each wiring diagram includes:
-- Rack clusters containing devices
-- Central hubs (devices with >1 connection) with thicker borders
-- Peripheral devices connected to central hubs
-- Inter-rack connections
-- Connection counts on central nodes
+-   `output/<layer>.dot`\
+    Wiring diagrams per layer
 
-## Requirements
+-   `output/computer_info.csv`\
+    Inventory table
 
-- Python 3.6+
-- PyYAML
-- Graphviz (for rendering .dot files)
+-   `output/computer_info.html`\
+    Inventory report
 
-## Installation
+Rendered image formats depend on Graphviz.
 
-```bash
-pip install pyyaml
-```
+------------------------------------------------------------------------
 
-And install Graphviz:
-- **macOS**: `brew install graphviz`
-- **Linux**: `apt-get install graphviz`
-- **Windows**: Download from https://graphviz.org/download/
+## Best Practices
 
-## Notes
+-   Keep device names consistent
+-   Use clusters for repeated hardware
+-   Group wiring by function
+-   Validate `system.yaml` after changes
+-   Keep inventory entries aligned with rack devices
 
-- Device names must be unique within a configuration
-- Unit numbering starts at the top (U42 for 42U racks)
-- Rack pairs are automatically spaced for visual clarity
-- Central nodes in wiring diagrams are determined by connection count (>1 connection)
-- Missing device properties are handled gracefully with warnings
-- Colors use standard hex notation (#RRGGBB)
+------------------------------------------------------------------------
 
-## Troubleshooting
+## Summary
 
-**Issue: Device doesn't appear in layout**
-- Check that `start_u` and `units` are correctly defined
-- Verify no duplicate device names exist
-- Check that the device name matches exactly in wiring connections
+This generator provides a unified, automated way to:
 
-**Issue: Wiring diagram shows empty clusters**
-- Verify device names in connections match exactly with device definitions
-- Ensure devices are in `front` or `rear` lists
+-   Design multi-rack systems
+-   Document physical layouts
+-   Visualize power and networks
+-   Manage large clustered systems
+-   Maintain accurate inventories
 
-**Issue: Poor radial layout in wiring diagram**
-- Use `neato` instead of `dot` for rendering
-- Increase `sep` value in graph attributes if nodes overlap
-
-## License
-
-This project is open source.
+All outputs are derived from a single configuration file, making the
+system easy to maintain and scale.
