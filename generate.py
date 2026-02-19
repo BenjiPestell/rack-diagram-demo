@@ -80,6 +80,61 @@ def expand_inventory_clusters(inventory_raw):
     return expanded
 
 # -------------------------------------------------
+# Expand cluster definitions
+# -------------------------------------------------
+def expand_clusters(devices):
+    """
+    Expand cluster device definitions into individual devices.
+    
+    Cluster format:
+    - name: "RVD {N}"
+      start_u: 20
+      start: 1
+      end: 3
+      units: 4
+      spacing: 0
+      type: pc
+    
+    Expands to:
+    - name: "RVD 1", start_u: 20, units: 4, type: pc
+    - name: "RVD 2", start_u: 16, units: 4, type: pc
+    - name: "RVD 3", start_u: 12, units: 4, type: pc
+    """
+    expanded = []
+    
+    for dev in devices:
+        # Check if this is a cluster definition
+        if "start" in dev and "end" in dev and "{N}" in dev.get("name", ""):
+            start_num = dev["start"]
+            end_num = dev["end"]
+            start_u = dev["start_u"]
+            units = dev["units"]
+            spacing = dev.get("spacing", 0)
+            
+            # Expand the cluster
+            for i in range(start_num, end_num + 1):
+                # Calculate U position for this item
+                items_before = i - start_num
+                u_offset = (units + spacing) * items_before
+                current_start_u = start_u - u_offset
+                
+                # Create expanded device
+                expanded_dev = dev.copy()
+                expanded_dev["name"] = dev["name"].replace("{N}", str(i))
+                expanded_dev["start_u"] = current_start_u
+                
+                # Remove cluster-specific fields
+                for key in ["start", "end", "spacing"]:
+                    expanded_dev.pop(key, None)
+                
+                expanded.append(expanded_dev)
+        else:
+            # Regular device, add as-is
+            expanded.append(dev)
+    
+    return expanded
+
+# -------------------------------------------------
 # Build device map
 # -------------------------------------------------
 def build_device_map(racks_config):
@@ -92,7 +147,10 @@ def build_device_map(racks_config):
         
         for side in ['front', 'rear']:
             if side in rack_config:
-                for dev in rack_config[side]:
+                # Expand clusters first
+                devices = expand_clusters(rack_config[side])
+                
+                for dev in devices:
                     dev_copy = dev.copy()
                     dev_copy["rack_id"] = rack_id
                     dev_copy["side"] = side
@@ -127,6 +185,9 @@ def build_occupancy(devices, total_u):
     """
     Build map: U number -> device
     """
+    # First expand clusters
+    devices = expand_clusters(devices)
+    
     slots = {}
     for dev in devices:
         name = dev["name"]
@@ -143,8 +204,8 @@ def build_occupancy(devices, total_u):
                 if u in slots:
                     raise ValueError(f"U{u} conflict between {slots[u]['name']} and {name}")
                 slots[u] = dev
-        except:
-            print(f"Skipping layout for device '{name}'. Missing properties.")
+        except Exception as e:
+            print(f"Skipping layout for device '{name}'. {str(e)}")
     
     return slots
 
@@ -695,7 +756,8 @@ def main():
             
             for side in ['front', 'rear']:
                 if side in rack_config:
-                    for dev in rack_config[side]:
+                    devices = expand_clusters(rack_config[side])
+                    for dev in devices:
                         dev["rack_id"] = rack_id
                         all_devices[dev["name"]] = dev
         

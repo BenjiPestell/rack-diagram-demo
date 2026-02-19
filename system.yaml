@@ -20,19 +20,12 @@ racks:
         units: 3
         type: pdu
 
-      - name: KVM shelf 1
+      - name: "KVM Shelf {N}"
         start_u: 39
+        start: 1
+        end: 3
         units: 1
-        type: shelf
-
-      - name: KVM shelf 2
-        start_u: 38
-        units: 1
-        type: shelf
-
-      - name: KVM shelf 3
-        start_u: 37
-        units: 1
+        spacing: 0
         type: shelf
 
       - name: Operator PC
@@ -153,29 +146,20 @@ racks:
         units: 15
         type: customer
 
-      - name: RVD 1
+      - name: "RVD {N}"
         start_u: 20
+        start: 1
+        end: 3
         units: 4
+        spacing: 0
         type: pc
 
-      - name: RVD 2
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: RVD 3
-        start_u: 12
-        units: 4
-        type: pc
-        
-      - name: IG 1
+      - name: "IG {N}"
         start_u: 8
+        start: 1
+        end: 2
         units: 4
-        type: pc
-        
-      - name: IG 2
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -227,29 +211,12 @@ racks:
         units: 15
         type: customer
         
-      - name: IG 3
+      - name: "IG {N}"
         start_u: 20
+        start: 3
+        end: 7
         units: 4
-        type: pc
-  
-      - name: IG 4
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: IG 5
-        start_u: 12
-        units: 4
-        type: pc
-        
-      - name: IG 6
-        start_u: 8
-        units: 4
-        type: pc
-        
-      - name: IG 7
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -301,34 +268,12 @@ racks:
         units: 1
         type: customer
 
-      - name: IG 8
+      - name: "IG {N}"
         start_u: 24
+        start: 8
+        end: 13
         units: 4
-        type: pc
-      
-      - name: IG 9
-        start_u: 20
-        units: 4
-        type: pc
-
-      - name: IG 10
-        start_u: 16
-        units: 4
-        type: pc
-      
-      - name: IG 11
-        start_u: 12
-        units: 4
-        type: pc
-              
-      - name: IG 12
-        start_u: 8
-        units: 4
-        type: pc
-              
-      - name: IG 13
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -672,7 +617,7 @@ inventory:
     arena_part_number: "902-00011"
     ethernet_ports:
       - adapter: "rFpro"
-        ip: "192.168.2.{N+50}"
+        ip: "192.168.2.{N+10}"
 
   - device_name: "RVD {N}"
     start: 1
