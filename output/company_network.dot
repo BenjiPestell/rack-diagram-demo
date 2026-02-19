@@ -33,9 +33,13 @@ graph "Company Network" {
     fontname="Sinkin Sans 400 Regular";
 
     "Company_Network_Switch" [
-      label="Company Network Switch\n(2 conn)",
+      label="Company Network Switch\n(3 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
+    ];
+    "Company_Net_in" [
+      label="Company Net in",
+      fillcolor="#B8D6D6"
     ];
     "Operator_PC" [
       label="Operator PC",
@@ -52,6 +56,9 @@ graph "Company Network" {
     color="#333333", style=solid, penwidth=2.0
   ];
   Company_Network_Switch -- Telemetry [
+    color="#333333", style=solid, penwidth=2.0
+  ];
+  Company_Net_in -- Company_Network_Switch [
     color="#333333", style=solid, penwidth=2.0
   ];
 

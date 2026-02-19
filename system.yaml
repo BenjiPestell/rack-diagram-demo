@@ -136,6 +136,10 @@ racks:
 
       - name: Mains in 1
         type: pdu
+      
+      # I/O
+      - name: Company Net in
+        type: switch
 
   # Rack 2
   - rack:
@@ -632,3 +636,6 @@ wiring_layers:
 
       - from: Company Network Switch
         to: Telemetry
+      
+      - from: Company Net in
+        to: Company Network Switch
