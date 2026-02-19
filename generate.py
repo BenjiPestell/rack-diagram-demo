@@ -446,7 +446,8 @@ def main():
         
         # Generate single comprehensive layout
         layout_dot = generate_rack_layout_dot(racks_config, type_colors)
-        os.mkdir("output")
+        if not os.path.exists("output"):
+            os.mkdir("output")
         with open("output/rack_layout.dot", "w") as f:
             f.write(layout_dot)
         print("Generated output/rack_layout.dot")
