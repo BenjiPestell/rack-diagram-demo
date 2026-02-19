@@ -319,17 +319,13 @@ wiring_layers:
   - name: Visuals Subnet
     edge_color: "#b551a9"
     connections:
-      # Inter-rack connections
-      - from: Graphics Switch 1
-        to: Graphics Switch 2
+      # Inter-rack connections - Graphics switches daisy chained
+      - from: "Graphics Switch {N}"
+        to: "Graphics Switch {N+1}"
+        start: 1
+        end: 3
 
-      - from: Graphics Switch 2
-        to: Graphics Switch 3
-
-      - from: Graphics Switch 3
-        to: Graphics Switch 4
-
-      # Rack 1
+      # Rack 1 - Graphics Switch 1 to devices
       - from: Graphics Switch 1
         to: Operator PC
 
@@ -345,69 +341,37 @@ wiring_layers:
       - from: Graphics Switch 1
         to: dSPACE
 
-      # Rack 2      
+      # Rack 2 - Graphics Switch 2 to devices (clusters)
       - from: Graphics Switch 2
-        to: RVD 1
-
-      - from: Graphics Switch 2
-        to: RVD 2
-
-      - from: Graphics Switch 2
-        to: RVD 3
+        to: "RVD {N}"
+        start: 1
+        end: 3
         
       - from: Graphics Switch 2
-        to: IG 1
-        
-      - from: Graphics Switch 2
-        to: IG 2
+        to: "IG {N}"
+        start: 1
+        end: 2
 
-      # Rack 3
+      # Rack 3 - Graphics Switch 3 to devices (cluster)
       - from: Graphics Switch 3
-        to: IG 3
+        to: "IG {N}"
+        start: 3
+        end: 7
 
-      - from: Graphics Switch 3
-        to: IG 4
-
-      - from: Graphics Switch 3
-        to: IG 5
-        
-      - from: Graphics Switch 3
-        to: IG 6
-        
-      - from: Graphics Switch 3
-        to: IG 7
-
-      # Rack 4
+      # Rack 4 - Graphics Switch 4 to devices (cluster)
       - from: Graphics Switch 4
-        to: IG 8
+        to: "IG {N}"
+        start: 8
+        end: 13
 
-      - from: Graphics Switch 4
-        to: IG 9
-
-      - from: Graphics Switch 4
-        to: IG 10
-        
-      - from: Graphics Switch 4
-        to: IG 11
-        
-      - from: Graphics Switch 4
-        to: IG 12
-
-      - from: Graphics Switch 4
-        to: IG 13
-
-  # Power 
-  - name: Power distrubution
+  # Power distribution
+  - name: Power Distribution
     connections:
       # Rack 1 Front
       - from: UPS
-        to: KVM Shelf 1
-
-      - from: UPS
-        to: KVM Shelf 2
-        
-      - from: UPS
-        to: KVM Shelf 3
+        to: "KVM Shelf {N}"
+        start: 1
+        end: 3
 
       - from: R1 16A PDU B
         to: Operator PC 
@@ -455,24 +419,19 @@ wiring_layers:
       - from: R1 16A PDU C
         to: Graphics Switch 1
 
-      # Rack 2 Front  
+      # Rack 2 Front
       - from: R2 16A PDU A
         to: Customer 2
 
       - from: R2 16A PDU B
-        to: RVD 1
-        
-      - from: R2 16A PDU B
-        to: RVD 2
-
-      - from: R2 16A PDU B
-        to: RVD 3
+        to: "RVD {N}"
+        start: 1
+        end: 3
       
       - from: R2 16A PDU C
-        to: IG 1
-      
-      - from: R2 16A PDU C
-        to: IG 2
+        to: "IG {N}"
+        start: 1
+        end: 2
 
       # Rack 2 Rear
       - from: Mains in 2
@@ -490,24 +449,19 @@ wiring_layers:
       - from: R2 16A PDU C
         to: Graphics Switch 2
 
-      # Rack 3 Front  
+      # Rack 3 Front
       - from: R3 16A PDU A
         to: Customer 3
 
       - from: R3 16A PDU B
-        to: IG 3
-        
-      - from: R3 16A PDU B
-        to: IG 4
+        to: "IG {N}"
+        start: 3
+        end: 5
 
-      - from: R3 16A PDU B
-        to: IG 5
-      
       - from: R3 16A PDU C
-        to: IG 6
-      
-      - from: R3 16A PDU C
-        to: IG 7
+        to: "IG {N}"
+        start: 6
+        end: 7
 
       # Rack 3 Rear
       - from: Mains in 3
@@ -525,16 +479,16 @@ wiring_layers:
       - from: R3 16A PDU C
         to: Graphics Switch 3
 
-      # Rack 4 Front  
+      # Rack 4 Front
       - from: R4 16A PDU A
         to: Customer 4
 
-      - from: "R4 16A PDU B"
+      - from: R4 16A PDU B
         to: "IG {N}"
         start: 8
         end: 10
       
-      - from: "R4 16A PDU C"
+      - from: R4 16A PDU C
         to: "IG {N}"
         start: 11
         end: 13
@@ -591,10 +545,10 @@ computer_info:
 
       - adapter: "Host"
         ip: "192.168.7.2"
-        mac: "00-14-5E-EA-4C-DC"
+        mac: "00-14-5E-EA-4C-DF"
 
       - adapter: "Telemetry"
-        ip: "192.168.7.2"
+        ip: "192.168.5.1"
         mac: "00-14-5E-EA-4C-DE"
 
   - device_name: "Physics PC"
