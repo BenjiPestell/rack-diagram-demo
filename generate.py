@@ -6,7 +6,7 @@ from collections import defaultdict
 # Load config
 # -------------------------------------------------
 def load_config():
-    with open("checkers.yaml") as f:
+    with open("system.yaml") as f:
         return yaml.safe_load(f)
         
 # -------------------------------------------------
