@@ -1,4 +1,4 @@
-# Rack Visualization System
+# Rack Visualisation System
 
 A Python-based system for generating professional rack layout diagrams and network wiring diagrams from YAML configuration files using Graphviz.
 
@@ -6,7 +6,7 @@ A Python-based system for generating professional rack layout diagrams and netwo
 
 This system generates two types of diagrams:
 
-1. **Rack Layout Diagrams** - Horizontal visualization of all racks showing front and rear panels with devices
+1. **Rack Layout Diagrams** - Horizontal Visualisation of all racks showing front and rear panels with devices
 2. **Wiring Diagrams** - Radial network topology diagrams showing device interconnections grouped by rack
 
 ## Configuration
