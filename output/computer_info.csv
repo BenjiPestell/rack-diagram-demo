@@ -1,0 +1,6 @@
+Device Name,Part Number,Port #,Adapter/Network,MAC Address,IP Address
+Operator PC,902-00008,1,CompanyNetwork,00-14-5E-EA-4C-DD,None (DHCP)
+Operator PC,902-00008,2,rFpro,00-14-5E-EA-4C-DC,192.168.2.80
+Operator PC,902-00008,3,Host,00-14-5E-EA-4C-DC,192.168.7.2
+Operator PC,902-00008,4,Telemetry,00-14-5E-EA-4C-DE,192.168.7.2
+Physics PC,908-00028,1,rFpro,,"192.168.2.50, 59"

@@ -1,5 +1,7 @@
 import yaml
 import os
+import csv
+import json
 from collections import defaultdict
 
 # -------------------------------------------------
@@ -27,6 +29,8 @@ def build_device_map(racks_config):
                     dev_copy["rack_id"] = rack_id
                     dev_copy["side"] = side
                     all_devices[dev["name"]] = dev_copy
+    
+    return all_devices
 
 # -------------------------------------------------
 # Get device color based on type or explicit color
@@ -432,6 +436,200 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     return "\n".join(lines)
 
 # -------------------------------------------------
+# Export inventory to CSV
+# -------------------------------------------------
+def export_inventory_csv(inventory, output_file="output/computer_info.csv"):
+    """Export inventory to CSV format"""
+    with open(output_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
+        # Header
+        writer.writerow([
+            "Device Name",
+            "Part Number",
+            "Port #",
+            "Adapter/Network",
+            "MAC Address",
+            "IP Address"
+        ])
+        
+        # Data rows
+        for device in inventory:
+            device_name = device.get("device_name", "")
+            part_number = device.get("arena_part_number", "")
+            ports = device.get("ethernet_ports", [])
+            
+            if not ports:
+                writer.writerow([device_name, part_number, "", "", "", ""])
+            else:
+                for idx, port in enumerate(ports, 1):
+                    writer.writerow([
+                        device_name,
+                        part_number,
+                        idx,
+                        port.get("adapter", ""),
+                        port.get("mac", ""),
+                        port.get("ip", "")
+                    ])
+    
+    print(f"Exported inventory to {output_file}")
+
+# -------------------------------------------------
+# Export inventory to JSON
+# -------------------------------------------------
+def export_inventory_json(inventory, output_file="output/computer_info.json"):
+    """Export inventory to JSON format"""
+    with open(output_file, 'w') as f:
+        json.dump(inventory, f, indent=2)
+    
+    print(f"Exported inventory to {output_file}")
+
+# -------------------------------------------------
+# Export inventory to HTML
+# -------------------------------------------------
+def export_inventory_html(inventory, output_file="output/computer_info.html"):
+    """Export inventory to HTML table"""
+    html = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Computer Inventory</title>
+    <style>
+        body {
+            font-family: 'Sinkin Sans', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #5af282;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .device-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .port-number {
+            background-color: #f0f0f0;
+            text-align: center;
+            width: 60px;
+        }
+        .mac-address {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .ip-address {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Computer Inventory</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Device Name</th>
+                <th>Part Number</th>
+                <th>Port #</th>
+                <th>Adapter/Network</th>
+                <th>MAC Address</th>
+                <th>IP Address</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+    
+    for device in inventory:
+        device_name = device.get("device_name", "")
+        part_number = device.get("arena_part_number", "")
+        ports = device.get("ethernet_ports", [])
+        
+        if not ports:
+            html += f"""            <tr>
+                <td class="device-name">{device_name}</td>
+                <td>{part_number}</td>
+                <td class="port-number">-</td>
+                <td>-</td>
+                <td class="mac-address">-</td>
+                <td class="ip-address">-</td>
+            </tr>
+"""
+        else:
+            for idx, port in enumerate(ports, 1):
+                html += f"""            <tr>
+                <td class="device-name">{device_name}</td>
+                <td>{part_number}</td>
+                <td class="port-number">{idx}</td>
+                <td>{port.get('adapter', '')}</td>
+                <td class="mac-address">{port.get('mac', '')}</td>
+                <td class="ip-address">{port.get('ip', '')}</td>
+            </tr>
+"""
+    
+    html += """        </tbody>
+    </table>
+</body>
+</html>
+"""
+    
+    with open(output_file, 'w') as f:
+        f.write(html)
+    
+    print(f"Exported inventory to {output_file}")
+
+# -------------------------------------------------
+# Generate inventory summary
+# -------------------------------------------------
+def generate_inventory_summary(inventory):
+    """Generate summary statistics"""
+    if not inventory:
+        print("\nNo inventory data found in system.yaml\n")
+        return
+    
+    total_devices = len(inventory)
+    total_ports = sum(len(d.get("ethernet_ports", [])) for d in inventory)
+    
+    print("\n" + "="*70)
+    print("INVENTORY SUMMARY")
+    print("="*70)
+    print(f"Total devices: {total_devices}")
+    print(f"Total ethernet ports: {total_ports}")
+    print(f"Average ports per device: {total_ports / total_devices:.1f}" if total_devices > 0 else "")
+    
+    # Group by adapter
+    adapters = {}
+    for device in inventory:
+        for port in device.get("ethernet_ports", []):
+            adapter = port.get("adapter", "Unknown")
+            adapters[adapter] = adapters.get(adapter, 0) + 1
+    
+    if adapters:
+        print("\nPorts by Adapter/Network:")
+        for adapter in sorted(adapters.keys()):
+            print(f"  {adapter}: {adapters[adapter]} ports")
+    
+    print("="*70 + "\n")
+
+# -------------------------------------------------
 # Main
 # -------------------------------------------------
 def main():
@@ -440,14 +638,16 @@ def main():
     # Extract type color mappings from config
     type_colors = config.get("type_colors", {})
     
+    # Create output directory if it doesn't exist
+    if not os.path.exists("output"):
+        os.mkdir("output")
+    
     if "racks" in config:
         racks_config = config["racks"]
         all_devices = build_device_map(racks_config)
         
         # Generate single comprehensive layout
         layout_dot = generate_rack_layout_dot(racks_config, type_colors)
-        if not os.path.exists("output"):
-            os.mkdir("output")
         with open("output/rack_layout.dot", "w") as f:
             f.write(layout_dot)
         print("Generated output/rack_layout.dot")
@@ -475,6 +675,14 @@ def main():
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
+        
+        # Process inventory
+        inventory = config.get("inventory", [])
+        if inventory:
+            export_inventory_csv(inventory)
+            export_inventory_json(inventory)
+            export_inventory_html(inventory)
+            generate_inventory_summary(inventory)
     
     else:
         print("Error: Configuration must have 'racks' with consolidated front/rear")

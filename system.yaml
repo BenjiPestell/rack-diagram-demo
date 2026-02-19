@@ -639,3 +639,37 @@ wiring_layers:
       
       - from: Company Net in
         to: Company Network Switch
+
+inventory:
+  - device_name: "Operator PC"
+    arena_part_number: "902-00008"
+    ethernet_ports:
+      - adapter: "CompanyNetwork"
+        ip: "None (DHCP)"
+        mac: "00-14-5E-EA-4C-DD"
+
+      - adapter: "rFpro"
+        ip: "192.168.2.80"
+        mac: "00-14-5E-EA-4C-DC"
+
+      - adapter: "Host"
+        ip: "192.168.7.2"
+        mac: "00-14-5E-EA-4C-DC"
+
+      - adapter: "Telemetry"
+        ip: "192.168.7.2"
+        mac: "00-14-5E-EA-4C-DE"
+
+  - device_name: "Physics PC"
+    arena_part_number: "908-00028"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.50, 59"
+
+  # - device_name: "IG {N}"
+  #   start: 1
+  #   end: 13
+  #   arena_part_number: "902-00011"
+  #   ethernet_ports:
+  #     - adapter: "rFpro"
+  #       ip: "192.168.2.{N+50}"
