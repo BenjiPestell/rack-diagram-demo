@@ -13,11 +13,11 @@ def load_config():
         return yaml.safe_load(f)
 
 # -------------------------------------------------
-# Expand inventory clusters
+# Expand computer_info clusters
 # -------------------------------------------------
-def expand_inventory_clusters(inventory_raw):
+def expand_computer_info_clusters(computer_info_raw):
     """
-    Expand inventory entries with start/end ranges.
+    Expand computer_info entries with start/end ranges.
     
     Example:
     - device_name: "IG {N}"
@@ -32,7 +32,7 @@ def expand_inventory_clusters(inventory_raw):
     """
     expanded = []
     
-    for entry in inventory_raw:
+    for entry in computer_info_raw:
         # Check if this is a cluster definition
         if "start" in entry and "end" in entry:
             device_template = entry.get("device_name", "Device {N}")
@@ -565,10 +565,10 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     return "\n".join(lines)
 
 # -------------------------------------------------
-# Export inventory to CSV
+# Export computer_info to CSV
 # -------------------------------------------------
-def export_inventory_csv(inventory, output_file="output/computer_info.csv"):
-    """Export inventory to CSV format"""
+def export_computer_info_csv(computer_info, output_file="output/computer_info.csv"):
+    """Export computer_info to CSV format"""
     with open(output_file, 'w', newline='') as f:
         writer = csv.writer(f)
         
@@ -583,7 +583,7 @@ def export_inventory_csv(inventory, output_file="output/computer_info.csv"):
         ])
         
         # Data rows
-        for device in inventory:
+        for device in computer_info:
             device_name = device.get("device_name", "")
             part_number = device.get("arena_part_number", "")
             ports = device.get("ethernet_ports", [])
@@ -601,23 +601,23 @@ def export_inventory_csv(inventory, output_file="output/computer_info.csv"):
                         port.get("ip", "")
                     ])
     
-    print(f"Exported inventory to {output_file}")
+    print(f"Exported computer_info to {output_file}")
 
 # -------------------------------------------------
-# Export inventory to JSON
+# Export computer_info to JSON
 # -------------------------------------------------
-def export_inventory_json(inventory, output_file="output/computer_info.json"):
-    """Export inventory to JSON format"""
+def export_computer_info_json(computer_info, output_file="output/computer_info.json"):
+    """Export computer_info to JSON format"""
     with open(output_file, 'w') as f:
-        json.dump(inventory, f, indent=2)
+        json.dump(computer_info, f, indent=2)
     
-    print(f"Exported inventory to {output_file}")
+    print(f"Exported computer_info to {output_file}")
 
 # -------------------------------------------------
-# Export inventory to HTML
+# Export computer_info to HTML
 # -------------------------------------------------
-def export_inventory_html(inventory, output_file="output/computer_info.html"):
-    """Export inventory to HTML table"""
+def export_computer_info_html(computer_info, output_file="output/computer_info.html"):
+    """Export computer_info to HTML table"""
     html = """<!DOCTYPE html>
 <html>
 <head>
@@ -687,7 +687,7 @@ def export_inventory_html(inventory, output_file="output/computer_info.html"):
         <tbody>
 """
     
-    for device in inventory:
+    for device in computer_info:
         device_name = device.get("device_name", "")
         part_number = device.get("arena_part_number", "")
         ports = device.get("ethernet_ports", [])
@@ -723,7 +723,7 @@ def export_inventory_html(inventory, output_file="output/computer_info.html"):
     with open(output_file, 'w') as f:
         f.write(html)
     
-    print(f"Exported inventory to {output_file}")
+    print(f"Exported computer_info to {output_file}")
 
 
 # -------------------------------------------------
@@ -774,17 +774,17 @@ def main():
                 f.write(wiring_dot)
             print(f"Generated {filename}")
         
-        # Process inventory
-        inventory_raw = config.get("inventory", [])
-        if inventory_raw:
+        # Process computer_info
+        computer_info_raw = config.get("computer_info", [])
+        if computer_info_raw:
             # Expand clusters
-            inventory = expand_inventory_clusters(inventory_raw)
-            print(f"Expanded inventory from {len(inventory_raw)} entries to {len(inventory)} devices")
+            computer_info = expand_computer_info_clusters(computer_info_raw)
+            print(f"Expanded computer_info from {len(computer_info_raw)} entries to {len(computer_info)} devices")
             
             # Export
-            export_inventory_csv(inventory)
-            # export_inventory_json(inventory)
-            export_inventory_html(inventory)
+            export_computer_info_csv(computer_info)
+            # export_computer_info_json(computer_info)
+            export_computer_info_html(computer_info)
     
     else:
         print("Error: Configuration must have 'racks' with consolidated front/rear")

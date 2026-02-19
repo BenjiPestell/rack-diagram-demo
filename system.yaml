@@ -585,7 +585,7 @@ wiring_layers:
       - from: Company Net in
         to: Company Network Switch
 
-inventory:
+computer_info:
   - device_name: "Operator PC"
     arena_part_number: "902-00008"
     ethernet_ports:
