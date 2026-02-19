@@ -666,10 +666,24 @@ inventory:
       - adapter: "rFpro"
         ip: "192.168.2.50, 59"
 
-  # - device_name: "IG {N}"
-  #   start: 1
-  #   end: 13
-  #   arena_part_number: "902-00011"
-  #   ethernet_ports:
-  #     - adapter: "rFpro"
-  #       ip: "192.168.2.{N+50}"
+  - device_name: "IG {N}"
+    start: 1
+    end: 13
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.{N+50}"
+
+  - device_name: "RVD {N}"
+    start: 1
+    end: 3
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.{N+23}"
+
+  - device_name: "Spectator IG"
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.90"

@@ -2,6 +2,7 @@ import yaml
 import os
 import csv
 import json
+import re
 from collections import defaultdict
 
 # -------------------------------------------------
@@ -10,7 +11,74 @@ from collections import defaultdict
 def load_config():
     with open("system.yaml") as f:
         return yaml.safe_load(f)
-        
+
+# -------------------------------------------------
+# Expand inventory clusters
+# -------------------------------------------------
+def expand_inventory_clusters(inventory_raw):
+    """
+    Expand inventory entries with start/end ranges.
+    
+    Example:
+    - device_name: "IG {N}"
+      start: 1
+      end: 13
+      arena_part_number: "902-00011"
+      ethernet_ports:
+        - adapter: "rFpro"
+          ip: "192.168.2.{N+50}"
+    
+    Expands to 13 individual devices: IG 1, IG 2, ..., IG 13
+    """
+    expanded = []
+    
+    for entry in inventory_raw:
+        # Check if this is a cluster definition
+        if "start" in entry and "end" in entry:
+            device_template = entry.get("device_name", "Device {N}")
+            start = entry["start"]
+            end = entry["end"]
+            part_number = entry.get("arena_part_number", "")
+            ports_template = entry.get("ethernet_ports", [])
+            
+            # Generate individual devices
+            for n in range(start, end + 1):
+                # Expand device name
+                device_name = device_template.replace("{N}", str(n))
+                
+                # Expand ports
+                ports = []
+                for port_template in ports_template:
+                    port = {}
+                    for key, value in port_template.items():
+                        if isinstance(value, str):
+                            # Replace {N} placeholders
+                            value = value.replace("{N}", str(n))
+                            # Replace {N+X} placeholders
+                            match = re.search(r'\{N\+(\d+)\}', value)
+                            if match:
+                                offset = int(match.group(1))
+                                value = value.replace(match.group(0), str(n + offset))
+                            # Replace {N-X} placeholders
+                            match = re.search(r'\{N-(\d+)\}', value)
+                            if match:
+                                offset = int(match.group(1))
+                                value = value.replace(match.group(0), str(n - offset))
+                        port[key] = value
+                    ports.append(port)
+                
+                # Create expanded entry
+                expanded.append({
+                    "device_name": device_name,
+                    "arena_part_number": part_number,
+                    "ethernet_ports": ports
+                })
+        else:
+            # Regular entry, no expansion needed
+            expanded.append(entry)
+    
+    return expanded
+
 # -------------------------------------------------
 # Build device map
 # -------------------------------------------------
@@ -492,7 +560,7 @@ def export_inventory_html(inventory, output_file="output/computer_info.html"):
     html = """<!DOCTYPE html>
 <html>
 <head>
-    <title>Computer Inventory</title>
+    <title>Computer Info</title>
     <style>
         body {
             font-family: 'Sinkin Sans', Arial, sans-serif;
@@ -543,7 +611,7 @@ def export_inventory_html(inventory, output_file="output/computer_info.html"):
     </style>
 </head>
 <body>
-    <h1>Computer Inventory</h1>
+    <h1>Computer Info</h1>
     <table>
         <thead>
             <tr>
@@ -596,38 +664,6 @@ def export_inventory_html(inventory, output_file="output/computer_info.html"):
     
     print(f"Exported inventory to {output_file}")
 
-# -------------------------------------------------
-# Generate inventory summary
-# -------------------------------------------------
-def generate_inventory_summary(inventory):
-    """Generate summary statistics"""
-    if not inventory:
-        print("\nNo inventory data found in system.yaml\n")
-        return
-    
-    total_devices = len(inventory)
-    total_ports = sum(len(d.get("ethernet_ports", [])) for d in inventory)
-    
-    print("\n" + "="*70)
-    print("INVENTORY SUMMARY")
-    print("="*70)
-    print(f"Total devices: {total_devices}")
-    print(f"Total ethernet ports: {total_ports}")
-    print(f"Average ports per device: {total_ports / total_devices:.1f}" if total_devices > 0 else "")
-    
-    # Group by adapter
-    adapters = {}
-    for device in inventory:
-        for port in device.get("ethernet_ports", []):
-            adapter = port.get("adapter", "Unknown")
-            adapters[adapter] = adapters.get(adapter, 0) + 1
-    
-    if adapters:
-        print("\nPorts by Adapter/Network:")
-        for adapter in sorted(adapters.keys()):
-            print(f"  {adapter}: {adapters[adapter]} ports")
-    
-    print("="*70 + "\n")
 
 # -------------------------------------------------
 # Main
@@ -677,12 +713,16 @@ def main():
             print(f"Generated {filename}")
         
         # Process inventory
-        inventory = config.get("inventory", [])
-        if inventory:
+        inventory_raw = config.get("inventory", [])
+        if inventory_raw:
+            # Expand clusters
+            inventory = expand_inventory_clusters(inventory_raw)
+            print(f"Expanded inventory from {len(inventory_raw)} entries to {len(inventory)} devices")
+            
+            # Export
             export_inventory_csv(inventory)
-            export_inventory_json(inventory)
+            # export_inventory_json(inventory)
             export_inventory_html(inventory)
-            generate_inventory_summary(inventory)
     
     else:
         print("Error: Configuration must have 'racks' with consolidated front/rear")

@@ -34,5 +34,175 @@
         "ip": "192.168.2.50, 59"
       }
     ]
+  },
+  {
+    "device_name": "IG 1",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.51"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 2",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.52"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 3",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.53"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 4",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.54"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 5",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.55"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 6",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.56"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 7",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.57"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 8",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.58"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 9",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.59"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 10",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.60"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 11",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.61"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 12",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.62"
+      }
+    ]
+  },
+  {
+    "device_name": "IG 13",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.63"
+      }
+    ]
+  },
+  {
+    "device_name": "RVD 1",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.24"
+      }
+    ]
+  },
+  {
+    "device_name": "RVD 2",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.25"
+      }
+    ]
+  },
+  {
+    "device_name": "RVD 3",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.26"
+      }
+    ]
+  },
+  {
+    "device_name": "Spectator IG",
+    "arena_part_number": "902-00011",
+    "ethernet_ports": [
+      {
+        "adapter": "rFpro",
+        "ip": "192.168.2.90"
+      }
+    ]
   }
 ]
