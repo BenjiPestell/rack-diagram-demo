@@ -29,18 +29,10 @@ racks:
         units: 2
         type: pc
         
-      - name: IG 1
+      - name: IG {N}
         start_u: 16
-        units: 5
-        type: pc
-        
-      - name: IG 2
-        start_u: 11
-        units: 5
-        type: pc
-        
-      - name: IG 3
-        start_u: 6
+        start: 1
+        end: 3
         units: 5
         type: pc
 
@@ -105,10 +97,6 @@ wiring_layers:
         to: Terrain Server
 
       - from: Graphics Switch
-        to: IG 1
-
-      - from: Graphics Switch
-        to: IG 2
-        
-      - from: Graphics Switch
-        to: IG 3
+        to: IG {N}
+        start: 1
+        end: 3
