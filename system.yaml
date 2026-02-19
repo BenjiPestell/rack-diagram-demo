@@ -1,7 +1,7 @@
 type_colors:
   pc: "#E8F4F8"
   pdu: "#AAAAAA"
-  shelf: "#ced3db"
+  Shelf: "#ced3db"
   realtime: "#FFE8D8"
   cable management: "#C4C4C4"
   switch: "#B8D6D6"
@@ -26,7 +26,7 @@ racks:
         end: 3
         units: 1
         spacing: 0
-        type: shelf
+        type: Shelf
 
       - name: Operator PC
         start_u: 27
@@ -92,12 +92,12 @@ racks:
       - name: RME Digiface
         start_u: 36
         units: 2
-        type: shelf
+        type: Shelf
 
       - name: Media Converters
         start_u: 34
         units: 4
-        type: shelf
+        type: Shelf
       
       - name: Cable Manager
         start_u: 24
@@ -401,13 +401,13 @@ wiring_layers:
     connections:
       # Rack 1 Front
       - from: UPS
-        to: KVM shelf 1
+        to: KVM Shelf 1
 
       - from: UPS
-        to: KVM shelf 2
+        to: KVM Shelf 2
         
       - from: UPS
-        to: KVM shelf 3
+        to: KVM Shelf 3
 
       - from: R1 16A PDU B
         to: Operator PC 
@@ -529,23 +529,15 @@ wiring_layers:
       - from: R4 16A PDU A
         to: Customer 4
 
-      - from: R4 16A PDU B
-        to: IG 8
-        
-      - from: R4 16A PDU B
-        to: IG 9
-
-      - from: R4 16A PDU B
-        to: IG 10
+      - from: "R4 16A PDU B"
+        to: "IG {N}"
+        start: 8
+        end: 10
       
-      - from: R4 16A PDU C
-        to: IG 11
-      
-      - from: R4 16A PDU C
-        to: IG 12
-        
-      - from: R4 16A PDU C
-        to: IG 13
+      - from: "R4 16A PDU C"
+        to: "IG {N}"
+        start: 11
+        end: 13
 
       # Rack 4 Rear
       - from: Mains in 4

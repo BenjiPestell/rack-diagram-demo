@@ -13,6 +13,100 @@ def load_config():
         return yaml.safe_load(f)
 
 # -------------------------------------------------
+# Expand wiring clusters
+# -------------------------------------------------
+def expand_wiring_clusters(connections):
+    """
+    Expand wiring connection clusters into individual connections.
+    
+    Cluster format:
+    - from: "R4 16A PDU B"
+      to: "IG {N}"
+      start: 8
+      end: 10
+    
+    Expands to:
+    - from: "R4 16A PDU B", to: "IG 8"
+    - from: "R4 16A PDU B", to: "IG 9"
+    - from: "R4 16A PDU B", to: "IG 10"
+    
+    Also supports:
+    - from: "PDU {N}"
+      to: "Device {N}"
+      start: 1
+      end: 3
+    
+    Which expands to:
+    - from: "PDU 1", to: "Device 1"
+    - from: "PDU 2", to: "Device 2"
+    - from: "PDU 3", to: "Device 3"
+    """
+    expanded = []
+    
+    for conn in connections:
+        # Check if this is a cluster definition
+        if "start" in conn and "end" in conn:
+            from_template = conn.get("from", "")
+            to_template = conn.get("to", "")
+            start = conn["start"]
+            end = conn["end"]
+            label = conn.get("label", "")
+            color = conn.get("color", "")
+            style = conn.get("style", "")
+            width = conn.get("width", "")
+            
+            # Expand the cluster
+            for n in range(start, end + 1):
+                # Replace {N} placeholders
+                from_dev = from_template.replace("{N}", str(n))
+                to_dev = to_template.replace("{N}", str(n))
+                
+                # Replace {N+X} placeholders
+                match = re.search(r'\{N\+(\d+)\}', from_dev)
+                if match:
+                    offset = int(match.group(1))
+                    from_dev = from_dev.replace(match.group(0), str(n + offset))
+                
+                match = re.search(r'\{N\+(\d+)\}', to_dev)
+                if match:
+                    offset = int(match.group(1))
+                    to_dev = to_dev.replace(match.group(0), str(n + offset))
+                
+                # Replace {N-X} placeholders
+                match = re.search(r'\{N-(\d+)\}', from_dev)
+                if match:
+                    offset = int(match.group(1))
+                    from_dev = from_dev.replace(match.group(0), str(n - offset))
+                
+                match = re.search(r'\{N-(\d+)\}', to_dev)
+                if match:
+                    offset = int(match.group(1))
+                    to_dev = to_dev.replace(match.group(0), str(n - offset))
+                
+                # Create expanded connection
+                expanded_conn = {
+                    "from": from_dev,
+                    "to": to_dev
+                }
+                
+                # Add optional fields if present
+                if label:
+                    expanded_conn["label"] = label
+                if color:
+                    expanded_conn["color"] = color
+                if style:
+                    expanded_conn["style"] = style
+                if width:
+                    expanded_conn["width"] = width
+                
+                expanded.append(expanded_conn)
+        else:
+            # Regular connection, add as-is
+            expanded.append(conn)
+    
+    return expanded
+
+# -------------------------------------------------
 # Expand computer_info clusters
 # -------------------------------------------------
 def expand_computer_info_clusters(computer_info_raw):
@@ -409,7 +503,10 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     Central nodes are any device with more than 1 connection.
     """
     layer_name = layer["name"]
-    connections = layer.get("connections", [])
+    connections_raw = layer.get("connections", [])
+    
+    # Expand connection clusters
+    connections = expand_wiring_clusters(connections_raw)
     
     # Styling
     edge_color = layer.get("edge_color", "#333333")
