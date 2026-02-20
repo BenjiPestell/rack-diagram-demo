@@ -38,15 +38,15 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">39</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 1</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM Shelf 1</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">38</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 2</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM Shelf 2</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM shelf 3</B></FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#ced3db" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>KVM Shelf 3</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>

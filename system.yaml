@@ -1,7 +1,7 @@
 type_colors:
   pc: "#E8F4F8"
   pdu: "#AAAAAA"
-  shelf: "#ced3db"
+  Shelf: "#ced3db"
   realtime: "#FFE8D8"
   cable management: "#C4C4C4"
   switch: "#B8D6D6"
@@ -20,20 +20,13 @@ racks:
         units: 3
         type: pdu
 
-      - name: KVM shelf 1
+      - name: "KVM Shelf {N}"
         start_u: 39
+        start: 1
+        end: 3
         units: 1
-        type: shelf
-
-      - name: KVM shelf 2
-        start_u: 38
-        units: 1
-        type: shelf
-
-      - name: KVM shelf 3
-        start_u: 37
-        units: 1
-        type: shelf
+        spacing: 0
+        type: Shelf
 
       - name: Operator PC
         start_u: 27
@@ -99,12 +92,12 @@ racks:
       - name: RME Digiface
         start_u: 36
         units: 2
-        type: shelf
+        type: Shelf
 
       - name: Media Converters
         start_u: 34
         units: 4
-        type: shelf
+        type: Shelf
       
       - name: Cable Manager
         start_u: 24
@@ -153,29 +146,20 @@ racks:
         units: 15
         type: customer
 
-      - name: RVD 1
+      - name: "RVD {N}"
         start_u: 20
+        start: 1
+        end: 3
         units: 4
+        spacing: 0
         type: pc
 
-      - name: RVD 2
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: RVD 3
-        start_u: 12
-        units: 4
-        type: pc
-        
-      - name: IG 1
+      - name: "IG {N}"
         start_u: 8
+        start: 1
+        end: 2
         units: 4
-        type: pc
-        
-      - name: IG 2
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -227,29 +211,12 @@ racks:
         units: 15
         type: customer
         
-      - name: IG 3
+      - name: "IG {N}"
         start_u: 20
+        start: 3
+        end: 7
         units: 4
-        type: pc
-  
-      - name: IG 4
-        start_u: 16
-        units: 4
-        type: pc
-        
-      - name: IG 5
-        start_u: 12
-        units: 4
-        type: pc
-        
-      - name: IG 6
-        start_u: 8
-        units: 4
-        type: pc
-        
-      - name: IG 7
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -301,34 +268,12 @@ racks:
         units: 1
         type: customer
 
-      - name: IG 8
+      - name: "IG {N}"
         start_u: 24
+        start: 8
+        end: 13
         units: 4
-        type: pc
-      
-      - name: IG 9
-        start_u: 20
-        units: 4
-        type: pc
-
-      - name: IG 10
-        start_u: 16
-        units: 4
-        type: pc
-      
-      - name: IG 11
-        start_u: 12
-        units: 4
-        type: pc
-              
-      - name: IG 12
-        start_u: 8
-        units: 4
-        type: pc
-              
-      - name: IG 13
-        start_u: 4
-        units: 4
+        spacing: 0
         type: pc
 
     rear:
@@ -374,17 +319,13 @@ wiring_layers:
   - name: Visuals Subnet
     edge_color: "#b551a9"
     connections:
-      # Inter-rack connections
-      - from: Graphics Switch 1
-        to: Graphics Switch 2
+      # Inter-rack connections - Graphics switches daisy chained
+      - from: "Graphics Switch {N}"
+        to: "Graphics Switch {N+1}"
+        start: 1
+        end: 3
 
-      - from: Graphics Switch 2
-        to: Graphics Switch 3
-
-      - from: Graphics Switch 3
-        to: Graphics Switch 4
-
-      # Rack 1
+      # Rack 1 - Graphics Switch 1 to devices
       - from: Graphics Switch 1
         to: Operator PC
 
@@ -400,69 +341,37 @@ wiring_layers:
       - from: Graphics Switch 1
         to: dSPACE
 
-      # Rack 2      
+      # Rack 2 - Graphics Switch 2 to devices (clusters)
       - from: Graphics Switch 2
-        to: RVD 1
-
-      - from: Graphics Switch 2
-        to: RVD 2
-
-      - from: Graphics Switch 2
-        to: RVD 3
+        to: "RVD {N}"
+        start: 1
+        end: 3
         
       - from: Graphics Switch 2
-        to: IG 1
-        
-      - from: Graphics Switch 2
-        to: IG 2
+        to: "IG {N}"
+        start: 1
+        end: 2
 
-      # Rack 3
+      # Rack 3 - Graphics Switch 3 to devices (cluster)
       - from: Graphics Switch 3
-        to: IG 3
+        to: "IG {N}"
+        start: 3
+        end: 7
 
-      - from: Graphics Switch 3
-        to: IG 4
-
-      - from: Graphics Switch 3
-        to: IG 5
-        
-      - from: Graphics Switch 3
-        to: IG 6
-        
-      - from: Graphics Switch 3
-        to: IG 7
-
-      # Rack 4
+      # Rack 4 - Graphics Switch 4 to devices (cluster)
       - from: Graphics Switch 4
-        to: IG 8
+        to: "IG {N}"
+        start: 8
+        end: 13
 
-      - from: Graphics Switch 4
-        to: IG 9
-
-      - from: Graphics Switch 4
-        to: IG 10
-        
-      - from: Graphics Switch 4
-        to: IG 11
-        
-      - from: Graphics Switch 4
-        to: IG 12
-
-      - from: Graphics Switch 4
-        to: IG 13
-
-  # Power 
-  - name: Power distrubution
+  # Power distribution
+  - name: Power Distribution
     connections:
       # Rack 1 Front
       - from: UPS
-        to: KVM shelf 1
-
-      - from: UPS
-        to: KVM shelf 2
-        
-      - from: UPS
-        to: KVM shelf 3
+        to: "KVM Shelf {N}"
+        start: 1
+        end: 3
 
       - from: R1 16A PDU B
         to: Operator PC 
@@ -510,24 +419,19 @@ wiring_layers:
       - from: R1 16A PDU C
         to: Graphics Switch 1
 
-      # Rack 2 Front  
+      # Rack 2 Front
       - from: R2 16A PDU A
         to: Customer 2
 
       - from: R2 16A PDU B
-        to: RVD 1
-        
-      - from: R2 16A PDU B
-        to: RVD 2
-
-      - from: R2 16A PDU B
-        to: RVD 3
+        to: "RVD {N}"
+        start: 1
+        end: 3
       
       - from: R2 16A PDU C
-        to: IG 1
-      
-      - from: R2 16A PDU C
-        to: IG 2
+        to: "IG {N}"
+        start: 1
+        end: 2
 
       # Rack 2 Rear
       - from: Mains in 2
@@ -545,24 +449,19 @@ wiring_layers:
       - from: R2 16A PDU C
         to: Graphics Switch 2
 
-      # Rack 3 Front  
+      # Rack 3 Front
       - from: R3 16A PDU A
         to: Customer 3
 
       - from: R3 16A PDU B
-        to: IG 3
-        
-      - from: R3 16A PDU B
-        to: IG 4
+        to: "IG {N}"
+        start: 3
+        end: 5
 
-      - from: R3 16A PDU B
-        to: IG 5
-      
       - from: R3 16A PDU C
-        to: IG 6
-      
-      - from: R3 16A PDU C
-        to: IG 7
+        to: "IG {N}"
+        start: 6
+        end: 7
 
       # Rack 3 Rear
       - from: Mains in 3
@@ -580,27 +479,19 @@ wiring_layers:
       - from: R3 16A PDU C
         to: Graphics Switch 3
 
-      # Rack 4 Front  
+      # Rack 4 Front
       - from: R4 16A PDU A
         to: Customer 4
 
       - from: R4 16A PDU B
-        to: IG 8
-        
-      - from: R4 16A PDU B
-        to: IG 9
-
-      - from: R4 16A PDU B
-        to: IG 10
+        to: "IG {N}"
+        start: 8
+        end: 10
       
       - from: R4 16A PDU C
-        to: IG 11
-      
-      - from: R4 16A PDU C
-        to: IG 12
-        
-      - from: R4 16A PDU C
-        to: IG 13
+        to: "IG {N}"
+        start: 11
+        end: 13
 
       # Rack 4 Rear
       - from: Mains in 4
@@ -639,3 +530,51 @@ wiring_layers:
       
       - from: Company Net in
         to: Company Network Switch
+
+computer_info:
+  - device_name: "Operator PC"
+    arena_part_number: "902-00008"
+    ethernet_ports:
+      - adapter: "CompanyNetwork"
+        ip: "None (DHCP)"
+        mac: "00-14-5E-EA-4C-DD"
+
+      - adapter: "rFpro"
+        ip: "192.168.2.80"
+        mac: "00-14-5E-EA-4C-DC"
+
+      - adapter: "Host"
+        ip: "192.168.7.2"
+        mac: "00-14-5E-EA-4C-DF"
+
+      - adapter: "Telemetry"
+        ip: "192.168.5.1"
+        mac: "00-14-5E-EA-4C-DE"
+
+  - device_name: "Physics PC"
+    arena_part_number: "908-00028"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.50, 59"
+
+  - device_name: "IG {N}"
+    start: 1
+    end: 13
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.{N+10}"
+
+  - device_name: "RVD {N}"
+    start: 1
+    end: 3
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.{N+23}"
+
+  - device_name: "Spectator IG"
+    arena_part_number: "902-00011"
+    ethernet_ports:
+      - adapter: "rFpro"
+        ip: "192.168.2.90"

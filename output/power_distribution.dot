@@ -1,8 +1,8 @@
-graph "Power distrubution" {
+graph "Power Distribution" {
 
   graph [
     bgcolor="white",
-    label="Power distrubution",
+    label="Power Distribution",
     labelloc=t,
     fontsize=16,
     fontname="Sinkin Sans 400 Regular",
@@ -73,16 +73,16 @@ graph "Power distrubution" {
       label="Graphics Switch 1",
       fillcolor="#B8D6D6"
     ];
-    "KVM_shelf_1" [
-      label="KVM shelf 1",
+    "KVM_Shelf_1" [
+      label="KVM Shelf 1",
       fillcolor="#ced3db"
     ];
-    "KVM_shelf_2" [
-      label="KVM shelf 2",
+    "KVM_Shelf_2" [
+      label="KVM Shelf 2",
       fillcolor="#ced3db"
     ];
-    "KVM_shelf_3" [
-      label="KVM shelf 3",
+    "KVM_Shelf_3" [
+      label="KVM Shelf 3",
       fillcolor="#ced3db"
     ];
     "Mains_in_1" [
@@ -300,13 +300,13 @@ graph "Power distrubution" {
   }
 
   // Connections
-  UPS -- KVM_shelf_1 [
+  UPS -- KVM_Shelf_1 [
     color="#333333", style=solid, penwidth=2.0
   ];
-  UPS -- KVM_shelf_2 [
+  UPS -- KVM_Shelf_2 [
     color="#333333", style=solid, penwidth=2.0
   ];
-  UPS -- KVM_shelf_3 [
+  UPS -- KVM_Shelf_3 [
     color="#333333", style=solid, penwidth=2.0
   ];
   R1_16A_PDU_B -- Operator_PC [

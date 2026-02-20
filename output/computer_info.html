@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Computer Info</title>
+    <style>
+        body {
+            font-family: 'Sinkin Sans', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #5af282;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .device-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .port-number {
+            background-color: #f0f0f0;
+            text-align: center;
+            width: 60px;
+        }
+        .mac-address {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .ip-address {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Computer Info</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Device Name</th>
+                <th>Part Number</th>
+                <th>Port #</th>
+                <th>Adapter/Network</th>
+                <th>MAC Address</th>
+                <th>IP Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="device-name">Operator PC</td>
+                <td>902-00008</td>
+                <td class="port-number">1</td>
+                <td>CompanyNetwork</td>
+                <td class="mac-address">00-14-5E-EA-4C-DD</td>
+                <td class="ip-address">None (DHCP)</td>
+            </tr>
+            <tr>
+                <td class="device-name">Operator PC</td>
+                <td>902-00008</td>
+                <td class="port-number">2</td>
+                <td>rFpro</td>
+                <td class="mac-address">00-14-5E-EA-4C-DC</td>
+                <td class="ip-address">192.168.2.80</td>
+            </tr>
+            <tr>
+                <td class="device-name">Operator PC</td>
+                <td>902-00008</td>
+                <td class="port-number">3</td>
+                <td>Host</td>
+                <td class="mac-address">00-14-5E-EA-4C-DF</td>
+                <td class="ip-address">192.168.7.2</td>
+            </tr>
+            <tr>
+                <td class="device-name">Operator PC</td>
+                <td>902-00008</td>
+                <td class="port-number">4</td>
+                <td>Telemetry</td>
+                <td class="mac-address">00-14-5E-EA-4C-DE</td>
+                <td class="ip-address">192.168.5.1</td>
+            </tr>
+            <tr>
+                <td class="device-name">Physics PC</td>
+                <td>908-00028</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.50, 59</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 1</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.11</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 2</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.12</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 3</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.13</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 4</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.14</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 5</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.15</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 6</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.16</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 7</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.17</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 8</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.18</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 9</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.19</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 10</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.20</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 11</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.21</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 12</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.22</td>
+            </tr>
+            <tr>
+                <td class="device-name">IG 13</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.23</td>
+            </tr>
+            <tr>
+                <td class="device-name">RVD 1</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.24</td>
+            </tr>
+            <tr>
+                <td class="device-name">RVD 2</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.25</td>
+            </tr>
+            <tr>
+                <td class="device-name">RVD 3</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.26</td>
+            </tr>
+            <tr>
+                <td class="device-name">Spectator IG</td>
+                <td>902-00011</td>
+                <td class="port-number">1</td>
+                <td>rFpro</td>
+                <td class="mac-address"></td>
+                <td class="ip-address">192.168.2.90</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
