@@ -15,7 +15,7 @@ def load_config():
 # -------------------------------------------------
 # Expand wiring clusters
 # -------------------------------------------------
-def expand_wiring_clusters(connections):
+def expand_wiring_clusters(connections, layer_edge_color="#333333"):
     """
     Expand wiring connection clusters into individual connections.
     
@@ -40,6 +40,11 @@ def expand_wiring_clusters(connections):
     - from: "PDU 1", to: "Device 1"
     - from: "PDU 2", to: "Device 2"
     - from: "PDU 3", to: "Device 3"
+    
+    Supports per-connection edge_color override:
+    - from: "Switch"
+      to: "Device"
+      edge_color: "#FF0000"  # Override layer color for this connection
     """
     expanded = []
     
@@ -52,6 +57,7 @@ def expand_wiring_clusters(connections):
             end = conn["end"]
             label = conn.get("label", "")
             color = conn.get("color", "")
+            edge_color = conn.get("edge_color", "")  # Per-connection override
             style = conn.get("style", "")
             width = conn.get("width", "")
             
@@ -94,6 +100,8 @@ def expand_wiring_clusters(connections):
                     expanded_conn["label"] = label
                 if color:
                     expanded_conn["color"] = color
+                if edge_color:
+                    expanded_conn["edge_color"] = edge_color
                 if style:
                     expanded_conn["style"] = style
                 if width:
@@ -505,14 +513,14 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     layer_name = layer["name"]
     connections_raw = layer.get("connections", [])
     
-    # Expand connection clusters
-    connections = expand_wiring_clusters(connections_raw)
-    
-    # Styling
-    edge_color = layer.get("edge_color", "#333333")
+    # Styling - layer defaults
+    layer_edge_color = layer.get("edge_color", "#333333")
     edge_style = layer.get("edge_style", "solid")
     edge_width = layer.get("edge_width", "2.0")
     font_size = layer.get("font_size", 12)
+    
+    # Expand connection clusters with layer edge color as fallback
+    connections = expand_wiring_clusters(connections_raw, layer_edge_color)
     
     lines = []
     
@@ -540,7 +548,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     lines.append("")
     
     lines.append("  edge [")
-    lines.append(f"    color=\"{edge_color}\",")
+    lines.append(f"    color=\"{layer_edge_color}\",")
     lines.append(f"    style={edge_style},")
     lines.append(f"    penwidth={edge_width}")
     lines.append("  ];")
@@ -637,12 +645,16 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         to_id = to_dev.replace(" ", "_").replace("/", "_")
         
         label = conn.get("label", "")
-        conn_color = conn.get("color", edge_color)
+        
+        # Use per-connection edge_color if set, otherwise use layer default
+        conn_edge_color = conn.get("edge_color", layer_edge_color)
+        
+        conn_color = conn.get("color", "")
         conn_style = conn.get("style", edge_style)
         conn_width = conn.get("width", edge_width)
         
         edge_attrs = [
-            f"color=\"{conn_color}\"",
+            f"color=\"{conn_edge_color}\"",
             f"style={conn_style}",
             f"penwidth={conn_width}"
         ]
@@ -652,8 +664,11 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
             edge_attrs.append(f"fontsize={font_size - 2}")
             edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
         
+        # Format edge attributes properly (commas added by join)
+        edge_attrs_str = ", ".join(edge_attrs)
+        
         lines.append(f"  {from_id} -- {to_id} [")
-        lines.append(f"    {', '.join(edge_attrs)}")
+        lines.append(f"    {edge_attrs_str}")
         lines.append("  ];")
     
     lines.append("")

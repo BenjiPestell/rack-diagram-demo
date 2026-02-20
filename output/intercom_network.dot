@@ -1,0 +1,58 @@
+graph "Intercom Network" {
+
+  graph [
+    bgcolor="white",
+    label="Intercom Network",
+    labelloc=t,
+    fontsize=16,
+    fontname="Sinkin Sans 400 Regular",
+    overlap=false,
+    sep=0.5
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontsize=12,
+    fontname="Sinkin Sans 400 Regular",
+    margin=0.2
+  ];
+
+  edge [
+    color="#FFD526",
+    style=solid,
+    penwidth=2.0
+  ];
+
+  // Devices grouped by rack
+
+  // Connections
+  Intercom_Switch -- Driver_beltpack [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_1 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_2 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_3 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_4 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_5 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_6 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Operator_room_beltpack_7 [
+    color="#FFD526", style=solid, penwidth=2.0
+  ];
+  Intercom_Switch -- Four_wire_interface [
+    color="#AAAAAA", style=solid, penwidth=2.0
+  ];
+
+}
