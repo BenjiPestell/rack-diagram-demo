@@ -15,78 +15,121 @@ def load_config():
 # -------------------------------------------------
 # Expand wiring clusters
 # -------------------------------------------------
-def expand_wiring_clusters(connections):
+def expand_wiring_clusters(connections, layer_edge_color="#333333"):
     """
     Expand wiring connection clusters into individual connections.
     
-    Cluster format:
+    Cluster format with single 'to':
     - from: "R4 16A PDU B"
       to: "IG {N}"
       start: 8
       end: 10
     
-    Expands to:
-    - from: "R4 16A PDU B", to: "IG 8"
-    - from: "R4 16A PDU B", to: "IG 9"
-    - from: "R4 16A PDU B", to: "IG 10"
+    Cluster format with multiple 'to' targets:
+    - from: "Graphics Switch"
+      to:
+        - "Operator PC"
+        - "Speedgoat"
+        - "Terrain Server"
     
-    Also supports:
-    - from: "PDU {N}"
-      to: "Device {N}"
+    Cluster format with multiple 'to' targets AND start/end:
+    - from: "Graphics Switch"
+      to:
+        - "IG {N}"
+        - "RVD {N}"
       start: 1
       end: 3
     
-    Which expands to:
-    - from: "PDU 1", to: "Device 1"
-    - from: "PDU 2", to: "Device 2"
-    - from: "PDU 3", to: "Device 3"
+    Expands to:
+    - from: "Graphics Switch", to: "IG 1"
+    - from: "Graphics Switch", to: "RVD 1"
+    - from: "Graphics Switch", to: "IG 2"
+    - from: "Graphics Switch", to: "RVD 2"
+    - etc.
+    
+    Supports per-connection edge_color override:
+    - from: "Switch"
+      to: "Device"
+      edge_color: "#FF0000"  # Override layer color for this connection
     """
     expanded = []
     
     for conn in connections:
-        # Check if this is a cluster definition
+        from_template = conn.get("from", "")
+        to_field = conn.get("to", "")
+        label = conn.get("label", "")
+        color = conn.get("color", "")
+        edge_color = conn.get("edge_color", "")
+        style = conn.get("style", "")
+        width = conn.get("width", "")
+        
+        # Normalize to_field to always be a list
+        if isinstance(to_field, str):
+            to_list = [to_field]
+        elif isinstance(to_field, list):
+            to_list = to_field
+        else:
+            to_list = [to_field]
+        
+        # Check if this is a cluster definition (with start/end)
         if "start" in conn and "end" in conn:
-            from_template = conn.get("from", "")
-            to_template = conn.get("to", "")
-            start = conn["start"]
-            end = conn["end"]
-            label = conn.get("label", "")
-            color = conn.get("color", "")
-            style = conn.get("style", "")
-            width = conn.get("width", "")
+            start = int(conn["start"]) if isinstance(conn["start"], str) else conn["start"]
+            end = int(conn["end"]) if isinstance(conn["end"], str) else conn["end"]
             
-            # Expand the cluster
-            for n in range(start, end + 1):
-                # Replace {N} placeholders
-                from_dev = from_template.replace("{N}", str(n))
-                to_dev = to_template.replace("{N}", str(n))
-                
-                # Replace {N+X} placeholders
-                match = re.search(r'\{N\+(\d+)\}', from_dev)
-                if match:
-                    offset = int(match.group(1))
-                    from_dev = from_dev.replace(match.group(0), str(n + offset))
-                
-                match = re.search(r'\{N\+(\d+)\}', to_dev)
-                if match:
-                    offset = int(match.group(1))
-                    to_dev = to_dev.replace(match.group(0), str(n + offset))
-                
-                # Replace {N-X} placeholders
-                match = re.search(r'\{N-(\d+)\}', from_dev)
-                if match:
-                    offset = int(match.group(1))
-                    from_dev = from_dev.replace(match.group(0), str(n - offset))
-                
-                match = re.search(r'\{N-(\d+)\}', to_dev)
-                if match:
-                    offset = int(match.group(1))
-                    to_dev = to_dev.replace(match.group(0), str(n - offset))
-                
-                # Create expanded connection
+            # Expand each 'to' template with the cluster range
+            for to_template in to_list:
+                for n in range(start, end + 1):
+                    # Replace {N} placeholders
+                    from_dev = from_template.replace("{N}", str(n))
+                    to_dev = to_template.replace("{N}", str(n))
+                    
+                    # Replace {N+X} placeholders
+                    match = re.search(r'\{N\+(\d+)\}', from_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        from_dev = from_dev.replace(match.group(0), str(n + offset))
+                    
+                    match = re.search(r'\{N\+(\d+)\}', to_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        to_dev = to_dev.replace(match.group(0), str(n + offset))
+                    
+                    # Replace {N-X} placeholders
+                    match = re.search(r'\{N-(\d+)\}', from_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        from_dev = from_dev.replace(match.group(0), str(n - offset))
+                    
+                    match = re.search(r'\{N-(\d+)\}', to_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        to_dev = to_dev.replace(match.group(0), str(n - offset))
+                    
+                    # Create expanded connection
+                    expanded_conn = {
+                        "from": from_dev,
+                        "to": to_dev
+                    }
+                    
+                    # Add optional fields if present
+                    if label:
+                        expanded_conn["label"] = label
+                    if color:
+                        expanded_conn["color"] = color
+                    if edge_color:
+                        expanded_conn["edge_color"] = edge_color
+                    if style:
+                        expanded_conn["style"] = style
+                    if width:
+                        expanded_conn["width"] = width
+                    
+                    expanded.append(expanded_conn)
+        else:
+            # No cluster - just handle multiple 'to' targets
+            for to_template in to_list:
                 expanded_conn = {
-                    "from": from_dev,
-                    "to": to_dev
+                    "from": from_template,
+                    "to": to_template
                 }
                 
                 # Add optional fields if present
@@ -94,15 +137,14 @@ def expand_wiring_clusters(connections):
                     expanded_conn["label"] = label
                 if color:
                     expanded_conn["color"] = color
+                if edge_color:
+                    expanded_conn["edge_color"] = edge_color
                 if style:
                     expanded_conn["style"] = style
                 if width:
                     expanded_conn["width"] = width
                 
                 expanded.append(expanded_conn)
-        else:
-            # Regular connection, add as-is
-            expanded.append(conn)
     
     return expanded
 
@@ -174,6 +216,87 @@ def expand_computer_info_clusters(computer_info_raw):
     return expanded
 
 # -------------------------------------------------
+# Expand external devices (with group support)
+# -------------------------------------------------
+def expand_external_devices(external_devices_config):
+    """
+    Expand external devices, handling both grouped and ungrouped formats.
+    
+    Ungrouped format (flat):
+    - name: "Device {N}"
+      start: 1
+      end: 3
+      type: pc
+    
+    Grouped format (nested):
+    - name: Operator Room
+      devices:
+        - name: "Operator room beltpack {N}"
+          start: 1
+          end: 7
+          type: beltpack
+    
+    Returns a dict with group names as keys and lists of expanded devices as values.
+    Ungrouped devices go into "default" group.
+    """
+    expanded = {}
+    
+    if not external_devices_config:
+        return expanded
+    
+    for entry in external_devices_config:
+        # Check if this is a grouped entry
+        if "devices" in entry:
+            group_name = entry.get("name", "External Devices")
+            group_devices = []
+            
+            # Expand devices within the group
+            for dev_template in entry.get("devices", []):
+                if "start" in dev_template and "end" in dev_template:
+                    # This is a cluster definition
+                    name_template = dev_template.get("name", "Device {N}")
+                    start = dev_template["start"]
+                    end = dev_template["end"]
+                    dev_type = dev_template.get("type", "")
+                    
+                    for n in range(start, end + 1):
+                        dev_name = name_template.replace("{N}", str(n))
+                        group_devices.append({
+                            "name": dev_name,
+                            "type": dev_type
+                        })
+                else:
+                    # Regular device entry
+                    group_devices.append(dev_template)
+            
+            expanded[group_name] = group_devices
+        else:
+            # Ungrouped device (flat format)
+            if "start" in entry and "end" in entry:
+                # This is a cluster definition
+                name_template = entry.get("name", "Device {N}")
+                start = entry["start"]
+                end = entry["end"]
+                dev_type = entry.get("type", "")
+                
+                group_devices = []
+                for n in range(start, end + 1):
+                    dev_name = name_template.replace("{N}", str(n))
+                    group_devices.append({
+                        "name": dev_name,
+                        "type": dev_type
+                    })
+                
+                expanded["External Devices"] = group_devices
+            else:
+                # Regular ungrouped device
+                if "External Devices" not in expanded:
+                    expanded["External Devices"] = []
+                expanded["External Devices"].append(entry)
+    
+    return expanded
+
+# -------------------------------------------------
 # Expand cluster definitions
 # -------------------------------------------------
 def expand_clusters(devices):
@@ -231,11 +354,16 @@ def expand_clusters(devices):
 # -------------------------------------------------
 # Build device map
 # -------------------------------------------------
-def build_device_map(racks_config):
+def build_device_map(racks_config, external_devices_config=None):
     """
     Build a map of device name -> {rack_id, device_info}
+    Includes both rack devices and external devices
+    
+    External devices are organized in groups
     """
     all_devices = {}
+    
+    # Add rack devices
     for rack_config in racks_config:
         rack_id = rack_config["rack"].get("id", "rack")
         
@@ -249,6 +377,19 @@ def build_device_map(racks_config):
                     dev_copy["rack_id"] = rack_id
                     dev_copy["side"] = side
                     all_devices[dev["name"]] = dev_copy
+    
+    # Add external devices
+    if external_devices_config:
+        expanded_ext_devices = expand_external_devices(external_devices_config)
+        
+        # Flatten all grouped devices into the device map
+        for group_name, devices in expanded_ext_devices.items():
+            for dev in devices:
+                dev_copy = dev.copy()
+                dev_copy["rack_id"] = "external"
+                dev_copy["external_group"] = group_name
+                dev_copy["side"] = "external"
+                all_devices[dev["name"]] = dev_copy
     
     return all_devices
 
@@ -505,14 +646,14 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     layer_name = layer["name"]
     connections_raw = layer.get("connections", [])
     
-    # Expand connection clusters
-    connections = expand_wiring_clusters(connections_raw)
-    
-    # Styling
-    edge_color = layer.get("edge_color", "#333333")
+    # Styling - layer defaults
+    layer_edge_color = layer.get("edge_color", "#333333")
     edge_style = layer.get("edge_style", "solid")
     edge_width = layer.get("edge_width", "2.0")
     font_size = layer.get("font_size", 12)
+    
+    # Expand connection clusters with layer edge color as fallback
+    connections = expand_wiring_clusters(connections_raw, layer_edge_color)
     
     lines = []
     
@@ -540,7 +681,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     lines.append("")
     
     lines.append("  edge [")
-    lines.append(f"    color=\"{edge_color}\",")
+    lines.append(f"    color=\"{layer_edge_color}\",")
     lines.append(f"    style={edge_style},")
     lines.append(f"    penwidth={edge_width}")
     lines.append("  ];")
@@ -576,6 +717,12 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
                 inter_rack_connections.append((from_dev, to_dev, from_rack, to_rack))
                 rack_connection_count[from_rack][from_dev] += 1
                 rack_connection_count[to_rack][to_dev] += 1
+        else:
+            # Log missing devices
+            if not from_info:
+                print(f"Warning: Device '{from_dev}' not found in device map (used in {layer_name})")
+            if not to_info:
+                print(f"Warning: Device '{to_dev}' not found in device map (used in {layer_name})")
     
     # Find central nodes per rack (any device with >1 connection)
     rack_central = defaultdict(list)
@@ -584,16 +731,33 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
             if conn_count > 1:
                 rack_central[rack_id].append(dev_name)
     
-    # Create nodes grouped by rack
-    lines.append("  // Devices grouped by rack")
+    # Create nodes grouped by rack and external groups
+    lines.append("  // Devices grouped by rack and external groups")
     lines.append("")
     
+    # Track external groups
+    external_groups = {}
     for rack_id in sorted(rack_devices.keys()):
+        if rack_id == "external":
+            # Organize external devices by group
+            for dev_name in sorted(rack_devices[rack_id]):
+                dev_info = all_devices.get(dev_name)
+                group_name = dev_info.get("external_group", "External Devices")
+                
+                if group_name not in external_groups:
+                    external_groups[group_name] = set()
+                external_groups[group_name].add(dev_name)
+    
+    # Create clusters for racks first
+    for rack_id in sorted(rack_devices.keys()):
+        if rack_id == "external":
+            continue  # Handle external separately
+        
         devices = rack_devices[rack_id]
         
         lines.append(f"  subgraph cluster_{rack_id} {{")
-        rack_label = rack_id.replace('rack', '').replace('_front', '').replace('_rear', '').strip('_')
-        lines.append(f"    label=\"Rack {rack_label}\";")
+        rack_label = f"Rack {rack_id.replace('rack', '').replace('_front', '').replace('_rear', '').strip('_')}"
+        lines.append(f"    label=\"{rack_label}\";")
         lines.append("    style=filled;")
         lines.append("    color=\"#F5F5F5\";")
         lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
@@ -628,6 +792,52 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         lines.append("  }")
         lines.append("")
     
+    # Create clusters for external device groups
+    for group_name in sorted(external_groups.keys()):
+        devices = external_groups[group_name]
+        
+        group_id = group_name.replace(" ", "_").replace("/", "_")
+        lines.append(f"  subgraph cluster_external_{group_id} {{")
+        lines.append(f"    label=\"{group_name}\";")
+        lines.append("    style=filled;")
+        lines.append("    color=\"#E0E0E0\";")
+        lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
+        lines.append("")
+        
+        # Central nodes
+        central_nodes = rack_central.get("external", [])
+        for dev_name in sorted(devices):
+            if dev_name not in central_nodes:
+                continue
+            
+            node_id = dev_name.replace(" ", "_").replace("/", "_")
+            dev_info = all_devices.get(dev_name)
+            color = get_device_color(dev_info, type_colors)
+            connection_count = rack_connection_count["external"][dev_name]
+            
+            lines.append(f"    \"{node_id}\" [")
+            lines.append(f"      label=\"{dev_name}\\n({connection_count} conn)\",")
+            lines.append(f"      fillcolor=\"{color}\",")
+            lines.append("      penwidth=2.5")
+            lines.append("    ];")
+        
+        # Peripheral nodes
+        for dev_name in sorted(devices):
+            if dev_name in central_nodes:
+                continue
+            
+            node_id = dev_name.replace(" ", "_").replace("/", "_")
+            dev_info = all_devices.get(dev_name)
+            color = get_device_color(dev_info, type_colors)
+            
+            lines.append(f"    \"{node_id}\" [")
+            lines.append(f"      label=\"{dev_name}\",")
+            lines.append(f"      fillcolor=\"{color}\"")
+            lines.append("    ];")
+        
+        lines.append("  }")
+        lines.append("")
+    
     # Create connections
     lines.append("  // Connections")
     for conn in connections:
@@ -637,12 +847,16 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         to_id = to_dev.replace(" ", "_").replace("/", "_")
         
         label = conn.get("label", "")
-        conn_color = conn.get("color", edge_color)
+        
+        # Use per-connection edge_color if set, otherwise use layer default
+        conn_edge_color = conn.get("edge_color", layer_edge_color)
+        
+        conn_color = conn.get("color", "")
         conn_style = conn.get("style", edge_style)
         conn_width = conn.get("width", edge_width)
         
         edge_attrs = [
-            f"color=\"{conn_color}\"",
+            f"color=\"{conn_edge_color}\"",
             f"style={conn_style}",
             f"penwidth={conn_width}"
         ]
@@ -652,8 +866,11 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
             edge_attrs.append(f"fontsize={font_size - 2}")
             edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
         
+        # Format edge attributes properly (commas added by join)
+        edge_attrs_str = ", ".join(edge_attrs)
+        
         lines.append(f"  {from_id} -- {to_id} [")
-        lines.append(f"    {', '.join(edge_attrs)}")
+        lines.append(f"    {edge_attrs_str}")
         lines.append("  ];")
     
     lines.append("")
@@ -838,7 +1055,9 @@ def main():
     
     if "racks" in config:
         racks_config = config["racks"]
-        all_devices = build_device_map(racks_config)
+        external_devices_config = config.get("external_devices", [])
+        
+        all_devices = build_device_map(racks_config, external_devices_config)
         
         # Generate single comprehensive layout
         layout_dot = generate_rack_layout_dot(racks_config, type_colors)
@@ -846,8 +1065,10 @@ def main():
             f.write(layout_dot)
         print("Generated output/rack_layout.dot")
         
-        # Build device map for wiring (from both front and rear)
+        # Build device map for wiring (from both front and rear + external)
         all_devices = {}
+        
+        # Add rack devices
         for rack_config in racks_config:
             rack_id = rack_config["rack"].get("id", "rack")
             
@@ -858,7 +1079,20 @@ def main():
                         dev["rack_id"] = rack_id
                         all_devices[dev["name"]] = dev
         
-        print(f"Device map built with {len(all_devices)} devices")
+        # Add external devices (organized by group)
+        if external_devices_config:
+            expanded_ext_devices = expand_external_devices(external_devices_config)
+            for group_name, devices in expanded_ext_devices.items():
+                for dev in devices:
+                    dev_copy = dev.copy()
+                    dev_copy["rack_id"] = "external"
+                    dev_copy["external_group"] = group_name
+                    all_devices[dev["name"]] = dev_copy
+        
+        external_device_count = len(all_devices) - sum(len(expand_clusters(rack_config.get(side, []))) 
+                                                        for rack_config in racks_config 
+                                                        for side in ['front', 'rear'])
+        print(f"Device map built with {len(all_devices)} devices ({external_device_count} external)")
 
         layers = config.get("wiring_layers", [])
         for layer in layers:

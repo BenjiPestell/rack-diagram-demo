@@ -24,7 +24,7 @@ graph "Host Subnet" {
     penwidth=2.0
   ];
 
-  // Devices grouped by rack
+  // Devices grouped by rack and external groups
 
   subgraph cluster_rack1 {
     label="Rack 1";
