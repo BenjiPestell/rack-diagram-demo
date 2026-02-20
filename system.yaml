@@ -5,6 +5,7 @@ type_colors:
   cable management: "#C4C4C4"
   switch: "#B8D6D6"
   patch: "#ecf0aa"
+  beltpack: "#AAAAAA"
 
 racks:
   # Rack 1
@@ -69,6 +70,22 @@ racks:
         start_u: 13
         units: 1
         type: switch
+
+      - name: Four wire interface
+        type: beltpack
+
+external_devices:
+  - name: Operator Room
+    devices:
+      - name: "Operator room beltpack {N}"
+        start: 1
+        end: 7
+        type: beltpack
+
+  - name: Chassis
+    devices:
+      - name: Driver beltpack
+        type: beltpack
 
 wiring_layers:
   # Visuals subnet

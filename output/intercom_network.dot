@@ -24,7 +24,72 @@ graph "Intercom Network" {
     penwidth=2.0
   ];
 
-  // Devices grouped by rack
+  // Devices grouped by rack and external groups
+
+  subgraph cluster_rack1 {
+    label="Rack 1";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "Intercom_Switch" [
+      label="Intercom Switch\n(9 conn)",
+      fillcolor="#B8D6D6",
+      penwidth=2.5
+    ];
+    "Four_wire_interface" [
+      label="Four wire interface",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  subgraph cluster_external_Chassis {
+    label="Chassis";
+    style=filled;
+    color="#E0E0E0";
+    fontname="Sinkin Sans 400 Regular";
+
+    "Driver_beltpack" [
+      label="Driver beltpack",
+      fillcolor="#AAAAAA"
+    ];
+  }
+
+  subgraph cluster_external_Operator_Room {
+    label="Operator Room";
+    style=filled;
+    color="#E0E0E0";
+    fontname="Sinkin Sans 400 Regular";
+
+    "Operator_room_beltpack_1" [
+      label="Operator room beltpack 1",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_2" [
+      label="Operator room beltpack 2",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_3" [
+      label="Operator room beltpack 3",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_4" [
+      label="Operator room beltpack 4",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_5" [
+      label="Operator room beltpack 5",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_6" [
+      label="Operator room beltpack 6",
+      fillcolor="#AAAAAA"
+    ];
+    "Operator_room_beltpack_7" [
+      label="Operator room beltpack 7",
+      fillcolor="#AAAAAA"
+    ];
+  }
 
   // Connections
   Intercom_Switch -- Driver_beltpack [
