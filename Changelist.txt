@@ -4,4 +4,3 @@
 - Support for patch panel (some ethernet connections)
 - Add support for multiple "to:"s for a given "from:" in wiring definition
 - (can you add label text to lines? i.e. XLR3 to 3.5mm jack?)
-- add a container for external hardware that isn't intended to go in any rack
