@@ -2,4 +2,5 @@
 - Add support for power adapters for LV devices
 - Graph inter-rack connections serperately
 - Support for patch panel (some ethernet connections)
-- Add support for multiple "to:"s for a given "from:" in wiring definition
+- Auto cable-length calculation & purchasing output
+- Port / power capacity / usage
