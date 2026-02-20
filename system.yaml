@@ -327,19 +327,12 @@ wiring_layers:
 
       # Rack 1 - Graphics Switch 1 to devices
       - from: Graphics Switch 1
-        to: Operator PC
-
-      - from: Graphics Switch 1
-        to: Physics PC
-
-      - from: Graphics Switch 1
-        to: Spectator IG
-
-      - from: Graphics Switch 1
-        to: Telemetry
-
-      - from: Graphics Switch 1
-        to: dSPACE
+        to:
+          - Operator PC
+          - Physics PC
+          - Spectator IG
+          - Telemetry
+          - dSPACE
 
       # Rack 2 - Graphics Switch 2 to devices (clusters)
       - from: Graphics Switch 2
@@ -374,47 +367,35 @@ wiring_layers:
         end: 3
 
       - from: R1 16A PDU B
-        to: Operator PC 
-        
-      - from: R1 16A PDU B
-        to: Physics PC
-
-      - from: R1 16A PDU B
-        to: Spectator IG
+        to:
+          - Operator PC
+          - Physics PC
+          - Spectator IG
         
       - from: R1 16A PDU C
-        to: Telemetry
-        
-      - from: R1 16A PDU C
-        to: dSPACE Controller
-        
-      - from: R1 16A PDU C
-        to: dSPACE
+        to: 
+          - Telemetry
+          - dSPACE Controller
+          - dSPACE
 
       # Rack 1 Rear
       - from: Mains in 1
         to: Vertical PDU 1
 
       - from: Vertical PDU 1
-        to: R1 16A PDU A 
-
-      - from: Vertical PDU 1
-        to: R1 16A PDU B 
-
-      - from: Vertical PDU 1
-        to: R1 16A PDU C 
+        to: 
+          - R1 16A PDU A
+          - R1 16A PDU B
+          - R1 16A PDU C
 
       - from: Vertical PDU 1
         to: UPS
 
       - from: R1 16A PDU A
-        to: Company Network Switch
-
-      - from: R1 16A PDU A
-        to: CCTV Switch
-        
-      - from: R1 16A PDU A
-        to: Audio Switch
+        to: 
+          - Company Network Switch
+          - CCTV Switch
+          - Audio Switch
 
       - from: R1 16A PDU C
         to: Graphics Switch 1
@@ -438,13 +419,10 @@ wiring_layers:
         to: Vertical PDU 2 
 
       - from: Vertical PDU 2
-        to: R2 16A PDU A
-
-      - from: Vertical PDU 2
-        to: R2 16A PDU B
-
-      - from: Vertical PDU 2
-        to: R2 16A PDU C
+        to: 
+          - R2 16A PDU A
+          - R2 16A PDU B
+          - R2 16A PDU C
 
       - from: R2 16A PDU C
         to: Graphics Switch 2
@@ -468,13 +446,10 @@ wiring_layers:
         to: Vertical PDU 3 
 
       - from: Vertical PDU 3
-        to: R3 16A PDU A
-
-      - from: Vertical PDU 3
-        to: R3 16A PDU B
-
-      - from: Vertical PDU 3
-        to: R3 16A PDU C
+        to:
+          - R3 16A PDU A
+          - R3 16A PDU B
+          - R3 16A PDU C
 
       - from: R3 16A PDU C
         to: Graphics Switch 3
@@ -498,13 +473,10 @@ wiring_layers:
         to: Vertical PDU 4
 
       - from: Vertical PDU 4
-        to: R4 16A PDU A
-
-      - from: Vertical PDU 4
-        to: R4 16A PDU B
-
-      - from: Vertical PDU 4
-        to: R4 16A PDU C
+        to: 
+          - R4 16A PDU A
+          - R4 16A PDU B
+          - R4 16A PDU C
 
       - from: R4 16A PDU C
         to: Graphics Switch 4
