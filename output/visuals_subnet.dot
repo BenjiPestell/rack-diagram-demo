@@ -26,6 +26,51 @@ graph "Visuals Subnet" {
 
   // Devices grouped by rack and external groups
 
+  subgraph cluster_rack1 {
+    label="Rack 1";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "Graphics_Switch" [
+      label="Graphics Switch\n(6 conn)",
+      fillcolor="#B8D6D6",
+      penwidth=2.5
+    ];
+    "Operator_PC" [
+      label="Operator PC",
+      fillcolor="#E8F4F8"
+    ];
+    "Speedgoat" [
+      label="Speedgoat",
+      fillcolor="#E8F4F8"
+    ];
+    "Terrain_Server" [
+      label="Terrain Server",
+      fillcolor="#E8F4F8"
+    ];
+  }
+
+  subgraph cluster_rack2 {
+    label="Rack 2";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "IG_1" [
+      label="IG 1",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_2" [
+      label="IG 2",
+      fillcolor="#E8F4F8"
+    ];
+    "IG_3" [
+      label="IG 3",
+      fillcolor="#E8F4F8"
+    ];
+  }
+
   // Connections
   Graphics_Switch -- Operator_PC [
     color="#b551a9", style=solid, penwidth=2.0
@@ -34,6 +79,15 @@ graph "Visuals Subnet" {
     color="#b551a9", style=solid, penwidth=2.0
   ];
   Graphics_Switch -- Terrain_Server [
+    color="#b551a9", style=solid, penwidth=2.0
+  ];
+  Graphics_Switch -- IG_1 [
+    color="#b551a9", style=solid, penwidth=2.0
+  ];
+  Graphics_Switch -- IG_2 [
+    color="#b551a9", style=solid, penwidth=2.0
+  ];
+  Graphics_Switch -- IG_3 [
     color="#b551a9", style=solid, penwidth=2.0
   ];
 

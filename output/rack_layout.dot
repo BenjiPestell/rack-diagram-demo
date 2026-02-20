@@ -339,11 +339,341 @@ digraph rack_layout {
 >
   ];
 
+  rack2_front [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#5af282"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Front</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 1</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 2</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="4" BGCOLOR="#E8F4F8" WIDTH="200"><FONT POINT-SIZE="17.5" FACE="Sinkin Sans 400 Regular"><B>IG 3</B></FONT><BR/><FONT POINT-SIZE="15" FACE="Sinkin Sans 400 Regular">4U</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
+  rack2_rear [
+    label=<
+
+<TABLE
+  BORDER="2"
+  CELLBORDER="1"
+  CELLSPACING="0"
+  CELLPADDING="4"
+  WIDTH="240"
+>
+
+<TR>
+<TD COLSPAN="3" BGCOLOR="#5af282"><FONT POINT-SIZE="16" FACE="Sinkin Sans 400 Regular"><B>Rack 2 Rear</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">37</FONT></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#FFFFFF" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>Nada</B></FONT></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">36</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">35</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">34</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">33</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">32</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">31</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">30</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">29</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">28</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">27</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">26</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">25</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">24</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">23</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">22</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">21</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">20</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">19</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">18</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">17</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">16</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">15</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">14</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">13</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">10</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">9</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">8</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">7</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">6</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">5</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">4</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">3</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">2</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+<TR>
+<TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
+<TD COLSPAN="2"></TD>
+</TR>
+
+</TABLE>
+
+>
+  ];
+
   // Spacing between rack pairs
+  spacer_0 [shape=point, style=invis, width=1.6, height=0, fixedsize=true];
 
   // Horizontal layout with spacing
-  { rank=same; "rack1_front"; "rack1_rear"; }
+  { rank=same; "rack1_front"; "rack1_rear"; spacer_0; "rack2_front"; "rack2_rear"; }
 
   // Invisible edges to enforce spacing
+  rack1_rear -> spacer_0 [style=invis, minlen=1];
+  spacer_0 -> rack2_front [style=invis, minlen=1];
 
 }

@@ -19,27 +19,33 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
     """
     Expand wiring connection clusters into individual connections.
     
-    Cluster format:
+    Cluster format with single 'to':
     - from: "R4 16A PDU B"
       to: "IG {N}"
       start: 8
       end: 10
     
-    Expands to:
-    - from: "R4 16A PDU B", to: "IG 8"
-    - from: "R4 16A PDU B", to: "IG 9"
-    - from: "R4 16A PDU B", to: "IG 10"
+    Cluster format with multiple 'to' targets:
+    - from: "Graphics Switch"
+      to:
+        - "Operator PC"
+        - "Speedgoat"
+        - "Terrain Server"
     
-    Also supports:
-    - from: "PDU {N}"
-      to: "Device {N}"
+    Cluster format with multiple 'to' targets AND start/end:
+    - from: "Graphics Switch"
+      to:
+        - "IG {N}"
+        - "RVD {N}"
       start: 1
       end: 3
     
-    Which expands to:
-    - from: "PDU 1", to: "Device 1"
-    - from: "PDU 2", to: "Device 2"
-    - from: "PDU 3", to: "Device 3"
+    Expands to:
+    - from: "Graphics Switch", to: "IG 1"
+    - from: "Graphics Switch", to: "RVD 1"
+    - from: "Graphics Switch", to: "IG 2"
+    - from: "Graphics Switch", to: "RVD 2"
+    - etc.
     
     Supports per-connection edge_color override:
     - from: "Switch"
@@ -49,50 +55,81 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
     expanded = []
     
     for conn in connections:
-        # Check if this is a cluster definition
+        from_template = conn.get("from", "")
+        to_field = conn.get("to", "")
+        label = conn.get("label", "")
+        color = conn.get("color", "")
+        edge_color = conn.get("edge_color", "")
+        style = conn.get("style", "")
+        width = conn.get("width", "")
+        
+        # Normalize to_field to always be a list
+        if isinstance(to_field, str):
+            to_list = [to_field]
+        elif isinstance(to_field, list):
+            to_list = to_field
+        else:
+            to_list = [to_field]
+        
+        # Check if this is a cluster definition (with start/end)
         if "start" in conn and "end" in conn:
-            from_template = conn.get("from", "")
-            to_template = conn.get("to", "")
-            start = conn["start"]
-            end = conn["end"]
-            label = conn.get("label", "")
-            color = conn.get("color", "")
-            edge_color = conn.get("edge_color", "")  # Per-connection override
-            style = conn.get("style", "")
-            width = conn.get("width", "")
+            start = int(conn["start"]) if isinstance(conn["start"], str) else conn["start"]
+            end = int(conn["end"]) if isinstance(conn["end"], str) else conn["end"]
             
-            # Expand the cluster
-            for n in range(start, end + 1):
-                # Replace {N} placeholders
-                from_dev = from_template.replace("{N}", str(n))
-                to_dev = to_template.replace("{N}", str(n))
-                
-                # Replace {N+X} placeholders
-                match = re.search(r'\{N\+(\d+)\}', from_dev)
-                if match:
-                    offset = int(match.group(1))
-                    from_dev = from_dev.replace(match.group(0), str(n + offset))
-                
-                match = re.search(r'\{N\+(\d+)\}', to_dev)
-                if match:
-                    offset = int(match.group(1))
-                    to_dev = to_dev.replace(match.group(0), str(n + offset))
-                
-                # Replace {N-X} placeholders
-                match = re.search(r'\{N-(\d+)\}', from_dev)
-                if match:
-                    offset = int(match.group(1))
-                    from_dev = from_dev.replace(match.group(0), str(n - offset))
-                
-                match = re.search(r'\{N-(\d+)\}', to_dev)
-                if match:
-                    offset = int(match.group(1))
-                    to_dev = to_dev.replace(match.group(0), str(n - offset))
-                
-                # Create expanded connection
+            # Expand each 'to' template with the cluster range
+            for to_template in to_list:
+                for n in range(start, end + 1):
+                    # Replace {N} placeholders
+                    from_dev = from_template.replace("{N}", str(n))
+                    to_dev = to_template.replace("{N}", str(n))
+                    
+                    # Replace {N+X} placeholders
+                    match = re.search(r'\{N\+(\d+)\}', from_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        from_dev = from_dev.replace(match.group(0), str(n + offset))
+                    
+                    match = re.search(r'\{N\+(\d+)\}', to_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        to_dev = to_dev.replace(match.group(0), str(n + offset))
+                    
+                    # Replace {N-X} placeholders
+                    match = re.search(r'\{N-(\d+)\}', from_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        from_dev = from_dev.replace(match.group(0), str(n - offset))
+                    
+                    match = re.search(r'\{N-(\d+)\}', to_dev)
+                    if match:
+                        offset = int(match.group(1))
+                        to_dev = to_dev.replace(match.group(0), str(n - offset))
+                    
+                    # Create expanded connection
+                    expanded_conn = {
+                        "from": from_dev,
+                        "to": to_dev
+                    }
+                    
+                    # Add optional fields if present
+                    if label:
+                        expanded_conn["label"] = label
+                    if color:
+                        expanded_conn["color"] = color
+                    if edge_color:
+                        expanded_conn["edge_color"] = edge_color
+                    if style:
+                        expanded_conn["style"] = style
+                    if width:
+                        expanded_conn["width"] = width
+                    
+                    expanded.append(expanded_conn)
+        else:
+            # No cluster - just handle multiple 'to' targets
+            for to_template in to_list:
                 expanded_conn = {
-                    "from": from_dev,
-                    "to": to_dev
+                    "from": from_template,
+                    "to": to_template
                 }
                 
                 # Add optional fields if present
@@ -108,9 +145,6 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
                     expanded_conn["width"] = width
                 
                 expanded.append(expanded_conn)
-        else:
-            # Regular connection, add as-is
-            expanded.append(conn)
     
     return expanded
 
@@ -683,6 +717,12 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
                 inter_rack_connections.append((from_dev, to_dev, from_rack, to_rack))
                 rack_connection_count[from_rack][from_dev] += 1
                 rack_connection_count[to_rack][to_dev] += 1
+        else:
+            # Log missing devices
+            if not from_info:
+                print(f"Warning: Device '{from_dev}' not found in device map (used in {layer_name})")
+            if not to_info:
+                print(f"Warning: Device '{to_dev}' not found in device map (used in {layer_name})")
     
     # Find central nodes per rack (any device with >1 connection)
     rack_central = defaultdict(list)

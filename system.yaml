@@ -40,6 +40,10 @@ racks:
         units: 1
         type: pdu
 
+      - name: Graphics Switch
+        start_u: 12
+        type: switch
+
     rear:
       - name: Fan tray
         start_u: 37
@@ -74,6 +78,28 @@ racks:
       - name: Four wire interface
         type: beltpack
 
+  # Rack 2
+  - rack:
+      id: rack2
+      name: Rack 2
+      total_u: 37
+    
+    front:
+      - name: "IG {N}"
+        start_u: 37
+        start: 1
+        end: 3
+        units: 4
+        spacing: 0
+        type: pc
+
+    rear:
+      - name: Nada
+        start_u: 37
+        units: 1
+    
+
+
 external_devices:
   - name: Operator Room
     devices:
@@ -93,13 +119,16 @@ wiring_layers:
     edge_color: "#b551a9"
     connections:
       - from: Graphics Switch
-        to: Operator PC
+        to:
+          - Operator PC
+          - Speedgoat
+          - Terrain Server
 
       - from: Graphics Switch
-        to: Speedgoat
-
-      - from: Graphics Switch
-        to: Terrain Server
+        to: 
+          - "IG {N}"
+        start: 1
+        end: 3
 
   - name: Intercom Network
     edge_color: "#FFD526"
