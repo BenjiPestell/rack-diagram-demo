@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cable Length Calculations</title>
+    <style>
+        body {
+            font-family: 'Sinkin Sans', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        th {
+            background-color: #5af282;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .network {
+            font-weight: bold;
+            color: #333;
+        }
+        .metric {
+            text-align: right;
+            font-family: monospace;
+        }
+        .total {
+            background-color: #4297a1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cable Length Calculations</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Network</th>
+                <th>From</th>
+                <th>To</th>
+                <th>From Rack</th>
+                <th>To Rack</th>
+                <th class="metric">U Distance</th>
+                <th class="metric">Unit Length (m)</th>
+                <th class="metric">F2B (m)</th>
+                <th class="metric">Inter-rack (m)</th>
+                <th class="metric">Slack (m)</th>
+                <th class="metric total">Min Length (m)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>Graphics Switch 2</td>
+                <td>Rack 1</td>
+                <td>Rack 2</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.000</td>
+                <td class="metric">2.5</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">3.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>Graphics Switch 3</td>
+                <td>Rack 2</td>
+                <td>Rack 3</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.000</td>
+                <td class="metric">2.5</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">3.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>Graphics Switch 4</td>
+                <td>Rack 3</td>
+                <td>Rack 4</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.000</td>
+                <td class="metric">2.5</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">3.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>Operator PC</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">21</td>
+                <td class="metric">0.945</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>Physics PC</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">17</td>
+                <td class="metric">0.765</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>Spectator IG</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">13</td>
+                <td class="metric">0.585</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>Telemetry</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">7</td>
+                <td class="metric">0.315</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 1</td>
+                <td>dSPACE</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>RVD 1</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">14</td>
+                <td class="metric">0.630</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>RVD 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">10</td>
+                <td class="metric">0.450</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>RVD 3</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>IG 1</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 2</td>
+                <td>IG 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>IG 3</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">14</td>
+                <td class="metric">0.630</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>IG 4</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">10</td>
+                <td class="metric">0.450</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>IG 5</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>IG 6</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 3</td>
+                <td>IG 7</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 8</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">18</td>
+                <td class="metric">0.810</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 9</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">14</td>
+                <td class="metric">0.630</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 10</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">10</td>
+                <td class="metric">0.450</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 11</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 12</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Visuals Subnet</td>
+                <td>Graphics Switch 4</td>
+                <td>IG 13</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>UPS</td>
+                <td>KVM Shelf 1</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">1</td>
+                <td class="metric">0.045</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>UPS</td>
+                <td>KVM Shelf 2</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>UPS</td>
+                <td>KVM Shelf 3</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">3</td>
+                <td class="metric">0.135</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU B</td>
+                <td>Operator PC</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU B</td>
+                <td>Physics PC</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU B</td>
+                <td>Spectator IG</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU C</td>
+                <td>Telemetry</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">9</td>
+                <td class="metric">0.405</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU C</td>
+                <td>dSPACE Controller</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU C</td>
+                <td>dSPACE</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Mains in 1</td>
+                <td>Vertical PDU 1</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 1</td>
+                <td>R1 16A PDU A</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 1</td>
+                <td>R1 16A PDU B</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 1</td>
+                <td>R1 16A PDU C</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 1</td>
+                <td>UPS</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU A</td>
+                <td>Company Network Switch</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">1</td>
+                <td class="metric">0.045</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU A</td>
+                <td>CCTV Switch</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU A</td>
+                <td>Audio Switch</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R1 16A PDU C</td>
+                <td>Graphics Switch 1</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU A</td>
+                <td>Customer 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">14</td>
+                <td class="metric">0.630</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU B</td>
+                <td>RVD 1</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU B</td>
+                <td>RVD 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">8</td>
+                <td class="metric">0.360</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU B</td>
+                <td>RVD 3</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">12</td>
+                <td class="metric">0.540</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU C</td>
+                <td>IG 1</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU C</td>
+                <td>IG 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Mains in 2</td>
+                <td>Vertical PDU 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 2</td>
+                <td>R2 16A PDU A</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 2</td>
+                <td>R2 16A PDU B</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 2</td>
+                <td>R2 16A PDU C</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R2 16A PDU C</td>
+                <td>Graphics Switch 2</td>
+                <td>Rack 2</td>
+                <td>Rack 2</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU A</td>
+                <td>Customer 3</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">14</td>
+                <td class="metric">0.630</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU B</td>
+                <td>IG 3</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU B</td>
+                <td>IG 4</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">8</td>
+                <td class="metric">0.360</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU B</td>
+                <td>IG 5</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">12</td>
+                <td class="metric">0.540</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU C</td>
+                <td>IG 6</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU C</td>
+                <td>IG 7</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Mains in 3</td>
+                <td>Vertical PDU 3</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 3</td>
+                <td>R3 16A PDU A</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 3</td>
+                <td>R3 16A PDU B</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 3</td>
+                <td>R3 16A PDU C</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R3 16A PDU C</td>
+                <td>Graphics Switch 3</td>
+                <td>Rack 3</td>
+                <td>Rack 3</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU A</td>
+                <td>Customer 4</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">3</td>
+                <td class="metric">0.135</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU B</td>
+                <td>IG 8</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU B</td>
+                <td>IG 9</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU B</td>
+                <td>IG 10</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">8</td>
+                <td class="metric">0.360</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU C</td>
+                <td>IG 11</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">8</td>
+                <td class="metric">0.360</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU C</td>
+                <td>IG 12</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">4</td>
+                <td class="metric">0.180</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU C</td>
+                <td>IG 13</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Mains in 4</td>
+                <td>Vertical PDU 4</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 4</td>
+                <td>R4 16A PDU A</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 4</td>
+                <td>R4 16A PDU B</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>Vertical PDU 4</td>
+                <td>R4 16A PDU C</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Power Distribution</td>
+                <td>R4 16A PDU C</td>
+                <td>Graphics Switch 4</td>
+                <td>Rack 4</td>
+                <td>Rack 4</td>
+                <td class="metric">2</td>
+                <td class="metric">0.090</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Host Subnet</td>
+                <td>Operator PC</td>
+                <td>dSPACE Controller</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">17</td>
+                <td class="metric">0.765</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.00</td>
+            </tr>
+            <tr>
+                <td class="network">Host Subnet</td>
+                <td>dSPACE Controller</td>
+                <td>dSPACE</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">6</td>
+                <td class="metric">0.270</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+            <tr>
+                <td class="network">Company Network</td>
+                <td>Company Network Switch</td>
+                <td>Operator PC</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">17</td>
+                <td class="metric">0.765</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">1.50</td>
+            </tr>
+            <tr>
+                <td class="network">Company Network</td>
+                <td>Company Network Switch</td>
+                <td>Telemetry</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">31</td>
+                <td class="metric">1.395</td>
+                <td class="metric">0.200</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">2.00</td>
+            </tr>
+            <tr>
+                <td class="network">Company Network</td>
+                <td>Company Net in</td>
+                <td>Company Network Switch</td>
+                <td>Rack 1</td>
+                <td>Rack 1</td>
+                <td class="metric">0</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.000</td>
+                <td class="metric">0.0</td>
+                <td class="metric">0.200</td>
+                <td class="metric total">0.50</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

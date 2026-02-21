@@ -363,6 +363,13 @@ wiring_layers:
   # Power distribution
   - name: Power Distribution
     connections:
+      # #Inter-rack connections
+      # - from: UPS
+      #   to: 
+      #     - Graphics Switch 2
+      #     - Graphics Switch 3
+      #     - Graphics Switch 4
+
       # Rack 1 Front
       - from: UPS
         to: "KVM Shelf {N}"
