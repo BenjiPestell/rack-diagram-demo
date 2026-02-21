@@ -1,3 +1,6 @@
+inter_rack_distance: 2.5  # m
+cable_slack_length: 0.2  # m
+
 type_colors:
   pc: "#E8F4F8"
   pdu: "#AAAAAA"
