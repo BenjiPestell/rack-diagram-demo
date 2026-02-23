@@ -12,7 +12,7 @@ def main():
 
     # Run generate.py
     print("Running generate.py...")
-    result = subprocess.run([sys.executable, "generate.py"])
+    result = subprocess.run([sys.executable, "src/main.py"])
 
     # Stop if generate.py failed
     if result.returncode != 0:
