@@ -73,7 +73,7 @@ def hex_to_color_name(hex_color):
 
     # Grayscale detection
     if s < 0.25:
-        if v < 0.18:
+        if v < 0.2:
             result = "Black"
         elif v > 0.9:
             result = "White"
