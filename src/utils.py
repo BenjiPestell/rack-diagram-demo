@@ -26,7 +26,7 @@ def get_device_color(device, type_colors):
         if device_type in type_colors:
             return type_colors[device_type]
     
-    return "#FFFFFF"
+    result = "#FFFFFF"
 
 # -------------------------------------------------
 # Color utilities
@@ -39,7 +39,9 @@ def hex_to_color_name(hex_color):
     """
 
     if not hex_color:
-        return "Unknown"
+        return "Unknown", "#FFFFFF"
+
+    result = None    
 
     hex_color = hex_color.lstrip("#")
 
@@ -52,14 +54,14 @@ def hex_to_color_name(hex_color):
         hex_color = "".join(c * 2 for c in hex_color)
 
     if len(hex_color) != 6:
-        return "Unknown"
+        result = "Unknown"
 
     try:
         r = int(hex_color[0:2], 16)
         g = int(hex_color[2:4], 16)
         b = int(hex_color[4:6], 16)
     except ValueError:
-        return "Unknown"
+        result = "Unknown"
 
     # Normalize to 0–1
     r, g, b = r / 255, g / 255, b / 255
@@ -70,30 +72,35 @@ def hex_to_color_name(hex_color):
     h = h * 360  # degrees
 
     # Grayscale detection
-    if s < 0.15:
-        if v < 0.2:
-            return "Black"
+    if s < 0.25:
+        if v < 0.18:
+            result = "Black"
         elif v > 0.9:
-            return "White"
+            result = "White"
         else:
-            return "Gray"
+            result = "Grey"
 
-    # Color classification by hue
-    if h < 15 or h >= 345:
-        return "Red"
-    elif h < 45:
-        return "Orange"
-    elif h < 65:
-        return "Yellow"
-    elif h < 150:
-        return "Green"
-    elif h < 200:
-        return "Cyan"
-    elif h < 260:
-        return "Blue"
-    elif h < 290:
-        return "Purple"
-    elif h < 330:
-        return "Magenta"
-    else:
-        return "Red"
+    if not result:
+        # Color classification by hue
+        if h < 15 or h >= 345:
+            result = "Red"
+        elif h < 45:
+            result = "Orange"
+        elif h < 65:
+            result = "Yellow"
+        elif h < 150:
+            result = "Green"
+        elif h < 200:
+            result = "Cyan"
+        elif h < 260:
+            result = "Blue"
+        elif h < 290:
+            result = "Purple"
+        elif h < 330:
+            result = "Magenta"
+        else:
+            result = "Red"
+
+    return result, f"#{hex_color.upper()}"
+
+print(hex_to_color_name("#323232"))

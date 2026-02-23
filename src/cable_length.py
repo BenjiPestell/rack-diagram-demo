@@ -353,8 +353,8 @@ def generate_cable_summary_csv(all_devices, racks_config, wiring_layers, config,
                     continue
                 
                 # Get color - prefer connection color, fall back to layer color
-                cable_color = conn.get("edge_color", layer.get("edge_color", ""))
-                color_name = hex_to_color_name(cable_color)
+                cable_color = conn.get("edge_color", layer.get("edge_color", "323232"))
+                color_name, _ = hex_to_color_name(cable_color)
                 # color_name = cable_color  # Use hex code directly
                 
                 cable_length = cable_data["total_length"]
@@ -445,13 +445,14 @@ def generate_cable_summary_html(all_devices, racks_config, wiring_layers, config
                 
                 # Get color - prefer connection color, fall back to layer color
                 cable_color = conn.get("edge_color", layer.get("edge_color", "#323232"))
-                color_name = hex_to_color_name(cable_color)
+                color_name, _ = hex_to_color_name(cable_color)
                 # color_name = cable_color  # Use hex code directly
                 
                 cable_length = cable_data["total_length"]
                 
                 # Initialize cable type + color if needed
-                cable_key = (cable_type, color_name)
+                # Store both color name and hex code
+                cable_key = (cable_type, color_name, cable_color)
                 if cable_key not in cable_summary:
                     cable_summary[cable_key] = {}
                 
@@ -565,12 +566,12 @@ def generate_cable_summary_html(all_devices, racks_config, wiring_layers, config
     total_quantity_all = 0
     total_length_all = 0
     
-    # Group by cable type first, then by color
+    # Group by cable type first, then by color with hex codes
     cable_by_type = {}
-    for (cable_type, color_name), lengths in cable_summary.items():
+    for (cable_type, color_name, color_hex), lengths in cable_summary.items():
         if cable_type not in cable_by_type:
             cable_by_type[cable_type] = {}
-        cable_by_type[cable_type][color_name] = lengths
+        cable_by_type[cable_type][(color_name, color_hex)] = lengths
     
     for cable_type in sorted(cable_by_type.keys()):
         colors = cable_by_type[cable_type]
@@ -582,11 +583,25 @@ def generate_cable_summary_html(all_devices, racks_config, wiring_layers, config
 """
         
         # Add subsection for each color
-        for color_name in sorted(colors.keys()):
-            lengths = colors[color_name]
+        for (color_name, color_hex) in sorted(colors.keys()):
+            lengths = colors[(color_name, color_hex)]
             
-            html += f"""        <div style="margin-top: 15px; padding: 10px; background-color: #f5f5f5; border-left: 4px solid #5af282;">
-            <strong>{color_name}</strong>
+            # Determine text color for contrast
+            try:
+                r = int(color_hex[1:3], 16)
+                g = int(color_hex[3:5], 16)
+                b = int(color_hex[5:7], 16)
+                brightness = (r * 299 + g * 587 + b * 114) / 1000
+                text_color = "#FFFFFF" if brightness < 128 else "#000000"
+            except:
+                text_color = "#000000"
+            
+            html += f"""        <div style="margin-top: 15px; padding: 10px; background-color: #f5f5f5; border-left: 4px solid {color_hex};">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <div style="width: 30px; height: 30px; background-color: {color_hex}; border: 2px solid #333; border-radius: 4px;"></div>
+                <strong style="font-size: 16px;">{color_name}</strong>
+                <span style="color: #666; font-size: 12px;">({color_hex})</span>
+            </div>
             <table style="margin-top: 10px; width: 100%;">
                 <thead>
                     <tr style="background-color: #e8f5e9;">
