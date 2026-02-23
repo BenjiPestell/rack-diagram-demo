@@ -24,7 +24,7 @@ racks:
         units: 3
         type: pdu
 
-      - name: "KVM Shelf {N}"
+      - name: KVM Shelf {N}
         start_u: 39
         start: 1
         end: 3
@@ -322,6 +322,7 @@ wiring_layers:
   # Visuals subnet
   - name: Visuals Subnet
     edge_color: "#b551a9"
+    cable_type: "Ethernet"
     connections:
       # Inter-rack connections - Graphics switches daisy chained
       - from: "Graphics Switch {N}"
@@ -363,6 +364,7 @@ wiring_layers:
 
   # Power distribution
   - name: Power Distribution
+    cable_type: "C13-C14"
     connections:
       # #Inter-rack connections
       # - from: UPS
@@ -373,7 +375,7 @@ wiring_layers:
 
       # Rack 1 Front
       - from: UPS
-        to: "KVM Shelf {N}"
+        to: KVM Shelf {N}
         start: 1
         end: 3
 
@@ -388,10 +390,12 @@ wiring_layers:
           - Telemetry
           - dSPACE Controller
           - dSPACE
+          - Graphics Switch 1
 
       # Rack 1 Rear
       - from: Mains in 1
         to: Vertical PDU 1
+        cable_type: "Included"
 
       - from: Vertical PDU 1
         to: 
@@ -407,9 +411,6 @@ wiring_layers:
           - Company Network Switch
           - CCTV Switch
           - Audio Switch
-
-      - from: R1 16A PDU C
-        to: Graphics Switch 1
 
       # Rack 2 Front
       - from: R2 16A PDU A
@@ -428,6 +429,7 @@ wiring_layers:
       # Rack 2 Rear
       - from: Mains in 2
         to: Vertical PDU 2 
+        cable_type: "Included"
 
       - from: Vertical PDU 2
         to: 
@@ -455,6 +457,7 @@ wiring_layers:
       # Rack 3 Rear
       - from: Mains in 3
         to: Vertical PDU 3 
+        cable_type: "Included"
 
       - from: Vertical PDU 3
         to:
@@ -482,6 +485,7 @@ wiring_layers:
       # Rack 4 Rear
       - from: Mains in 4
         to: Vertical PDU 4
+        cable_type: "Included"
 
       - from: Vertical PDU 4
         to: 
@@ -495,6 +499,7 @@ wiring_layers:
   # Host network
   - name: Host Subnet
     edge_color: "#5192b5"
+    cable_type: "Ethernet"
     connections:
       - from: Operator PC
         to: dSPACE Controller
@@ -504,6 +509,7 @@ wiring_layers:
 
   # Company network
   - name: Company Network
+    cable_type: "Ethernet"
     connections:
       - from: Company Network Switch
         to: Operator PC
@@ -517,7 +523,7 @@ wiring_layers:
 computer_info:
   - device_name: "Operator PC"
     arena_part_number: "902-00008"
-    ethernet_ports:
+    Etherneternet_ports:
       - adapter: "CompanyNetwork"
         ip: "None (DHCP)"
         mac: "00-14-5E-EA-4C-DD"
@@ -536,7 +542,7 @@ computer_info:
 
   - device_name: "Physics PC"
     arena_part_number: "908-00028"
-    ethernet_ports:
+    Etherneternet_ports:
       - adapter: "rFpro"
         ip: "192.168.2.50, 59"
 
@@ -544,7 +550,7 @@ computer_info:
     start: 1
     end: 13
     arena_part_number: "902-00011"
-    ethernet_ports:
+    Etherneternet_ports:
       - adapter: "rFpro"
         ip: "192.168.2.{N+10}"
 
@@ -552,12 +558,12 @@ computer_info:
     start: 1
     end: 3
     arena_part_number: "902-00011"
-    ethernet_ports:
+    Etherneternet_ports:
       - adapter: "rFpro"
         ip: "192.168.2.{N+23}"
 
   - device_name: "Spectator IG"
     arena_part_number: "902-00011"
-    ethernet_ports:
+    Etherneternet_ports:
       - adapter: "rFpro"
         ip: "192.168.2.90"

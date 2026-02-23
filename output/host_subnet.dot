@@ -49,10 +49,10 @@ graph "Host Subnet" {
 
   // Connections
   Operator_PC -- dSPACE_Controller [
-    color="#5192b5", style=solid, penwidth=2.0
+    color="#5192b5", style=solid, penwidth=2.0, label="   Ethernet", fontsize=10, fontname="Sinkin Sans 400 Regular"
   ];
   dSPACE_Controller -- dSPACE [
-    color="#5192b5", style=solid, penwidth=2.0
+    color="#5192b5", style=solid, penwidth=2.0, label="   Ethernet", fontsize=10, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

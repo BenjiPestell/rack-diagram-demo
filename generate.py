@@ -17,9 +17,13 @@ def load_config():
 # -------------------------------------------------
 # Expand wiring clusters
 # -------------------------------------------------
-def expand_wiring_clusters(connections, layer_edge_color="#333333"):
+def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#333333"):
     """
     Expand wiring connection clusters into individual connections.
+    
+    Supports cable_type at both layer and connection level:
+    - Layer cable_type: default for all connections in the layer
+    - Connection cable_type: overrides layer cable_type for that connection
     
     Cluster format with single 'to':
     - from: "R4 16A PDU B"
@@ -32,27 +36,12 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
       to:
         - "Operator PC"
         - "Speedgoat"
-        - "Terrain Server"
     
-    Cluster format with multiple 'to' targets AND start/end:
-    - from: "Graphics Switch"
-      to:
-        - "IG {N}"
-        - "RVD {N}"
-      start: 1
-      end: 3
-    
-    Expands to:
-    - from: "Graphics Switch", to: "IG 1"
-    - from: "Graphics Switch", to: "RVD 1"
-    - from: "Graphics Switch", to: "IG 2"
-    - from: "Graphics Switch", to: "RVD 2"
-    - etc.
-    
-    Supports per-connection edge_color override:
+    Supports per-connection cable_type and edge_color override:
     - from: "Switch"
       to: "Device"
-      edge_color: "#FF0000"  # Override layer color for this connection
+      cable_type: "Cat6"
+      edge_color: "#FF0000"
     """
     expanded = []
     
@@ -64,6 +53,7 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
         edge_color = conn.get("edge_color", "")
         style = conn.get("style", "")
         width = conn.get("width", "")
+        cable_type = conn.get("cable_type", layer_cable_type)  # Use connection cable_type or fallback to layer
         
         # Normalize to_field to always be a list
         if isinstance(to_field, str):
@@ -124,7 +114,8 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
                         expanded_conn["style"] = style
                     if width:
                         expanded_conn["width"] = width
-                    
+                    if cable_type:
+                        expanded_conn["cable_type"] = cable_type
                     expanded.append(expanded_conn)
         else:
             # No cluster - just handle multiple 'to' targets
@@ -145,6 +136,8 @@ def expand_wiring_clusters(connections, layer_edge_color="#333333"):
                     expanded_conn["style"] = style
                 if width:
                     expanded_conn["width"] = width
+                if cable_type:
+                    expanded_conn["cable_type"] = cable_type
                 
                 expanded.append(expanded_conn)
     
@@ -650,12 +643,13 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     
     # Styling - layer defaults
     layer_edge_color = layer.get("edge_color", "#333333")
+    layer_cable_type = layer.get("cable_type", "")
     edge_style = layer.get("edge_style", "solid")
     edge_width = layer.get("edge_width", "2.0")
     font_size = layer.get("font_size", 12)
     
-    # Expand connection clusters with layer edge color as fallback
-    connections = expand_wiring_clusters(connections_raw, layer_edge_color)
+    # Expand connection clusters with layer defaults
+    connections = expand_wiring_clusters(connections_raw, layer_cable_type, layer_edge_color)
     
     lines = []
     
@@ -849,6 +843,11 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         to_id = to_dev.replace(" ", "_").replace("/", "_")
         
         label = conn.get("label", "")
+        cable_type = conn.get("cable_type", "")
+        
+        # Use cable_type as label if no explicit label is set
+        if not label and cable_type:
+            label = cable_type
         
         # Use per-connection edge_color if set, otherwise use layer default
         conn_edge_color = conn.get("edge_color", layer_edge_color)
@@ -864,7 +863,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         ]
         
         if label:
-            edge_attrs.append(f"label=\"{label}\"")
+            edge_attrs.append(f"label=\"{" "*3 + label}\"")
             edge_attrs.append(f"fontsize={font_size - 2}")
             edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
         
@@ -1056,7 +1055,7 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
       * Intra-rack: absolute difference in bottom U positions
       * Inter-rack: (start_u - 1) on from device + (start_u - 1) on to device
       * Undefined devices: 0
-    - front_to_back: 0.5 if connection spans from front to rear within same rack, else 0
+    - front_to_back: 0.5m if connection spans from front to rear within same rack, else 0
     - inter_rack: inter-rack distance if devices in different racks, else 0
     - cable_slack: configured slack length
     """
@@ -1211,10 +1210,11 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
                 <th>Network</th>
                 <th>From</th>
                 <th>To</th>
+                <th>Cable Type</th>
                 <th>From Rack</th>
                 <th>To Rack</th>
                 <th class="metric">U Distance</th>
-                <th class="metric">Unit Length (m)</th>
+                <th class="metric">U Length (m)</th>
                 <th class="metric">F2B (m)</th>
                 <th class="metric">Inter-rack (m)</th>
                 <th class="metric">Slack (m)</th>
@@ -1230,7 +1230,8 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
         connections_raw = layer.get("connections", [])
         
         # Expand connections
-        connections = expand_wiring_clusters(connections_raw)
+        layer_cable_type = layer.get("cable_type", "")
+        connections = expand_wiring_clusters(connections_raw, layer_cable_type)
         
         # Output each connection
         for conn in connections:
@@ -1248,10 +1249,12 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
             cable_data = calculate_cable_length(from_dev, to_dev, all_devices, racks_config, config)
             
             if cable_data:
+                cable_type = conn.get("cable_type", "")
                 html += f"""            <tr>
                 <td class="network">{layer_name}</td>
                 <td>{from_dev}</td>
                 <td>{to_dev}</td>
+                <td>{cable_type}</td>
                 <td>{cable_data['from_rack']}</td>
                 <td>{cable_data['to_rack']}</td>
                 <td class="metric">{cable_data['unit_delta']}</td>
@@ -1288,6 +1291,7 @@ def generate_cable_length_table(all_devices, racks_config, wiring_layers, config
             "Network",
             "From",
             "To",
+            "Cable Type",
             "From Rack",
             "To Rack",
             "U Distance (units)",
@@ -1304,7 +1308,8 @@ def generate_cable_length_table(all_devices, racks_config, wiring_layers, config
             connections_raw = layer.get("connections", [])
             
             # Expand connections
-            connections = expand_wiring_clusters(connections_raw)
+            layer_cable_type = layer.get("cable_type", "")
+            connections = expand_wiring_clusters(connections_raw, layer_cable_type)
             
             # Output each connection
             for conn in connections:
@@ -1322,10 +1327,12 @@ def generate_cable_length_table(all_devices, racks_config, wiring_layers, config
                 cable_data = calculate_cable_length(from_dev, to_dev, all_devices, racks_config, config)
                 
                 if cable_data:
+                    cable_type = conn.get("cable_type", "")
                     writer.writerow([
                         layer_name,
                         from_dev,
                         to_dev,
+                        cable_type,
                         cable_data["from_rack"],
                         cable_data["to_rack"],
                         cable_data["unit_delta"],
