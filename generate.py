@@ -1071,7 +1071,7 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
     cable_slack = config.get("cable_slack_length", 0.2)  # Default 0.2m
     standard_u_height = config.get("standard_u_height", 0.045)  # Default 0.045m
     front_to_back = config.get("front_to_back_length", 0.5)  # Default 0.5m
-    inter_rack_distance = config.get("inter_rack_distance", 10)  # Default 10m
+    inter_rack_distance = config.get("inter_rack_distance", 2.5)  # Default 2.5m
     
     # Build rack name map
     rack_name_map = {}
@@ -1359,7 +1359,7 @@ def main():
         "cable_slack_length": config.get("cable_slack_length", 0.2),
         "standard_u_height": config.get("standard_u_height", 0.045),
         "front_to_back_length": config.get("front_to_back_length", 0.5),
-        "inter_rack_distance": config.get("inter_rack_distance", 10)
+        "inter_rack_distance": config.get("inter_rack_distance", 2.5)
     }
     
     # Create output directory if it doesn't exist
