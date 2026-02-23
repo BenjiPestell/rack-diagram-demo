@@ -2,6 +2,7 @@ import csv
 import math
 import re
 from clusters import expand_wiring_clusters
+from utils import hex_to_color_name
 
 # -------------------------------------------------
 # Cable length calculation
@@ -306,3 +307,366 @@ def generate_cable_length_table(all_devices, racks_config, wiring_layers, config
                     ])
     
     print(f"Generated cable length table: {output_file}")
+
+# -------------------------------------------------
+# Generate cable summary (for ordering)
+# -------------------------------------------------
+def generate_cable_summary_csv(all_devices, racks_config, wiring_layers, config, output_file="output/cable_summary.csv"):
+    """
+    Generate a summary of cables needed for ordering.
+    Groups cables by type and rounded length, showing quantities for each length.
+    """
+    
+    # Structure: {(cable_type, color_name): {length: quantity, ...}, ...}
+    cable_summary = {}
+    
+    # Process each wiring layer
+    for layer in wiring_layers:
+        connections_raw = layer.get("connections", [])
+        
+        # Expand connections
+        layer_cable_type = layer.get("cable_type", "")
+        connections = expand_wiring_clusters(connections_raw, layer_cable_type)
+        
+        # Accumulate cable data
+        for conn in connections:
+            from_dev = conn["from"]
+            to_dev = conn["to"]
+            
+            # Get device info
+            from_info = all_devices.get(from_dev)
+            to_info = all_devices.get(to_dev)
+            
+            if not from_info or not to_info:
+                continue
+            
+            # Calculate cable length
+            cable_data = calculate_cable_length(from_dev, to_dev, all_devices, racks_config, config)
+            
+            if cable_data:
+                cable_type = conn.get("cable_type", "")
+                if not cable_type:
+                    cable_type = layer_cable_type
+                
+                # Skip "included" cables - they don't need ordering
+                if cable_type.lower() == "included":
+                    continue
+                
+                # Get color - prefer connection color, fall back to layer color
+                cable_color = conn.get("edge_color", layer.get("edge_color", ""))
+                color_name = hex_to_color_name(cable_color)
+                # color_name = cable_color  # Use hex code directly
+                
+                cable_length = cable_data["total_length"]
+                
+                # Initialize cable type + color if needed
+                cable_key = (cable_type, color_name)
+                if cable_key not in cable_summary:
+                    cable_summary[cable_key] = {}
+                
+                # Increment quantity for this length
+                if cable_length not in cable_summary[cable_key]:
+                    cable_summary[cable_key][cable_length] = 0
+                cable_summary[cable_key][cable_length] += 1
+    
+    # Write CSV
+    with open(output_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
+        # Header
+        writer.writerow([
+            "Cable Type",
+            "Color",
+            "Length (m)",
+            "Quantity",
+            "Total Length (m)"
+        ])
+        
+        # Sort by cable type and color for consistent output
+        for cable_type, color_name in sorted(cable_summary.keys()):
+            lengths = cable_summary[(cable_type, color_name)]
+            
+            # Sort lengths in ascending order
+            for length in sorted(lengths.keys()):
+                quantity = lengths[length]
+                total_length = length * quantity
+                
+                writer.writerow([
+                    cable_type,
+                    color_name,
+                    f"{length:.1f}",
+                    quantity,
+                    f"{total_length:.1f}"
+                ])
+    
+    print(f"Generated cable summary CSV: {output_file}")
+    return cable_summary
+
+# -------------------------------------------------
+# Generate cable summary HTML
+# -------------------------------------------------
+def generate_cable_summary_html(all_devices, racks_config, wiring_layers, config, output_file="output/cable_summary.html"):
+    """Generate an HTML page with cable summary for ordering, grouped by cable type and color"""
+    
+    # Structure: {(cable_type, color_name): {length: quantity, ...}, ...}
+    cable_summary = {}
+    
+    # Process each wiring layer
+    for layer in wiring_layers:
+        connections_raw = layer.get("connections", [])
+        
+        # Expand connections
+        layer_cable_type = layer.get("cable_type", "")
+        connections = expand_wiring_clusters(connections_raw, layer_cable_type)
+        
+        # Accumulate cable data
+        for conn in connections:
+            from_dev = conn["from"]
+            to_dev = conn["to"]
+            
+            # Get device info
+            from_info = all_devices.get(from_dev)
+            to_info = all_devices.get(to_dev)
+            
+            if not from_info or not to_info:
+                continue
+            
+            # Calculate cable length
+            cable_data = calculate_cable_length(from_dev, to_dev, all_devices, racks_config, config)
+            
+            if cable_data:
+                cable_type = conn.get("cable_type", "")
+                if not cable_type:
+                    cable_type = layer_cable_type
+                
+                # Skip "included" cables - they don't need ordering
+                if cable_type.lower() == "included":
+                    continue
+                
+                # Get color - prefer connection color, fall back to layer color
+                cable_color = conn.get("edge_color", layer.get("edge_color", "#323232"))
+                color_name = hex_to_color_name(cable_color)
+                # color_name = cable_color  # Use hex code directly
+                
+                cable_length = cable_data["total_length"]
+                
+                # Initialize cable type + color if needed
+                cable_key = (cable_type, color_name)
+                if cable_key not in cable_summary:
+                    cable_summary[cable_key] = {}
+                
+                # Increment quantity for this length
+                if cable_length not in cable_summary[cable_key]:
+                    cable_summary[cable_key][cable_length] = 0
+                cable_summary[cable_key][cable_length] += 1
+    
+    # Generate HTML
+    html = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Cable Ordering Summary</title>
+    <style>
+        body {
+            font-family: 'Sinkin Sans', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #5af282;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        .summary-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .cable-type-section {
+            margin-bottom: 30px;
+        }
+        .cable-type-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #5af282;
+            padding: 12px 15px;
+            border-radius: 4px 4px 0 0;
+            margin-bottom: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        table th {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .metric {
+            text-align: right;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .subtotal-row {
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+        .subtotal-row .metric {
+            color: #2e7d32;
+        }
+        .total-row {
+            background-color: #4297a1;
+            color: white;
+            font-weight: bold;
+        }
+        .total-row .metric {
+            color: white;
+        }
+        .notes {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border-left: 4px solid #5af282;
+        }
+        .notes p {
+            margin: 5px 0;
+            color: #333;
+        }
+        .notes strong {
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cable Ordering Summary</h1>
+    <p>Cables grouped by type and length (rounded to nearest 0.5m)</p>
+"""
+    
+    # Add cable type sections
+    total_quantity_all = 0
+    total_length_all = 0
+    
+    # Group by cable type first, then by color
+    cable_by_type = {}
+    for (cable_type, color_name), lengths in cable_summary.items():
+        if cable_type not in cable_by_type:
+            cable_by_type[cable_type] = {}
+        cable_by_type[cable_type][color_name] = lengths
+    
+    for cable_type in sorted(cable_by_type.keys()):
+        colors = cable_by_type[cable_type]
+        type_total_quantity = 0
+        type_total_length = 0
+        
+        html += f"""    <div class="summary-card cable-type-section">
+        <div class="cable-type-header">{cable_type}</div>
+"""
+        
+        # Add subsection for each color
+        for color_name in sorted(colors.keys()):
+            lengths = colors[color_name]
+            
+            html += f"""        <div style="margin-top: 15px; padding: 10px; background-color: #f5f5f5; border-left: 4px solid #5af282;">
+            <strong>{color_name}</strong>
+            <table style="margin-top: 10px; width: 100%;">
+                <thead>
+                    <tr style="background-color: #e8f5e9;">
+                        <th style="padding: 8px; text-align: left;">Length (m)</th>
+                        <th style="padding: 8px; text-align: right; font-family: monospace;">Quantity</th>
+                        <th style="padding: 8px; text-align: right; font-family: monospace;">Total (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
+            
+            color_quantity = 0
+            color_length = 0
+            
+            # Sort lengths in ascending order
+            for length in sorted(lengths.keys()):
+                quantity = lengths[length]
+                total_length = length * quantity
+                color_quantity += quantity
+                color_length += total_length
+                type_total_quantity += quantity
+                type_total_length += total_length
+                total_quantity_all += quantity
+                total_length_all += total_length
+                
+                html += f"""                    <tr>
+                        <td style="padding: 8px;">{length:.1f}</td>
+                        <td style="padding: 8px; text-align: right; font-family: monospace; font-weight: bold;">{quantity}</td>
+                        <td style="padding: 8px; text-align: right; font-family: monospace; font-weight: bold;">{total_length:.1f}</td>
+                    </tr>
+"""
+            
+            html += f"""                    <tr style="background-color: #e0f2f1; font-weight: bold;">
+                        <td style="padding: 8px;">{color_name} Subtotal</td>
+                        <td style="padding: 8px; text-align: right; font-family: monospace;">{color_quantity}</td>
+                        <td style="padding: 8px; text-align: right; font-family: monospace;">{color_length:.1f}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+"""
+        
+        html += f"""        <div style="margin-top: 10px; padding: 10px; background-color: #c8e6c9; font-weight: bold;">
+            {cable_type} Total: {type_total_quantity} cables, {type_total_length:.1f}m
+        </div>
+    </div>
+"""
+    
+    # Add grand total
+    html += f"""    <div class="summary-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Overall Summary</th>
+                    <th class="metric">Total Quantity</th>
+                    <th class="metric">Total Length (m)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="total-row">
+                    <td>GRAND TOTAL</td>
+                    <td class="metric">{total_quantity_all}</td>
+                    <td class="metric">{total_length_all:.1f}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary-card notes">
+        <h3>Notes for Ordering</h3>
+        <p><strong>Cable Lengths:</strong> All lengths are rounded up to the nearest 0.5m increment to match common spool options (1.0m, 1.5m, 2.0m, etc.).</p>
+        <p><strong>Ordering Tips:</strong> Use these quantities and lengths to request quotes from cable suppliers. Check with vendors for available spool sizes and bulk discounts.</p>
+        <p><strong>Extra Stock:</strong> Consider ordering 10-15% extra for contingencies, future growth, and test purposes.</p>
+        <p><strong>Cable Management:</strong> Plan cable routing and pathways before ordering. Ensure cable runs are protected and labeled during installation.</p>
+    </div>
+</body>
+</html>
+"""
+    
+    with open(output_file, 'w') as f:
+        f.write(html)
+    
+    print(f"Generated cable summary HTML: {output_file}")

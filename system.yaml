@@ -1,4 +1,4 @@
-inter_rack_distance: 2.5  # m
+inter_rack_distance: 5.0  # m
 cable_slack_length: 0.2  # m
 front_to_back_length: 0.5  # m
 

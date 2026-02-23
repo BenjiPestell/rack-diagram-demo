@@ -19,7 +19,7 @@ graph "Power Distribution" {
   ];
 
   edge [
-    color="#333333",
+    color="#323232",
     style=solid,
     penwidth=2.0
   ];
@@ -301,160 +301,160 @@ graph "Power Distribution" {
 
   // Connections
   UPS -- KVM_Shelf_1 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   UPS -- KVM_Shelf_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   UPS -- KVM_Shelf_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_B -- Operator_PC [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_B -- Physics_PC [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_B -- Spectator_IG [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_C -- Telemetry [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_C -- dSPACE_Controller [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_C -- dSPACE [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_C -- Graphics_Switch_1 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Mains_in_1 -- Vertical_PDU_1 [
-    color="#333333", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_1 -- R1_16A_PDU_A [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_1 -- R1_16A_PDU_B [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_1 -- R1_16A_PDU_C [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_1 -- UPS [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_A -- Company_Network_Switch [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_A -- CCTV_Switch [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R1_16A_PDU_A -- Audio_Switch [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_A -- Customer_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_B -- RVD_1 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_B -- RVD_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_B -- RVD_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_C -- IG_1 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_C -- IG_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Mains_in_2 -- Vertical_PDU_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_2 -- R2_16A_PDU_A [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_2 -- R2_16A_PDU_B [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_2 -- R2_16A_PDU_C [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R2_16A_PDU_C -- Graphics_Switch_2 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_A -- Customer_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_B -- IG_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_B -- IG_4 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_B -- IG_5 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_C -- IG_6 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_C -- IG_7 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Mains_in_3 -- Vertical_PDU_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_3 -- R3_16A_PDU_A [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_3 -- R3_16A_PDU_B [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_3 -- R3_16A_PDU_C [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R3_16A_PDU_C -- Graphics_Switch_3 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_A -- Customer_4 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_B -- IG_8 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_B -- IG_9 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_B -- IG_10 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_C -- IG_11 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_C -- IG_12 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_C -- IG_13 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Mains_in_4 -- Vertical_PDU_4 [
-    color="#333333", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   Included", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_4 -- R4_16A_PDU_A [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_4 -- R4_16A_PDU_B [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Vertical_PDU_4 -- R4_16A_PDU_C [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   R4_16A_PDU_C -- Graphics_Switch_4 [
-    color="#333333", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
+    color="#323232", style=solid, penwidth=2.0, label="   C13-C14", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

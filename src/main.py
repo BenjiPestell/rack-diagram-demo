@@ -8,7 +8,7 @@ from math import sqrt
 
 from utils import load_config, get_device_color
 from wiring_diagram import generate_wiring_diagram
-from cable_length import generate_cable_length_table, generate_cable_length_html
+from cable_length import generate_cable_length_table, generate_cable_length_html, generate_cable_summary_csv, generate_cable_summary_html
 from clusters import expand_computer_info_clusters, expand_external_devices, expand_clusters, expand_wiring_clusters
 from rack_layout import generate_rack_layout_dot, build_device_map, build_occupancy
 from computer_info import export_computer_info_csv, export_computer_info_json, export_computer_info_html
@@ -88,9 +88,11 @@ def main():
                 f.write(wiring_dot)
             print(f"Generated {filename}")
         
-        # Generate cable length table
+        # Generate cable length tables
         generate_cable_length_table(all_devices, racks_config, layers, cable_config)
         generate_cable_length_html(all_devices, racks_config, layers, cable_config)
+        generate_cable_summary_csv(all_devices, racks_config, layers, config)
+        generate_cable_summary_html(all_devices, racks_config, layers, config)
         
         # Process computer_info
         computer_info_raw = config.get("computer_info", [])

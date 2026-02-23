@@ -1,7 +1,7 @@
 Network,From,To,Cable Type,From Rack,To Rack,U Distance (units),Unit Length (m),F2B Length (m),Inter-rack Length (m),Cable Slack (m),Min Cable Length (m)
-Visuals Subnet,Graphics Switch 1,Graphics Switch 2,Ethernet,Rack 1,Rack 2,4,0.180,0.000,2.5,0.200,3.00
-Visuals Subnet,Graphics Switch 2,Graphics Switch 3,Ethernet,Rack 2,Rack 3,4,0.180,0.000,2.5,0.200,3.00
-Visuals Subnet,Graphics Switch 3,Graphics Switch 4,Ethernet,Rack 3,Rack 4,4,0.180,0.000,2.5,0.200,3.00
+Visuals Subnet,Graphics Switch 1,Graphics Switch 2,Ethernet,Rack 1,Rack 2,4,0.180,0.000,5.0,0.200,5.50
+Visuals Subnet,Graphics Switch 2,Graphics Switch 3,Ethernet,Rack 2,Rack 3,4,0.180,0.000,5.0,0.200,5.50
+Visuals Subnet,Graphics Switch 3,Graphics Switch 4,Ethernet,Rack 3,Rack 4,4,0.180,0.000,5.0,0.200,5.50
 Visuals Subnet,Graphics Switch 1,Operator PC,Ethernet,Rack 1,Rack 1,21,0.945,0.500,0.0,0.200,2.00
 Visuals Subnet,Graphics Switch 1,Physics PC,Ethernet,Rack 1,Rack 1,17,0.765,0.500,0.0,0.200,1.50
 Visuals Subnet,Graphics Switch 1,Spectator IG,Ethernet,Rack 1,Rack 1,13,0.585,0.500,0.0,0.200,1.50

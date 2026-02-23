@@ -21,7 +21,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     connections_raw = layer.get("connections", [])
     
     # Styling - layer defaults
-    layer_edge_color = layer.get("edge_color", "#333333")
+    layer_edge_color = layer.get("edge_color", "#323232")
     layer_cable_type = layer.get("cable_type", "")
     edge_style = layer.get("edge_style", "solid")
     edge_width = layer.get("edge_width", "2.0")
