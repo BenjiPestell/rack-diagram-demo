@@ -646,7 +646,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     layer_cable_type = layer.get("cable_type", "")
     edge_style = layer.get("edge_style", "solid")
     edge_width = layer.get("edge_width", "2.0")
-    font_size = layer.get("font_size", 12)
+    font_size = layer.get("font_size", 11)
     
     # Expand connection clusters with layer defaults
     connections = expand_wiring_clusters(connections_raw, layer_cable_type, layer_edge_color)
@@ -864,7 +864,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         
         if label:
             edge_attrs.append(f"label=\"{" "*3 + label}\"")
-            edge_attrs.append(f"fontsize={font_size - 2}")
+            edge_attrs.append(f"fontsize={font_size - 3}")
             edge_attrs.append("fontname=\"Sinkin Sans 400 Regular\"")
         
         # Format edge attributes properly (commas added by join)
