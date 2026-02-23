@@ -1056,7 +1056,7 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
       * Intra-rack: absolute difference in bottom U positions
       * Inter-rack: (start_u - 1) on from device + (start_u - 1) on to device
       * Undefined devices: 0
-    - front_to_back: 0.2m if connection spans from front to rear within same rack, else 0
+    - front_to_back: 0.5 if connection spans from front to rear within same rack, else 0
     - inter_rack: inter-rack distance if devices in different racks, else 0
     - cable_slack: configured slack length
     """
@@ -1071,7 +1071,7 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
     # Get config values
     cable_slack = config.get("cable_slack_length", 0.2)  # Default 0.2m
     standard_u_height = config.get("standard_u_height", 0.045)  # Default 0.045m
-    front_to_back = config.get("front_to_back_length", 0.2)  # Default 0.2m
+    front_to_back = config.get("front_to_back_length", 0.5)  # Default 0.5m
     inter_rack_distance = config.get("inter_rack_distance", 10)  # Default 10m
     
     # Build rack name map
@@ -1351,7 +1351,7 @@ def main():
     cable_config = {
         "cable_slack_length": config.get("cable_slack_length", 0.2),
         "standard_u_height": config.get("standard_u_height", 0.045),
-        "front_to_back_length": config.get("front_to_back_length", 0.2),
+        "front_to_back_length": config.get("front_to_back_length", 0.5),
         "inter_rack_distance": config.get("inter_rack_distance", 10)
     }
     
