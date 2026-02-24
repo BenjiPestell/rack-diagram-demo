@@ -700,7 +700,15 @@
     resize: none;
     outline: none;
     line-height: 1.65;
+    caret-color: var(--accent);
   }
+
+  .yaml-area.dirty { border-left: 2px solid var(--accent2); }
+  .yaml-area.has-error { border-left: 2px solid var(--red); }
+
+  .yaml-status-ok { color: var(--green); }
+  .yaml-status-err { color: var(--red); }
+  .yaml-status-info { color: var(--accent); }
 
   /* STATUS BAR */
   .status-bar {
@@ -840,11 +848,17 @@
     </div>
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
-      <div class="yaml-toolbar">
-        <button class="header-btn" onclick="refreshYAML()">Generate</button>
+      <div class="yaml-toolbar" style="flex-wrap:wrap;gap:5px">
+        <button class="header-btn" onclick="refreshYAML()" title="Re-generate from canvas">Generate YAML</button>
+        <button class="header-btn primary" onclick="applyYAMLToCanvas()" title="Parse YAML and update canvas">Apply to Canvas</button>
         <button class="header-btn" onclick="copyYAML()">Copy</button>
+        <button class="header-btn" onclick="exportYAML()">Download</button>
+        <label class="header-btn" style="cursor:pointer" title="Load a .yaml file">
+          Load File<input type="file" id="yamlFileInput" accept=".yaml,.yml,.txt" style="display:none" onchange="loadYAMLFile(event)">
+        </label>
       </div>
-      <textarea class="yaml-area" id="yamlOutput" readonly spellcheck="false"></textarea>
+      <div id="yamlStatus" style="display:none;padding:5px 10px;font-family:var(--mono);font-size:9px;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0"></div>
+      <textarea class="yaml-area" id="yamlOutput" spellcheck="false" oninput="markYAMLDirty()"></textarea>
     </div>
   </div>
 </div>
@@ -1289,6 +1303,23 @@ function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers()
 function removeConn(li,ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
 
 // ───── YAML ─────
+let yamlDirty = false;
+
+function markYAMLDirty() {
+  yamlDirty = true;
+  const ta = document.getElementById('yamlOutput');
+  ta.classList.add('dirty');
+  ta.classList.remove('has-error');
+  setYAMLStatus('Unsaved edits — click Apply to Canvas to update', 'info');
+}
+
+function setYAMLStatus(msg, type) {
+  const el = document.getElementById('yamlStatus');
+  el.style.display = msg ? 'block' : 'none';
+  el.className = 'yaml-status-' + (type || 'info');
+  el.textContent = msg;
+}
+
 function generateYAML() {
   const ir = document.getElementById('gInterRack').value||'5.0';
   const cs = document.getElementById('gCableSlack').value||'0.2';
@@ -1341,7 +1372,14 @@ function generateYAML() {
         y += `    connections:\n`;
         conns.forEach(c => {
           y += `      - from: ${c.from}\n`;
-          y += `        to: ${c.to}\n`;
+          if (Array.isArray(c.to)) {
+            y += `        to:\n`;
+            c.to.forEach(t => y += `          - ${t}\n`);
+          } else {
+            y += `        to: ${c.to}\n`;
+          }
+          if (c.start !== undefined) y += `        start: ${c.start}\n`;
+          if (c.end !== undefined) y += `        end: ${c.end}\n`;
         });
       }
     });
@@ -1349,11 +1387,20 @@ function generateYAML() {
   return y;
 }
 
-function refreshYAML() { document.getElementById('yamlOutput').value = generateYAML(); }
+function refreshYAML() {
+  if (yamlDirty) {
+    if (!confirm('This will overwrite your YAML edits with the current canvas state. Continue?')) return;
+  }
+  const ta = document.getElementById('yamlOutput');
+  ta.value = generateYAML();
+  ta.classList.remove('dirty','has-error');
+  yamlDirty = false;
+  setYAMLStatus('', '');
+}
 
 function copyYAML() {
-  refreshYAML();
-  navigator.clipboard.writeText(document.getElementById('yamlOutput').value).then(() => {
+  const text = document.getElementById('yamlOutput').value || generateYAML();
+  navigator.clipboard.writeText(text).then(() => {
     const btn = event.target;
     btn.textContent = 'Copied!';
     btn.style.color = 'var(--green)';
@@ -1363,11 +1410,387 @@ function copyYAML() {
 }
 
 function exportYAML() {
-  const blob = new Blob([generateYAML()], {type:'text/yaml'});
+  refreshYAML();
+  const text = document.getElementById('yamlOutput').value || generateYAML();
+  const blob = new Blob([text], {type:'text/yaml'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'rack-design.yaml';
   a.click();
+}
+
+// ───── LOAD FILE ─────
+function loadYAMLFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ta = document.getElementById('yamlOutput');
+    ta.value = e.target.result;
+    ta.classList.add('dirty');
+    ta.classList.remove('has-error');
+    yamlDirty = true;
+    setYAMLStatus(`Loaded: ${file.name} — click Apply to Canvas`, 'info');
+    switchTab('yaml', null);
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // reset so same file can be reloaded
+}
+
+// ───── YAML PARSER ─────
+function parseYAMLToState(text) {
+  const lines = text.split('\n');
+
+  function scalar(s) {
+    if (s === undefined || s === null) return null;
+    s = s.trim().replace(/\s+#.*$/, '').trim();
+    if (!s) return null;
+    if ((s[0] === '"' && s.slice(-1) === '"') || (s[0] === "'" && s.slice(-1) === "'"))
+      s = s.slice(1, -1);
+    if (s === 'true') return true;
+    if (s === 'false') return false;
+    if (s === 'null' || s === '~') return null;
+    const n = Number(s);
+    return (!isNaN(n) && s !== '') ? n : s;
+  }
+
+  function indent(line) { return line.length - line.trimStart().length; }
+
+  // Parse a flat list of "key: val" lines starting at i, all at exactly baseIndent
+  function parseSimpleMap(baseIndent, stopIndent) {
+    const obj = {};
+    while (i < lines.length) {
+      const ln = lines[i];
+      const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind < baseIndent || ind <= stopIndent && ind < baseIndent) break;
+      if (ind < baseIndent) break;
+      const ci = tr.indexOf(':');
+      if (ci === -1) { i++; continue; }
+      obj[tr.slice(0, ci).trim()] = scalar(tr.slice(ci + 1));
+      i++;
+    }
+    return obj;
+  }
+
+  // Parse a device list: items start with "- name: ..." at baseIndent, props at baseIndent+2
+  function parseDeviceList(baseIndent) {
+    const devs = [];
+    let cur = null;
+    while (i < lines.length) {
+      const ln = lines[i];
+      const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind < baseIndent) break;
+      if (tr.startsWith('- ')) {
+        cur = {};
+        devs.push(cur);
+        const rest = tr.slice(2).trim();
+        const ci = rest.indexOf(':');
+        if (ci !== -1) cur[rest.slice(0, ci).trim()] = scalar(rest.slice(ci + 1));
+        i++;
+      } else if (cur !== null) {
+        const ci = tr.indexOf(':');
+        if (ci !== -1) cur[tr.slice(0, ci).trim()] = scalar(tr.slice(ci + 1));
+        i++;
+      } else {
+        i++;
+      }
+    }
+    return devs;
+  }
+
+  // Parse wiring connections list at baseIndent
+  function parseConnections(baseIndent) {
+    const conns = [];
+    let cur = null;
+    while (i < lines.length) {
+      const ln = lines[i];
+      const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind < baseIndent) break;
+      if (tr.startsWith('- ')) {
+        const rest = tr.slice(2).trim();
+        const ci = rest.indexOf(':');
+        if (ci !== -1) {
+          const k = rest.slice(0, ci).trim();
+          const v = rest.slice(ci + 1).trim();
+          cur = {};
+          cur[k] = scalar(v) || null;
+          conns.push(cur);
+        }
+        i++;
+      } else if (cur !== null) {
+        const ci = tr.indexOf(':');
+        if (ci !== -1) {
+          const k = tr.slice(0, ci).trim();
+          const v = tr.slice(ci + 1).trim();
+          // handle "to:" with list below
+          if (!v || v.startsWith('#')) {
+            // peek ahead for list
+            i++;
+            const toItems = [];
+            while (i < lines.length) {
+              const ln2 = lines[i]; const tr2 = ln2.trim();
+              if (!tr2 || tr2.startsWith('#')) { i++; continue; }
+              if (indent(ln2) <= ind) break;
+              if (tr2.startsWith('- ')) toItems.push(scalar(tr2.slice(2).trim()));
+              i++;
+            }
+            cur[k] = toItems.length === 1 ? toItems[0] : toItems;
+            continue;
+          } else {
+            cur[k] = scalar(v);
+          }
+        }
+        i++;
+      } else {
+        i++;
+      }
+    }
+    return conns;
+  }
+
+  const result = {};
+  let i = 0;
+
+  while (i < lines.length) {
+    const ln = lines[i];
+    const tr = ln.trim();
+    if (!tr || tr.startsWith('#')) { i++; continue; }
+    const ind = indent(ln);
+    if (ind !== 0) { i++; continue; }
+
+    const ci = tr.indexOf(':');
+    if (ci === -1) { i++; continue; }
+    const key = tr.slice(0, ci).trim();
+    const val = tr.slice(ci + 1).trim();
+    i++;
+
+    if (val && !val.startsWith('#')) {
+      result[key] = scalar(val);
+      continue;
+    }
+
+    if (key === 'type_colors') {
+      const obj = {};
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        const ci2 = t2.indexOf(':');
+        if (ci2 !== -1) obj[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
+        i++;
+      }
+      result.type_colors = obj;
+
+    } else if (key === 'racks') {
+      const racks = [];
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        // Look for "  - rack:" (indent=2, starts a rack block)
+        if (indent(l2) === 2 && t2 === '- rack:') {
+          const rackEntry = { rack: {}, front: [], rear: [] };
+          racks.push(rackEntry);
+          i++;
+          // Now parse lines at indent >= 4 until indent < 4
+          while (i < lines.length) {
+            const l3 = lines[i]; const t3 = l3.trim();
+            if (!t3 || t3.startsWith('#')) { i++; continue; }
+            const ind3 = indent(l3);
+            if (ind3 < 4) break;
+            const ci3 = t3.indexOf(':');
+            if (ci3 === -1) { i++; continue; }
+            const k3 = t3.slice(0, ci3).trim();
+            const v3 = t3.slice(ci3 + 1).trim();
+            if (ind3 === 4 && (k3 === 'front' || k3 === 'rear')) {
+              i++;
+              rackEntry[k3] = parseDeviceList(6);
+            } else if (ind3 >= 6) {
+              // rack sub-keys: id, name, total_u
+              rackEntry.rack[k3] = scalar(v3);
+              i++;
+            } else {
+              i++;
+            }
+          }
+        } else {
+          i++;
+        }
+      }
+      result.racks = racks;
+
+    } else if (key === 'wiring_layers') {
+      const layers = [];
+      let curLayer = null;
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        const ind2 = indent(l2);
+        if (ind2 === 0) break;
+        if (ind2 === 2 && t2.startsWith('- ')) {
+          curLayer = { name: '', edge_color: null, cable_type: 'Ethernet', connections: [] };
+          layers.push(curLayer);
+          const rest2 = t2.slice(2).trim();
+          const ci2 = rest2.indexOf(':');
+          if (ci2 !== -1) curLayer[rest2.slice(0, ci2).trim()] = scalar(rest2.slice(ci2 + 1));
+          i++;
+        } else if (ind2 === 4 && curLayer) {
+          const ci2 = t2.indexOf(':');
+          if (ci2 !== -1) {
+            const k2 = t2.slice(0, ci2).trim();
+            const v2 = t2.slice(ci2 + 1).trim();
+            if (k2 === 'connections') {
+              i++;
+              curLayer.connections = parseConnections(6);
+            } else {
+              curLayer[k2] = scalar(v2);
+              i++;
+            }
+          } else {
+            i++;
+          }
+        } else {
+          i++;
+        }
+      }
+      result.wiring_layers = layers;
+
+    } else {
+      // skip unknown top-level block
+    }
+  }
+
+  return result;
+}
+
+function applyYAMLToCanvas() {
+  const text = document.getElementById('yamlOutput').value.trim();
+  if (!text) { setYAMLStatus('YAML is empty', 'err'); return; }
+
+  let parsed;
+  try {
+    parsed = parseYAMLToState(text);
+    console.log('Parsed YAML:', JSON.stringify(parsed, null, 2));
+  } catch(e) {
+    document.getElementById('yamlOutput').classList.add('has-error');
+    setYAMLStatus('Parse error: ' + e.message, 'err');
+    console.error(e);
+    return;
+  }
+
+  try {
+    applyParsedToState(parsed);
+    document.getElementById('yamlOutput').classList.remove('dirty','has-error');
+    yamlDirty = false;
+    setYAMLStatus('✓ Canvas updated successfully', 'ok');
+    setTimeout(() => setYAMLStatus('', ''), 3000);
+  } catch(e) {
+    document.getElementById('yamlOutput').classList.add('has-error');
+    setYAMLStatus('Apply error: ' + e.message, 'err');
+    console.error(e);
+  }
+}
+
+function applyParsedToState(parsed) {
+  // Globals
+  if (parsed.inter_rack_distance !== undefined)
+    document.getElementById('gInterRack').value = parsed.inter_rack_distance;
+  if (parsed.cable_slack_length !== undefined)
+    document.getElementById('gCableSlack').value = parsed.cable_slack_length;
+  if (parsed.front_to_back_length !== undefined)
+    document.getElementById('gFrontBack').value = parsed.front_to_back_length;
+
+  // Type colors
+  if (parsed.type_colors && typeof parsed.type_colors === 'object') {
+    state.typeColors = {};
+    for (const [k, v] of Object.entries(parsed.type_colors)) {
+      state.typeColors[k] = String(v);
+    }
+  }
+
+  // Racks — schema: racks is a list of mappings where each has keys: rack (obj), front (list), rear (list)
+  if (Array.isArray(parsed.racks)) {
+    state.racks = [];
+    let rackIdMax = 1;
+    parsed.racks.forEach((rackEntry, ri) => {
+      // rackEntry has { rack: {id,name,total_u}, front: [...], rear: [...] }
+      const meta = (rackEntry.rack && typeof rackEntry.rack === 'object') ? rackEntry.rack : rackEntry;
+      const id = String(meta.id || ('rack' + (ri + 1)));
+      const name = String(meta.name || ('Rack ' + (ri + 1)));
+      const total_u = parseInt(meta.total_u) || 42;
+
+      const idNum = parseInt(id.replace(/\D/g, ''));
+      if (!isNaN(idNum) && idNum >= rackIdMax) rackIdMax = idNum + 1;
+
+      const parseDevList = (arr) => {
+        if (!Array.isArray(arr)) return [];
+        return arr.map(d => {
+          if (typeof d !== 'object' || d === null) return null;
+          const dev = {};
+          dev.name = String(d.name || 'Device');
+          if (d.start_u !== undefined && d.start_u !== null) dev.start_u = parseInt(d.start_u);
+          if (d.units  !== undefined && d.units  !== null) dev.units  = parseInt(d.units);
+          if (d.start  !== undefined && d.start  !== null) dev.start  = parseInt(d.start);
+          if (d.end    !== undefined && d.end    !== null) dev.end    = parseInt(d.end);
+          if (d.spacing!== undefined && d.spacing!== null) dev.spacing= parseInt(d.spacing);
+          dev.type = String(d.type || 'pc');
+          return dev;
+        }).filter(Boolean);
+      };
+
+      state.racks.push({
+        id,
+        name,
+        total_u,
+        front: parseDevList(rackEntry.front),
+        rear:  parseDevList(rackEntry.rear)
+      });
+    });
+    state.nextRackId = rackIdMax;
+  }
+
+  // Wiring layers
+  if (Array.isArray(parsed.wiring_layers)) {
+    state.wiringLayers = [];
+    parsed.wiring_layers.forEach(l => {
+      if (!l) return;
+      const layer = {
+        name: String(l.name || 'Layer'),
+        edge_color: l.edge_color ? String(l.edge_color) : '#888888',
+        cable_type: l.cable_type ? String(l.cable_type) : 'Ethernet',
+        connections: [],
+        collapsed: false
+      };
+      if (Array.isArray(l.connections)) {
+        l.connections.forEach(c => {
+          if (!c || !c.from) return;
+          const conn = { from: String(c.from) };
+          if (Array.isArray(c.to)) conn.to = c.to.map(String);
+          else if (c.to !== undefined && c.to !== null) conn.to = String(c.to);
+          else conn.to = '';
+          if (c.start !== undefined) conn.start = parseInt(c.start);
+          if (c.end   !== undefined) conn.end   = parseInt(c.end);
+          layer.connections.push(conn);
+        });
+      }
+      state.wiringLayers.push(layer);
+    });
+  }
+
+  // Re-render everything
+  selectedDevRef = null;
+  document.getElementById('propsEmpty').style.display = 'flex';
+  document.getElementById('propsForm').style.display = 'none';
+  renderTypeColors();
+  renderAllRacks();
+  renderWiringLayers();
+  updateStatus();
 }
 
 // ───── TABS ─────
@@ -1383,7 +1806,16 @@ function switchTab(id, btn) {
       if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
     });
   }
-  if (id==='yaml') refreshYAML();
+  if (id==='yaml') {
+    // Auto-generate only if textarea is empty or not dirty
+    const ta = document.getElementById('yamlOutput');
+    if (!ta.value.trim() || !yamlDirty) {
+      ta.value = generateYAML();
+      ta.classList.remove('dirty','has-error');
+      yamlDirty = false;
+      setYAMLStatus('', '');
+    }
+  }
 }
 
 // ───── STATUS ─────
