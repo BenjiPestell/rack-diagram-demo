@@ -104,16 +104,16 @@ racks:
         start_u: 3
         units: 1
         type: switch
-      - name: "R1 16A PDU C"
-        start_u: 1
-        units: 1
-        type: pdu
       - name: "Vertical PDU 1"
         type: pdu
       - name: "Mains in 1"
         type: pdu
       - name: "Company Net in"
         type: switch
+      - name: "R1 16A PDU C"
+        start_u: 12
+        units: 1
+        type: pdu
 
   # Rack 2
   - rack:
@@ -162,13 +162,13 @@ racks:
         start_u: 3
         units: 1
         type: switch
-      - name: "R2 16A PDU C"
-        start_u: 1
-        units: 1
-        type: pdu
       - name: "Vertical PDU 2"
         type: pdu
       - name: "Mains in 2"
+        type: pdu
+      - name: "R2 16A PDU C"
+        start_u: 12
+        units: 1
         type: pdu
 
   # Rack 3
@@ -211,13 +211,13 @@ racks:
         start_u: 3
         units: 1
         type: switch
-      - name: "R3 16A PDU C"
-        start_u: 1
-        units: 1
-        type: pdu
       - name: "Vertical PDU 3"
         type: pdu
       - name: "Mains in 3"
+        type: pdu
+      - name: "R3 16A PDU C"
+        start_u: 12
+        units: 1
         type: pdu
 
   # Rack 4
@@ -260,13 +260,13 @@ racks:
         start_u: 3
         units: 1
         type: switch
-      - name: "R4 16A PDU C"
-        start_u: 1
-        units: 1
-        type: pdu
       - name: "Vertical PDU 4"
         type: pdu
       - name: "Mains in 4"
+        type: pdu
+      - name: "R4 16A PDU C"
+        start_u: 12
+        units: 1
         type: pdu
 
 wiring_layers:
@@ -306,7 +306,7 @@ wiring_layers:
 
   # Power Distribution
   - name: Power Distribution
-    edge_color: "#888888"
+    edge_color: "#292929"
     cable_type: "C13-C14"
     connections:
       - from: UPS
@@ -408,7 +408,7 @@ wiring_layers:
 
   # Company Network
   - name: Company Network
-    edge_color: "#888888"
+    edge_color: "#292929"
     cable_type: "Ethernet"
     connections:
       - from: Company Network Switch

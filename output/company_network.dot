@@ -19,7 +19,7 @@ graph "Company Network" {
   ];
 
   edge [
-    color="#888888",
+    color="#292929",
     style=solid,
     penwidth=2.0
   ];
@@ -53,13 +53,13 @@ graph "Company Network" {
 
   // Connections
   Company_Network_Switch -- Operator_PC [
-    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
+    color="#292929", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
   ];
   Company_Network_Switch -- Telemetry [
-    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
+    color="#292929", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
   ];
   Company_Net_in -- Company_Network_Switch [
-    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
+    color="#292929", style=solid, penwidth=2.0, label="   Ethernet", fontsize=7, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

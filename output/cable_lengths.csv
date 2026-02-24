@@ -29,10 +29,10 @@ Power Distribution,UPS,KVM Shelf 3,C13-C14,Rack 1,Rack 1,3,0.135,0.000,0.0,0.200
 Power Distribution,R1 16A PDU B,Operator PC,C13-C14,Rack 1,Rack 1,2,0.090,0.500,0.0,0.200,1.00
 Power Distribution,R1 16A PDU B,Physics PC,C13-C14,Rack 1,Rack 1,2,0.090,0.500,0.0,0.200,1.00
 Power Distribution,R1 16A PDU B,Spectator IG,C13-C14,Rack 1,Rack 1,6,0.270,0.500,0.0,0.200,1.00
-Power Distribution,R1 16A PDU C,Telemetry,C13-C14,Rack 1,Rack 1,9,0.405,0.500,0.0,0.200,1.50
-Power Distribution,R1 16A PDU C,dSPACE Controller,C13-C14,Rack 1,Rack 1,6,0.270,0.500,0.0,0.200,1.00
-Power Distribution,R1 16A PDU C,dSPACE,C13-C14,Rack 1,Rack 1,0,0.000,0.500,0.0,0.200,1.00
-Power Distribution,R1 16A PDU C,Graphics Switch 1,C13-C14,Rack 1,Rack 1,2,0.090,0.000,0.0,0.200,0.50
+Power Distribution,R1 16A PDU C,Telemetry,C13-C14,Rack 1,Rack 1,2,0.090,0.500,0.0,0.200,1.00
+Power Distribution,R1 16A PDU C,dSPACE Controller,C13-C14,Rack 1,Rack 1,5,0.225,0.500,0.0,0.200,1.00
+Power Distribution,R1 16A PDU C,dSPACE,C13-C14,Rack 1,Rack 1,11,0.495,0.500,0.0,0.200,1.50
+Power Distribution,R1 16A PDU C,Graphics Switch 1,C13-C14,Rack 1,Rack 1,9,0.405,0.000,0.0,0.200,1.00
 Power Distribution,Mains in 1,Vertical PDU 1,C13-C14,Rack 1,Rack 1,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 1,R1 16A PDU A,C13-C14,Rack 1,Rack 1,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 1,R1 16A PDU B,C13-C14,Rack 1,Rack 1,0,0.000,0.000,0.0,0.200,0.50
@@ -45,36 +45,36 @@ Power Distribution,R2 16A PDU A,Customer 2,C13-C14,Rack 2,Rack 2,14,0.630,0.500,
 Power Distribution,R2 16A PDU B,RVD 1,C13-C14,Rack 2,Rack 2,4,0.180,0.500,0.0,0.200,1.00
 Power Distribution,R2 16A PDU B,RVD 2,C13-C14,Rack 2,Rack 2,8,0.360,0.500,0.0,0.200,1.50
 Power Distribution,R2 16A PDU B,RVD 3,C13-C14,Rack 2,Rack 2,12,0.540,0.500,0.0,0.200,1.50
-Power Distribution,R2 16A PDU C,IG 1,C13-C14,Rack 2,Rack 2,4,0.180,0.500,0.0,0.200,1.00
-Power Distribution,R2 16A PDU C,IG 2,C13-C14,Rack 2,Rack 2,0,0.000,0.500,0.0,0.200,1.00
+Power Distribution,R2 16A PDU C,IG 1,C13-C14,Rack 2,Rack 2,7,0.315,0.500,0.0,0.200,1.50
+Power Distribution,R2 16A PDU C,IG 2,C13-C14,Rack 2,Rack 2,11,0.495,0.500,0.0,0.200,1.50
 Power Distribution,Mains in 2,Vertical PDU 2,C13-C14,Rack 2,Rack 2,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 2,R2 16A PDU A,C13-C14,Rack 2,Rack 2,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 2,R2 16A PDU B,C13-C14,Rack 2,Rack 2,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 2,R2 16A PDU C,C13-C14,Rack 2,Rack 2,0,0.000,0.000,0.0,0.200,0.50
-Power Distribution,R2 16A PDU C,Graphics Switch 2,C13-C14,Rack 2,Rack 2,2,0.090,0.000,0.0,0.200,0.50
+Power Distribution,R2 16A PDU C,Graphics Switch 2,C13-C14,Rack 2,Rack 2,9,0.405,0.000,0.0,0.200,1.00
 Power Distribution,R3 16A PDU A,Customer 3,C13-C14,Rack 3,Rack 3,14,0.630,0.500,0.0,0.200,1.50
 Power Distribution,R3 16A PDU B,IG 3,C13-C14,Rack 3,Rack 3,4,0.180,0.500,0.0,0.200,1.00
 Power Distribution,R3 16A PDU B,IG 4,C13-C14,Rack 3,Rack 3,8,0.360,0.500,0.0,0.200,1.50
 Power Distribution,R3 16A PDU B,IG 5,C13-C14,Rack 3,Rack 3,12,0.540,0.500,0.0,0.200,1.50
-Power Distribution,R3 16A PDU C,IG 6,C13-C14,Rack 3,Rack 3,4,0.180,0.500,0.0,0.200,1.00
-Power Distribution,R3 16A PDU C,IG 7,C13-C14,Rack 3,Rack 3,0,0.000,0.500,0.0,0.200,1.00
+Power Distribution,R3 16A PDU C,IG 6,C13-C14,Rack 3,Rack 3,7,0.315,0.500,0.0,0.200,1.50
+Power Distribution,R3 16A PDU C,IG 7,C13-C14,Rack 3,Rack 3,11,0.495,0.500,0.0,0.200,1.50
 Power Distribution,Mains in 3,Vertical PDU 3,C13-C14,Rack 3,Rack 3,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 3,R3 16A PDU A,C13-C14,Rack 3,Rack 3,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 3,R3 16A PDU B,C13-C14,Rack 3,Rack 3,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 3,R3 16A PDU C,C13-C14,Rack 3,Rack 3,0,0.000,0.000,0.0,0.200,0.50
-Power Distribution,R3 16A PDU C,Graphics Switch 3,C13-C14,Rack 3,Rack 3,2,0.090,0.000,0.0,0.200,0.50
+Power Distribution,R3 16A PDU C,Graphics Switch 3,C13-C14,Rack 3,Rack 3,9,0.405,0.000,0.0,0.200,1.00
 Power Distribution,R4 16A PDU A,Customer 4,C13-C14,Rack 4,Rack 4,3,0.135,0.500,0.0,0.200,1.00
 Power Distribution,R4 16A PDU B,IG 8,C13-C14,Rack 4,Rack 4,0,0.000,0.500,0.0,0.200,1.00
 Power Distribution,R4 16A PDU B,IG 9,C13-C14,Rack 4,Rack 4,4,0.180,0.500,0.0,0.200,1.00
 Power Distribution,R4 16A PDU B,IG 10,C13-C14,Rack 4,Rack 4,8,0.360,0.500,0.0,0.200,1.50
-Power Distribution,R4 16A PDU C,IG 11,C13-C14,Rack 4,Rack 4,8,0.360,0.500,0.0,0.200,1.50
-Power Distribution,R4 16A PDU C,IG 12,C13-C14,Rack 4,Rack 4,4,0.180,0.500,0.0,0.200,1.00
-Power Distribution,R4 16A PDU C,IG 13,C13-C14,Rack 4,Rack 4,0,0.000,0.500,0.0,0.200,1.00
+Power Distribution,R4 16A PDU C,IG 11,C13-C14,Rack 4,Rack 4,3,0.135,0.500,0.0,0.200,1.00
+Power Distribution,R4 16A PDU C,IG 12,C13-C14,Rack 4,Rack 4,7,0.315,0.500,0.0,0.200,1.50
+Power Distribution,R4 16A PDU C,IG 13,C13-C14,Rack 4,Rack 4,11,0.495,0.500,0.0,0.200,1.50
 Power Distribution,Mains in 4,Vertical PDU 4,C13-C14,Rack 4,Rack 4,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 4,R4 16A PDU A,C13-C14,Rack 4,Rack 4,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 4,R4 16A PDU B,C13-C14,Rack 4,Rack 4,0,0.000,0.000,0.0,0.200,0.50
 Power Distribution,Vertical PDU 4,R4 16A PDU C,C13-C14,Rack 4,Rack 4,0,0.000,0.000,0.0,0.200,0.50
-Power Distribution,R4 16A PDU C,Graphics Switch 4,C13-C14,Rack 4,Rack 4,2,0.090,0.000,0.0,0.200,0.50
+Power Distribution,R4 16A PDU C,Graphics Switch 4,C13-C14,Rack 4,Rack 4,9,0.405,0.000,0.0,0.200,1.00
 Host Subnet,Operator PC,dSPACE Controller,Ethernet,Rack 1,Rack 1,17,0.765,0.000,0.0,0.200,1.00
 Host Subnet,dSPACE Controller,dSPACE,Ethernet,Rack 1,Rack 1,6,0.270,0.000,0.0,0.200,0.50
 Company Network,Company Network Switch,Operator PC,Ethernet,Rack 1,Rack 1,17,0.765,0.500,0.0,0.200,1.50

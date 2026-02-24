@@ -312,7 +312,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
-<TD COLSPAN="2"></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 16A PDU C</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
@@ -356,7 +356,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R1 16A PDU C</B></FONT></TD>
+<TD COLSPAN="2"></TD>
 </TR>
 
 </TABLE>
@@ -659,7 +659,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
-<TD COLSPAN="2"></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R2 16A PDU C</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
@@ -703,7 +703,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R2 16A PDU C</B></FONT></TD>
+<TD COLSPAN="2"></TD>
 </TR>
 
 </TABLE>
@@ -1006,7 +1006,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
-<TD COLSPAN="2"></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R3 16A PDU C</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
@@ -1050,7 +1050,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R3 16A PDU C</B></FONT></TD>
+<TD COLSPAN="2"></TD>
 </TR>
 
 </TABLE>
@@ -1364,7 +1364,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">12</FONT></TD>
-<TD COLSPAN="2"></TD>
+<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R4 16A PDU C</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">11</FONT></TD>
@@ -1408,7 +1408,7 @@ digraph rack_layout {
 </TR>
 <TR>
 <TD WIDTH="28"><FONT FACE="Sinkin Sans 400 Regular">1</FONT></TD>
-<TD COLSPAN="2" ROWSPAN="1" BGCOLOR="#AAAAAA" WIDTH="200"><FONT POINT-SIZE="14.5" FACE="Sinkin Sans 400 Regular"><B>R4 16A PDU C</B></FONT></TD>
+<TD COLSPAN="2"></TD>
 </TR>
 
 </TABLE>
