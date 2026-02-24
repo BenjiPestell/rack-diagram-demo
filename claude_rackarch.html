@@ -40,7 +40,6 @@
     font-weight: 500;
   }
 
-  /* HEADER */
   header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -63,16 +62,12 @@
     text-shadow: 0 0 20px rgba(0,212,255,0.35);
     display: flex;
     align-items: center;
-    gap: 0;
     flex-shrink: 0;
     white-space: nowrap;
   }
 
   .logo-accent { color: var(--accent2); }
-
-  /* kill the old icon box */
   .logo-icon { display: none; }
-
   .header-divider { width: 1px; height: 22px; background: var(--border); flex-shrink:0; }
   .header-spacer { flex: 1; }
 
@@ -127,14 +122,8 @@
   .header-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 700; }
   .header-btn.primary:hover { background: transparent; color: var(--accent); }
 
-  /* APP BODY */
-  .app-body {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+  .app-body { display: flex; flex: 1; overflow: hidden; }
 
-  /* LEFT PANEL */
   .left-panel {
     width: 210px;
     background: var(--surface);
@@ -159,7 +148,7 @@
   .panel-scroll { overflow-y: auto; flex: 1; }
   .panel-scroll::-webkit-scrollbar { width: 4px; }
   .panel-scroll::-webkit-scrollbar-track { background: var(--bg); }
-  .panel-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 0; }
+  .panel-scroll::-webkit-scrollbar-thumb { background: var(--border2); }
 
   .palette-section { padding: 6px; }
 
@@ -178,7 +167,6 @@
     gap: 8px;
     padding: 6px 8px;
     border: 1px solid var(--border);
-    border-radius: 0;
     cursor: grab;
     font-family: var(--sans);
     font-size: 15px;
@@ -194,36 +182,14 @@
   .palette-item:hover { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
   .palette-item:active { cursor: grabbing; }
 
-  .palette-dot {
-    width: 10px; height: 10px;
-    border-radius: 1px;
-    flex-shrink: 0;
-    border: 1px solid rgba(0,0,0,0.25);
-  }
+  .palette-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
 
-  .type-color-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 8px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text2);
-    border-radius: 0;
-  }
-
+  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 15px; font-weight: 600; color: var(--text2); }
   .type-color-row:hover { background: var(--surface2); }
 
-  .color-swatch {
-    width: 16px; height: 16px;
-    border-radius: 1px;
-    border: 1px solid rgba(255,255,255,0.1);
-    cursor: pointer;
-    flex-shrink: 0;
-    padding: 0;
-  }
+  .color-swatch { width: 16px; height: 16px; border-radius: 1px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; padding: 0; }
 
-  /* CENTER CANVAS */
+  /* CANVAS */
   .canvas-area {
     flex: 1;
     overflow: auto;
@@ -236,8 +202,22 @@
     position: relative;
   }
 
+  /* PICK MODE */
+  .canvas-area.picking-device { cursor: crosshair; }
+  .canvas-area.picking-device .rack-device {
+    cursor: crosshair !important;
+    outline: 1px dashed rgba(0,212,255,0.35) !important;
+    transition: outline 0.1s, filter 0.1s !important;
+  }
+  .canvas-area.picking-device .rack-device:hover {
+    outline: 2px solid var(--accent) !important;
+    filter: brightness(1.35) !important;
+    z-index: 100 !important;
+    box-shadow: 0 0 12px rgba(0,212,255,0.35) !important;
+  }
+
   .canvas-area::-webkit-scrollbar { width: 6px; height: 6px; }
-  .canvas-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 0; }
+  .canvas-area::-webkit-scrollbar-thumb { background: var(--border2); }
   .canvas-area::-webkit-scrollbar-track { background: var(--bg); }
 
   .rack-canvas {
@@ -249,11 +229,33 @@
     align-items: flex-start;
   }
 
-  .rack-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+  /* PICK BANNER */
+  #pickBanner {
+    display: none;
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 0 30px rgba(0,212,255,0.6);
+    animation: bannerPulse 1.4s ease-in-out infinite;
   }
+  #pickBanner.visible { display: block; }
+
+  @keyframes bannerPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.5); }
+    50% { box-shadow: 0 0 40px rgba(0,212,255,0.9); }
+  }
+
+  .rack-wrapper { display: flex; flex-direction: column; align-items: stretch; }
 
   .rack-title-bar {
     background: var(--surface2);
@@ -279,8 +281,6 @@
     min-width: 0;
   }
 
-  .rack-title-input::placeholder { color: var(--text3); }
-
   .rack-remove-btn {
     background: none;
     border: 1px solid var(--border);
@@ -288,22 +288,13 @@
     cursor: pointer;
     font-size: 12px;
     font-family: var(--mono);
-    letter-spacing: 1px;
-    line-height: 1;
     padding: 2px 5px;
-    border-radius: 0;
     transition: all 0.2s;
   }
 
   .rack-remove-btn:hover { border-color: var(--red); color: var(--red); }
 
-  .rack-views {
-    display: flex;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    background: var(--surface2);
-  }
-
+  .rack-views { display: flex; border: 1px solid var(--border); overflow: hidden; background: var(--surface2); }
   .rack-view { display: flex; flex-direction: column; }
 
   .rack-view-label {
@@ -314,25 +305,19 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text3);
-    font-weight: 400;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
   }
 
   .rack-view-label.front-label { color: var(--accent); border-top: 2px solid var(--accent); }
   .rack-view-label.rear-label { color: var(--accent2); border-top: 2px solid var(--accent2); }
-
   .rack-view-divider { width: 1px; background: var(--border); }
+  .rack-column { width: 190px; display: flex; flex-direction: row; }
 
-  .rack-column {
-    width: 190px;
-    position: relative;
-  }
-
-  .u-row {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
+  .u-numbers-strip {
+    width: 22px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
   }
 
   .u-number {
@@ -345,16 +330,20 @@
     font-family: var(--mono);
     font-size: 12px;
     color: var(--text3);
-    flex-shrink: 0;
-    border-right: 1px solid var(--border);
     border-bottom: 1px solid rgba(30,42,53,0.6);
   }
 
-  .u-slot {
+  .u-slots-area {
     flex: 1;
+    position: relative;
+  }
+
+  .u-row { width: 100%; }
+
+  .u-slot {
+    width: 100%;
     height: var(--u-height);
     border-bottom: 1px solid rgba(30,42,53,0.5);
-    position: relative;
     transition: background 0.1s;
   }
 
@@ -363,9 +352,7 @@
 
   .rack-device {
     position: absolute;
-    left: 0;
-    right: 0;
-    border-radius: 0;
+    left: 0; right: 0;
     border: 1px solid rgba(0,0,0,0.2);
     cursor: pointer;
     display: flex;
@@ -379,14 +366,13 @@
   }
 
   .rack-device:hover { filter: brightness(1.15); z-index: 20; }
-  .rack-device.selected { outline: 2px solid rgba(255,255,255,0.9); outline-offset: 0px; z-index: 30; box-shadow: 0 0 8px rgba(255,255,255,0.15); }
+  .rack-device.selected { outline: 2px solid rgba(255,255,255,0.9); z-index: 30; box-shadow: 0 0 8px rgba(255,255,255,0.15); }
   .rack-device.dragging { opacity: 0.35; }
 
   .device-label {
     font-family: var(--sans);
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.3px;
     color: rgba(0,0,0,0.7);
     white-space: nowrap;
     overflow: hidden;
@@ -394,18 +380,12 @@
     flex: 1;
   }
 
-  .device-u-badge {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: rgba(0,0,0,0.35);
-    flex-shrink: 0;
-  }
+  .device-u-badge { font-family: var(--mono); font-size: 12px; color: rgba(0,0,0,0.35); flex-shrink: 0; }
 
   .add-rack-btn {
     width: 200px;
     height: 80px;
     border: 1px dashed var(--text3);
-    border-radius: 0;
     background: none;
     color: var(--text3);
     cursor: pointer;
@@ -436,11 +416,7 @@
     flex-shrink: 0;
   }
 
-  .tab-bar {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
 
   .tab-btn {
     flex: 1;
@@ -465,12 +441,9 @@
   .tab-content.active { display: flex; }
   .tab-content::-webkit-scrollbar { width: 4px; }
   .tab-content::-webkit-scrollbar-track { background: var(--bg); }
-  .tab-content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 0; }
+  .tab-content::-webkit-scrollbar-thumb { background: var(--border2); }
 
-  .prop-section {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-  }
+  .prop-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
 
   .prop-section-title {
     font-family: var(--mono);
@@ -482,12 +455,7 @@
     margin-bottom: 8px;
   }
 
-  .prop-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 7px;
-  }
+  .prop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
 
   .prop-label {
     font-family: var(--mono);
@@ -505,7 +473,6 @@
     border: 1px solid var(--border);
     color: var(--text);
     padding: 5px 7px;
-    border-radius: 0;
     font-family: var(--mono);
     font-size: 15px;
     outline: none;
@@ -516,19 +483,7 @@
   .prop-select { cursor: pointer; }
   .prop-select option { background: var(--surface2); }
 
-  .prop-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-family: var(--sans);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text2);
-    cursor: pointer;
-    margin-bottom: 7px;
-    letter-spacing: 0.3px;
-  }
-
+  .prop-checkbox { display: flex; align-items: center; gap: 7px; font-family: var(--sans); font-size: 15px; font-weight: 600; color: var(--text2); cursor: pointer; margin-bottom: 7px; }
   .prop-checkbox input { accent-color: var(--accent); }
 
   .prop-btn {
@@ -537,7 +492,6 @@
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text2);
-    border-radius: 0;
     cursor: pointer;
     font-family: var(--sans);
     font-size: 15px;
@@ -570,78 +524,151 @@
   }
 
   /* WIRING */
-  .wiring-layer-card {
-    margin: 7px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 0;
-    overflow: hidden;
-  }
+  .wiring-layer-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
 
-  .wiring-layer-header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 8px;
-    cursor: pointer;
-    user-select: none;
-  }
-
+  .wiring-layer-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
   .wiring-layer-header:hover { background: var(--surface3); }
 
-  .layer-color-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+  .layer-color-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-  .layer-name {
-    flex: 1;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.3px;
-  }
+  .wiring-layer-body { padding: 7px 8px; border-top: 1px solid var(--border); }
 
-  .wiring-layer-body {
-    padding: 7px 8px;
-    border-top: 1px solid var(--border);
-  }
-
-  .connection-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 5px;
-  }
-
-  .conn-from, .conn-to {
-    flex: 1;
+  /* Connection card */
+  .connection-card {
     background: var(--bg);
     border: 1px solid var(--border);
+    margin-bottom: 6px;
+    padding: 7px 8px;
+  }
+
+  .conn-main-row { display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
+
+  .conn-endpoint { flex: 1; display: flex; align-items: stretch; min-width: 0; }
+
+  .conn-field {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
     color: var(--text);
-    padding: 4px 5px;
-    border-radius: 0;
+    padding: 4px 6px;
     font-family: var(--mono);
-    font-size: 15px;
+    font-size: 11px;
     outline: none;
     min-width: 0;
   }
 
-  .conn-from:focus, .conn-to:focus { border-color: var(--accent); }
+  .conn-field:focus { border-color: var(--accent); }
+
+  /* Pick button */
+  .conn-pick-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0 7px;
+    line-height: 1;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .conn-pick-btn:hover { background: var(--surface3); border-color: var(--accent); color: var(--accent); }
+
+  .conn-pick-btn.picking {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    animation: pickPulse 0.9s ease-in-out infinite;
+  }
+
+  @keyframes pickPulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .conn-arrow { color: var(--accent); font-size: 11px; flex-shrink: 0; padding: 0 2px; }
 
   .conn-remove {
     background: none;
     border: none;
     color: var(--text3);
     cursor: pointer;
-    font-size: 16px;
-    padding: 1px 3px;
+    font-size: 14px;
+    padding: 2px 4px;
     line-height: 1;
     transition: color 0.2s;
+    flex-shrink: 0;
   }
 
   .conn-remove:hover { color: var(--red); }
+
+  /* Cluster toggle button */
+  .conn-cluster-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 3px 7px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+    margin-bottom: 0;
+  }
+
+  .conn-cluster-toggle:hover { border-color: var(--accent2); color: var(--accent2); }
+  .conn-cluster-toggle.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.07); }
+
+  /* Cluster range row */
+  .conn-cluster-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid var(--border);
+  }
+
+  .conn-cluster-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .conn-range-input {
+    width: 52px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    text-align: center;
+  }
+
+  .conn-range-input:focus { border-color: var(--accent2); color: var(--text); }
+
+  .conn-range-sep { font-family: var(--mono); font-size: 11px; color: var(--accent2); flex-shrink: 0; }
+
+  .conn-range-hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    margin-left: 2px;
+    letter-spacing: 0;
+  }
 
   .add-conn-btn {
     width: 100%;
@@ -649,7 +676,6 @@
     background: none;
     border: 1px solid var(--border);
     color: var(--text3);
-    border-radius: 0;
     cursor: pointer;
     font-family: var(--mono);
     font-size: 15px;
@@ -668,7 +694,6 @@
     background: none;
     border: 1px dashed var(--border2);
     color: var(--text3);
-    border-radius: 0;
     cursor: pointer;
     font-family: var(--mono);
     font-size: 15px;
@@ -680,14 +705,7 @@
   .add-layer-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* YAML */
-  .yaml-toolbar {
-    padding: 6px 10px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-    background: var(--surface);
-  }
+  .yaml-toolbar { padding: 6px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 6px; flex-shrink: 0; background: var(--surface); flex-wrap: wrap; }
 
   .yaml-area {
     flex: 1;
@@ -705,12 +723,10 @@
 
   .yaml-area.dirty { border-left: 2px solid var(--accent2); }
   .yaml-area.has-error { border-left: 2px solid var(--red); }
-
   .yaml-status-ok { color: var(--green); }
   .yaml-status-err { color: var(--red); }
   .yaml-status-info { color: var(--accent); }
 
-  /* STATUS BAR */
   .status-bar {
     height: 22px;
     background: var(--surface);
@@ -739,7 +755,7 @@
 <body>
 
 <header>
-  <div class="logo">RACK<span class="logo-accent">ARCH</span></div>
+  <div class="logo">RACK<span class="logo-accent">DESIGNER</span></div>
   <div class="header-divider"></div>
   <div class="global-settings">
     <label>Rack Dist.</label>
@@ -760,7 +776,6 @@
 
 <div class="app-body">
 
-  <!-- LEFT PANEL -->
   <div class="left-panel">
     <div class="panel-header">Device Palette</div>
     <div class="panel-scroll">
@@ -774,7 +789,6 @@
         <div class="palette-item" draggable="true" data-type="cable management" data-units="1" data-name="Cable Manager"><div class="palette-dot" style="background:#C4C4C4"></div>Cable Mgmt</div>
         <div class="palette-item" draggable="true" data-type="customer" data-units="4" data-name="Customer Equipment"><div class="palette-dot" style="background:#ffd9d6"></div>Customer</div>
       </div>
-
       <div style="border-top:1px solid var(--border);padding:6px 6px 8px">
         <div class="palette-label">Type Colors</div>
         <div id="typeColorList"></div>
@@ -782,7 +796,6 @@
     </div>
   </div>
 
-  <!-- CANVAS -->
   <div class="canvas-area" id="canvasArea">
     <div class="rack-canvas" id="rackCanvas">
       <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">
@@ -792,7 +805,6 @@
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
   <div class="right-panel">
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('props',this)">Properties</button>
@@ -807,28 +819,14 @@
       <div id="propsForm" style="display:none; flex-direction:column">
         <div class="prop-section">
           <div class="prop-section-title">Device</div>
-          <div class="prop-row">
-            <span class="prop-label">Name</span>
-            <input class="prop-input" id="pName" type="text" placeholder="Device name">
-          </div>
-          <div class="prop-row">
-            <span class="prop-label">Type</span>
-            <select class="prop-select" id="pType"></select>
-          </div>
-          <div class="prop-row">
-            <span class="prop-label">Units (U)</span>
-            <input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1">
-          </div>
-          <div class="prop-row">
-            <span class="prop-label">Start U</span>
-            <input class="prop-input" id="pStartU" type="number" min="1" max="42">
-          </div>
+          <div class="prop-row"><span class="prop-label">Name</span><input class="prop-input" id="pName" type="text" placeholder="Device name"></div>
+          <div class="prop-row"><span class="prop-label">Type</span><select class="prop-select" id="pType"></select></div>
+          <div class="prop-row"><span class="prop-label">Units (U)</span><input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1"></div>
+          <div class="prop-row"><span class="prop-label">Start U</span><input class="prop-input" id="pStartU" type="number" min="1" max="42"></div>
         </div>
         <div class="prop-section">
           <div class="prop-section-title">Pattern</div>
-          <label class="prop-checkbox">
-            <input type="checkbox" id="pIsPattern" onchange="togglePatternFields()"> Numbered pattern {N}
-          </label>
+          <label class="prop-checkbox"><input type="checkbox" id="pIsPattern" onchange="togglePatternFields()"> Numbered pattern {N}</label>
           <div id="patternFields" style="display:none">
             <div class="prop-row"><span class="prop-label">Start N</span><input class="prop-input" id="pStart" type="number" value="1"></div>
             <div class="prop-row"><span class="prop-label">End N</span><input class="prop-input" id="pEnd" type="number" value="3"></div>
@@ -848,12 +846,12 @@
     </div>
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
-      <div class="yaml-toolbar" style="flex-wrap:wrap;gap:5px">
-        <label class="header-btn primary" style="cursor:pointer" title="Load a .yaml file">
+      <div class="yaml-toolbar">
+        <label class="header-btn primary" style="cursor:pointer">
           Load File<input type="file" id="yamlFileInput" accept=".yaml,.yml,.txt" style="display:none" onchange="loadYAMLFile(event)">
         </label>
-        <button class="header-btn primary" onclick="applyYAMLToCanvas()" title="Parse YAML and update canvas">Apply to Canvas</button>
-        <button class="header-btn" onclick="refreshYAML()" title="Re-generate from canvas">Generate YAML</button>
+        <button class="header-btn primary" onclick="applyYAMLToCanvas()">Apply to Canvas</button>
+        <button class="header-btn" onclick="refreshYAML()">Generate YAML</button>
         <button class="header-btn" onclick="copyYAML()">Copy</button>
         <button class="header-btn" onclick="exportYAML()">Download</button>
       </div>
@@ -868,8 +866,11 @@
   <div class="status-item" id="statusRacks">0 racks</div>
   <div class="status-item" id="statusDevices">0 devices</div>
   <div class="status-item" id="statusLayers">0 wiring layers</div>
-  <div class="status-item" style="margin-left:auto">[ DEL ] Delete Selected &nbsp;·&nbsp; [ ESC ] Deselect</div>
+  <div class="status-item" style="margin-left:auto">[ DEL ] Delete &nbsp;·&nbsp; [ ESC ] Deselect / Cancel Pick</div>
 </div>
+
+<!-- Pick mode banner -->
+<div id="pickBanner">⊕ Click a device on the canvas &nbsp;—&nbsp; ESC to cancel</div>
 
 <script>
 const state = {
@@ -889,6 +890,31 @@ const state = {
 
 let selectedDevRef = null;
 let dragData = null;
+
+// ─── PICK MODE ───────────────────────────────────────────────────────
+// pickState: null | { layerIdx, connIdx, field: 'from'|'to' }
+let pickState = null;
+
+function enterPickMode(layerIdx, connIdx, field) {
+  pickState = { layerIdx, connIdx, field };
+  document.getElementById('canvasArea').classList.add('picking-device');
+  document.getElementById('pickBanner').classList.add('visible');
+  renderWiringLayers(); // re-render to highlight active pick button
+}
+
+function exitPickMode() {
+  pickState = null;
+  document.getElementById('canvasArea').classList.remove('picking-device');
+  document.getElementById('pickBanner').classList.remove('visible');
+  renderWiringLayers();
+}
+
+function handleDevicePickClick(devName) {
+  if (!pickState) return;
+  const { layerIdx, connIdx, field } = pickState;
+  state.wiringLayers[layerIdx].connections[connIdx][field] = devName;
+  exitPickMode();
+}
 
 // ───── INIT ─────
 function init() {
@@ -919,12 +945,10 @@ function updateTypeColor(type, color) {
 }
 
 function populateTypeSelects() {
-  ['pType'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const cur = el.value;
-    el.innerHTML = Object.keys(state.typeColors).map(t => `<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');
-  });
+  const el = document.getElementById('pType');
+  if (!el) return;
+  const cur = el.value;
+  el.innerHTML = Object.keys(state.typeColors).map(t => `<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');
 }
 
 // ───── RACKS ─────
@@ -983,7 +1007,6 @@ function buildRackEl(rack) {
   return wrap;
 }
 
-// Expand a device entry into one or more render items (clusters → multiple)
 function expandDeviceToRenderItems(dev) {
   const isPattern = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
   if (!isPattern) return [{ dev, displayName: dev.name, start_u: dev.start_u }];
@@ -991,18 +1014,12 @@ function expandDeviceToRenderItems(dev) {
   const items = [];
   const count = dev.end - dev.start + 1;
   const spacing = dev.spacing || 0;
-  const step = dev.units + spacing; // U slots per member
+  const step = dev.units + spacing;
 
   for (let i = 0; i < count; i++) {
     const n = dev.start + i;
     const memberStartU = dev.start_u - i * step;
-    items.push({
-      dev,
-      displayName: dev.name.replace('{N}', n),
-      start_u: memberStartU,
-      memberIndex: i,
-      memberN: n
-    });
+    items.push({ dev, displayName: dev.name.replace('{N}', n), start_u: memberStartU, memberIndex: i, memberN: n });
   }
   return items;
 }
@@ -1023,14 +1040,12 @@ function buildColumnEl(rack, face) {
 
   const totalU = rack.total_u || 42;
 
-  // Build the full set of render items (expanding clusters)
   const renderItems = [];
   rack[face].forEach(dev => {
     if (!dev.start_u || !dev.units) return;
     expandDeviceToRenderItems(dev).forEach(item => renderItems.push(item));
   });
 
-  // Mark occupied slots
   const occupied = {};
   renderItems.forEach(item => {
     for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
@@ -1038,14 +1053,18 @@ function buildColumnEl(rack, face) {
     }
   });
 
-  for (let u = totalU; u >= 1; u--) {
-    const row = document.createElement('div');
-    row.className = 'u-row';
+  // Numbers strip — always visible, devices positioned in slotsArea only
+  const numbersStrip = document.createElement('div');
+  numbersStrip.className = 'u-numbers-strip';
 
+  const slotsArea = document.createElement('div');
+  slotsArea.className = 'u-slots-area';
+
+  for (let u = totalU; u >= 1; u--) {
     const num = document.createElement('div');
     num.className = 'u-number';
     num.textContent = u;
-    // if (u % 5 === 0 || u === 1 || u === totalU) num.textContent = u;
+    numbersStrip.appendChild(num);
 
     const slot = document.createElement('div');
     slot.className = 'u-slot' + (occupied[u] ? ' occupied' : '');
@@ -1059,17 +1078,16 @@ function buildColumnEl(rack, face) {
       slot.addEventListener('dragleave', e => e.target.classList.remove('drop-target'));
     }
 
-    row.appendChild(num);
-    row.appendChild(slot);
-    col.appendChild(row);
+    slotsArea.appendChild(slot);
   }
 
-  // Render each item as its own block
   renderItems.forEach(item => {
     if (item.start_u < 1 || item.start_u > totalU) return;
-    col.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
+    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
   });
 
+  col.appendChild(numbersStrip);
+  col.appendChild(slotsArea);
   view.appendChild(col);
   return view;
 }
@@ -1090,12 +1108,24 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
   el.innerHTML = `<span class="device-label">${nm}</span><span class="device-u-badge">${dev.units}U</span>`;
 
   el.setAttribute('draggable', 'true');
-  el.addEventListener('click', () => selectDevice(dev, rackId, face));
+
+  el.addEventListener('click', e => {
+    if (pickState) {
+      e.stopPropagation();
+      // Insert the base/pattern name for cluster devices so {N} syntax is preserved
+      handleDevicePickClick(displayName);
+      return;
+    }
+    selectDevice(dev, rackId, face);
+  });
+
   el.addEventListener('dragstart', e => {
+    if (pickState) { e.preventDefault(); return; }
     dragData = { source: 'rack', dev, rackId, face };
     e.dataTransfer.effectAllowed = 'move';
     setTimeout(() => el.classList.add('dragging'), 0);
   });
+
   el.addEventListener('dragend', () => {
     el.classList.remove('dragging');
     document.querySelectorAll('.u-slot.drop-target').forEach(s => s.classList.remove('drop-target'));
@@ -1154,13 +1184,6 @@ function slotDrop(e) {
 // ───── SELECTION ─────
 function selectDevice(dev, rackId, face) {
   selectedDevRef = { dev, rackId, face };
-
-  document.querySelectorAll('.rack-device').forEach(el => el.classList.remove('selected'));
-  document.querySelectorAll('.rack-device').forEach(el => {
-    if (el.dataset.devName === dev.name) el.classList.add('selected');
-  });
-
-  // Re-render to properly mark selected
   renderAllRacks();
 
   document.getElementById('propsEmpty').style.display = 'none';
@@ -1256,7 +1279,7 @@ function renderWiringLayers() {
         value="${layer.name}" onclick="event.stopPropagation()"
         onchange="state.wiringLayers[${li}].name=this.value">
       <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
-        style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;border-radius:0;outline:none;max-width:82px;letter-spacing:0.5px">
+        style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;outline:none;max-width:82px;letter-spacing:0.5px">
         ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI'].map(ct =>
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
       </select>
@@ -1275,23 +1298,16 @@ function renderWiringLayers() {
       body.className = 'wiring-layer-body';
 
       layer.connections.forEach((conn, ci) => {
-        const row = document.createElement('div');
-        row.className = 'connection-row';
-        row.innerHTML = `
-          <input class="conn-from" placeholder="From" value="${conn.from||''}"
-            onchange="state.wiringLayers[${li}].connections[${ci}].from=this.value">
-          <span style="color:var(--accent);font-size:10px;flex-shrink:0">→</span>
-          <input class="conn-to" placeholder="To" value="${conn.to||''}"
-            onchange="state.wiringLayers[${li}].connections[${ci}].to=this.value">
-          <button class="conn-remove" onclick="removeConn(${li},${ci})">✕</button>
-        `;
-        body.appendChild(row);
+        body.appendChild(buildConnectionCard(li, ci, conn));
       });
 
       const ab = document.createElement('button');
       ab.className = 'add-conn-btn';
       ab.textContent = '＋ Add Connection';
-      ab.onclick = () => { state.wiringLayers[li].connections.push({from:'',to:''}); renderWiringLayers(); };
+      ab.onclick = () => {
+        state.wiringLayers[li].connections.push({ from: '', to: '' });
+        renderWiringLayers();
+      };
       body.appendChild(ab);
       card.appendChild(body);
     }
@@ -1300,8 +1316,167 @@ function renderWiringLayers() {
   });
 }
 
+function buildConnectionCard(li, ci, conn) {
+  const isPickingFrom = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field==='from';
+  const isPickingTo   = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field==='to';
+
+  const card = document.createElement('div');
+  card.className = 'connection-card';
+
+  // ── Main from → to row ──────────────────────
+  const mainRow = document.createElement('div');
+  mainRow.className = 'conn-main-row';
+
+  // FROM endpoint
+  const fromWrap = document.createElement('div');
+  fromWrap.className = 'conn-endpoint';
+
+  const fromInput = document.createElement('input');
+  fromInput.className = 'conn-field';
+  fromInput.placeholder = 'From device';
+  fromInput.value = conn.from || '';
+  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; });
+
+  const fromPick = document.createElement('button');
+  fromPick.className = 'conn-pick-btn' + (isPickingFrom ? ' picking' : '');
+  fromPick.title = 'Pick a device from the canvas';
+  fromPick.innerHTML = '⊕';
+  fromPick.addEventListener('click', e => {
+    e.stopPropagation();
+    if (isPickingFrom) { exitPickMode(); return; }
+    enterPickMode(li, ci, 'from');
+  });
+
+  fromWrap.appendChild(fromInput);
+  fromWrap.appendChild(fromPick);
+
+  const arrow = document.createElement('span');
+  arrow.className = 'conn-arrow';
+  arrow.textContent = '→';
+
+  // TO endpoint
+  const toWrap = document.createElement('div');
+  toWrap.className = 'conn-endpoint';
+
+  const toInput = document.createElement('input');
+  toInput.className = 'conn-field';
+  toInput.placeholder = 'To device';
+  toInput.value = Array.isArray(conn.to) ? conn.to.join(', ') : (conn.to || '');
+  toInput.addEventListener('change', e => {
+    const raw = e.target.value;
+    const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+    state.wiringLayers[li].connections[ci].to = parts.length > 1 ? parts : (parts[0] || '');
+  });
+
+  const toPick = document.createElement('button');
+  toPick.className = 'conn-pick-btn' + (isPickingTo ? ' picking' : '');
+  toPick.title = 'Pick a device from the canvas';
+  toPick.innerHTML = '⊕';
+  toPick.addEventListener('click', e => {
+    e.stopPropagation();
+    if (isPickingTo) { exitPickMode(); return; }
+    enterPickMode(li, ci, 'to');
+  });
+
+  toWrap.appendChild(toInput);
+  toWrap.appendChild(toPick);
+
+  // Remove button
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'conn-remove';
+  removeBtn.textContent = '✕';
+  removeBtn.title = 'Remove connection';
+  removeBtn.addEventListener('click', () => removeConn(li, ci));
+
+  mainRow.appendChild(fromWrap);
+  mainRow.appendChild(arrow);
+  mainRow.appendChild(toWrap);
+  mainRow.appendChild(removeBtn);
+  card.appendChild(mainRow);
+
+  // ── Cluster range toggle + fields ───────────
+  const hasCluster = conn.start !== undefined || conn.end !== undefined || conn._showCluster;
+
+  const clusterFooter = document.createElement('div');
+  clusterFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'conn-cluster-toggle' + (hasCluster ? ' active' : '');
+  toggleBtn.innerHTML = hasCluster
+    ? '<span style="color:var(--accent2)">{N}</span>&nbsp;cluster range ▾'
+    : '<span style="opacity:.5">{N}</span>&nbsp;add cluster range';
+  toggleBtn.title = 'Emit one connection per integer N in range — substituted into {N} in device names';
+  toggleBtn.addEventListener('click', () => {
+    if (hasCluster) {
+      delete state.wiringLayers[li].connections[ci].start;
+      delete state.wiringLayers[li].connections[ci].end;
+      state.wiringLayers[li].connections[ci]._showCluster = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showCluster = true;
+      if (state.wiringLayers[li].connections[ci].start === undefined)
+        state.wiringLayers[li].connections[ci].start = 1;
+      if (state.wiringLayers[li].connections[ci].end === undefined)
+        state.wiringLayers[li].connections[ci].end = 3;
+    }
+    renderWiringLayers();
+  });
+  clusterFooter.appendChild(toggleBtn);
+  card.appendChild(clusterFooter);
+
+  if (hasCluster) {
+    const clusterRow = document.createElement('div');
+    clusterRow.className = 'conn-cluster-row';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'conn-cluster-label';
+    lbl.textContent = 'N =';
+
+    const startIn = document.createElement('input');
+    startIn.className = 'conn-range-input';
+    startIn.type = 'number';
+    startIn.title = 'Start of N range (inclusive)';
+    startIn.placeholder = '1';
+    startIn.value = conn.start !== undefined ? conn.start : '';
+    startIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.wiringLayers[li].connections[ci].start = isNaN(v) ? undefined : v;
+    });
+
+    const sep = document.createElement('span');
+    sep.className = 'conn-range-sep';
+    sep.textContent = '→';
+
+    const endIn = document.createElement('input');
+    endIn.className = 'conn-range-input';
+    endIn.type = 'number';
+    endIn.title = 'End of N range (inclusive)';
+    endIn.placeholder = '3';
+    endIn.value = conn.end !== undefined ? conn.end : '';
+    endIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.wiringLayers[li].connections[ci].end = isNaN(v) ? undefined : v;
+    });
+
+    const hint = document.createElement('span');
+    hint.className = 'conn-range-hint';
+    const count = (conn.start !== undefined && conn.end !== undefined)
+      ? Math.max(0, conn.end - conn.start + 1)
+      : '?';
+    hint.textContent = `(${count} connection${count === 1 ? '' : 's'})`;
+
+    clusterRow.appendChild(lbl);
+    clusterRow.appendChild(startIn);
+    clusterRow.appendChild(sep);
+    clusterRow.appendChild(endIn);
+    clusterRow.appendChild(hint);
+    card.appendChild(clusterRow);
+  }
+
+  return card;
+}
+
 function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers(); updateStatus(); }
-function removeConn(li,ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
+function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
 
 // ───── YAML ─────
 let yamlDirty = false;
@@ -1435,7 +1610,7 @@ function loadYAMLFile(event) {
     switchTab('yaml', null);
   };
   reader.readAsText(file);
-  event.target.value = ''; // reset so same file can be reloaded 
+  event.target.value = '';
 }
 
 // ───── YAML PARSER ─────
@@ -1457,25 +1632,6 @@ function parseYAMLToState(text) {
 
   function indent(line) { return line.length - line.trimStart().length; }
 
-  // Parse a flat list of "key: val" lines starting at i, all at exactly baseIndent
-  function parseSimpleMap(baseIndent, stopIndent) {
-    const obj = {};
-    while (i < lines.length) {
-      const ln = lines[i];
-      const tr = ln.trim();
-      if (!tr || tr.startsWith('#')) { i++; continue; }
-      const ind = indent(ln);
-      if (ind < baseIndent || ind <= stopIndent && ind < baseIndent) break;
-      if (ind < baseIndent) break;
-      const ci = tr.indexOf(':');
-      if (ci === -1) { i++; continue; }
-      obj[tr.slice(0, ci).trim()] = scalar(tr.slice(ci + 1));
-      i++;
-    }
-    return obj;
-  }
-
-  // Parse a device list: items start with "- name: ..." at baseIndent, props at baseIndent+2
   function parseDeviceList(baseIndent) {
     const devs = [];
     let cur = null;
@@ -1489,12 +1645,12 @@ function parseYAMLToState(text) {
         cur = {};
         devs.push(cur);
         const rest = tr.slice(2).trim();
-        const ci = rest.indexOf(':');
-        if (ci !== -1) cur[rest.slice(0, ci).trim()] = scalar(rest.slice(ci + 1));
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) cur[rest.slice(0, ci2).trim()] = scalar(rest.slice(ci2 + 1));
         i++;
       } else if (cur !== null) {
-        const ci = tr.indexOf(':');
-        if (ci !== -1) cur[tr.slice(0, ci).trim()] = scalar(tr.slice(ci + 1));
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) cur[tr.slice(0, ci2).trim()] = scalar(tr.slice(ci2 + 1));
         i++;
       } else {
         i++;
@@ -1503,7 +1659,6 @@ function parseYAMLToState(text) {
     return devs;
   }
 
-  // Parse wiring connections list at baseIndent
   function parseConnections(baseIndent) {
     const conns = [];
     let cur = null;
@@ -1515,23 +1670,21 @@ function parseYAMLToState(text) {
       if (ind < baseIndent) break;
       if (tr.startsWith('- ')) {
         const rest = tr.slice(2).trim();
-        const ci = rest.indexOf(':');
-        if (ci !== -1) {
-          const k = rest.slice(0, ci).trim();
-          const v = rest.slice(ci + 1).trim();
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) {
+          const k = rest.slice(0, ci2).trim();
+          const v = rest.slice(ci2 + 1).trim();
           cur = {};
           cur[k] = scalar(v) || null;
           conns.push(cur);
         }
         i++;
       } else if (cur !== null) {
-        const ci = tr.indexOf(':');
-        if (ci !== -1) {
-          const k = tr.slice(0, ci).trim();
-          const v = tr.slice(ci + 1).trim();
-          // handle "to:" with list below
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
           if (!v || v.startsWith('#')) {
-            // peek ahead for list
             i++;
             const toItems = [];
             while (i < lines.length) {
@@ -1594,12 +1747,10 @@ function parseYAMLToState(text) {
         const l2 = lines[i]; const t2 = l2.trim();
         if (!t2 || t2.startsWith('#')) { i++; continue; }
         if (indent(l2) === 0) break;
-        // Look for "  - rack:" (indent=2, starts a rack block)
         if (indent(l2) === 2 && t2 === '- rack:') {
           const rackEntry = { rack: {}, front: [], rear: [] };
           racks.push(rackEntry);
           i++;
-          // Now parse lines at indent >= 4 until indent < 4
           while (i < lines.length) {
             const l3 = lines[i]; const t3 = l3.trim();
             if (!t3 || t3.startsWith('#')) { i++; continue; }
@@ -1613,7 +1764,6 @@ function parseYAMLToState(text) {
               i++;
               rackEntry[k3] = parseDeviceList(6);
             } else if (ind3 >= 6) {
-              // rack sub-keys: id, name, total_u
               rackEntry.rack[k3] = scalar(v3);
               i++;
             } else {
@@ -1661,9 +1811,6 @@ function parseYAMLToState(text) {
         }
       }
       result.wiring_layers = layers;
-
-    } else {
-      // skip unknown top-level block
     }
   }
 
@@ -1677,11 +1824,9 @@ function applyYAMLToCanvas() {
   let parsed;
   try {
     parsed = parseYAMLToState(text);
-    console.log('Parsed YAML:', JSON.stringify(parsed, null, 2));
   } catch(e) {
     document.getElementById('yamlOutput').classList.add('has-error');
     setYAMLStatus('Parse error: ' + e.message, 'err');
-    console.error(e);
     return;
   }
 
@@ -1699,33 +1844,23 @@ function applyYAMLToCanvas() {
 }
 
 function applyParsedToState(parsed) {
-  // Globals
-  if (parsed.inter_rack_distance !== undefined)
-    document.getElementById('gInterRack').value = parsed.inter_rack_distance;
-  if (parsed.cable_slack_length !== undefined)
-    document.getElementById('gCableSlack').value = parsed.cable_slack_length;
-  if (parsed.front_to_back_length !== undefined)
-    document.getElementById('gFrontBack').value = parsed.front_to_back_length;
+  if (parsed.inter_rack_distance !== undefined) document.getElementById('gInterRack').value = parsed.inter_rack_distance;
+  if (parsed.cable_slack_length !== undefined) document.getElementById('gCableSlack').value = parsed.cable_slack_length;
+  if (parsed.front_to_back_length !== undefined) document.getElementById('gFrontBack').value = parsed.front_to_back_length;
 
-  // Type colors
   if (parsed.type_colors && typeof parsed.type_colors === 'object') {
     state.typeColors = {};
-    for (const [k, v] of Object.entries(parsed.type_colors)) {
-      state.typeColors[k] = String(v);
-    }
+    for (const [k, v] of Object.entries(parsed.type_colors)) state.typeColors[k] = String(v);
   }
 
-  // Racks — schema: racks is a list of mappings where each has keys: rack (obj), front (list), rear (list)
   if (Array.isArray(parsed.racks)) {
     state.racks = [];
     let rackIdMax = 1;
     parsed.racks.forEach((rackEntry, ri) => {
-      // rackEntry has { rack: {id,name,total_u}, front: [...], rear: [...] }
       const meta = (rackEntry.rack && typeof rackEntry.rack === 'object') ? rackEntry.rack : rackEntry;
       const id = String(meta.id || ('rack' + (ri + 1)));
       const name = String(meta.name || ('Rack ' + (ri + 1)));
       const total_u = parseInt(meta.total_u) || 42;
-
       const idNum = parseInt(id.replace(/\D/g, ''));
       if (!isNaN(idNum) && idNum >= rackIdMax) rackIdMax = idNum + 1;
 
@@ -1735,28 +1870,21 @@ function applyParsedToState(parsed) {
           if (typeof d !== 'object' || d === null) return null;
           const dev = {};
           dev.name = String(d.name || 'Device');
-          if (d.start_u !== undefined && d.start_u !== null) dev.start_u = parseInt(d.start_u);
-          if (d.units  !== undefined && d.units  !== null) dev.units  = parseInt(d.units);
-          if (d.start  !== undefined && d.start  !== null) dev.start  = parseInt(d.start);
-          if (d.end    !== undefined && d.end    !== null) dev.end    = parseInt(d.end);
-          if (d.spacing!== undefined && d.spacing!== null) dev.spacing= parseInt(d.spacing);
+          if (d.start_u != null) dev.start_u = parseInt(d.start_u);
+          if (d.units != null) dev.units = parseInt(d.units);
+          if (d.start != null) dev.start = parseInt(d.start);
+          if (d.end != null) dev.end = parseInt(d.end);
+          if (d.spacing != null) dev.spacing = parseInt(d.spacing);
           dev.type = String(d.type || 'pc');
           return dev;
         }).filter(Boolean);
       };
 
-      state.racks.push({
-        id,
-        name,
-        total_u,
-        front: parseDevList(rackEntry.front),
-        rear:  parseDevList(rackEntry.rear)
-      });
+      state.racks.push({ id, name, total_u, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
     });
     state.nextRackId = rackIdMax;
   }
 
-  // Wiring layers
   if (Array.isArray(parsed.wiring_layers)) {
     state.wiringLayers = [];
     parsed.wiring_layers.forEach(l => {
@@ -1773,10 +1901,10 @@ function applyParsedToState(parsed) {
           if (!c || !c.from) return;
           const conn = { from: String(c.from) };
           if (Array.isArray(c.to)) conn.to = c.to.map(String);
-          else if (c.to !== undefined && c.to !== null) conn.to = String(c.to);
+          else if (c.to != null) conn.to = String(c.to);
           else conn.to = '';
           if (c.start !== undefined) conn.start = parseInt(c.start);
-          if (c.end   !== undefined) conn.end   = parseInt(c.end);
+          if (c.end !== undefined) conn.end = parseInt(c.end);
           layer.connections.push(conn);
         });
       }
@@ -1784,8 +1912,8 @@ function applyParsedToState(parsed) {
     });
   }
 
-  // Re-render everything
   selectedDevRef = null;
+  exitPickMode();
   document.getElementById('propsEmpty').style.display = 'flex';
   document.getElementById('propsForm').style.display = 'none';
   renderTypeColors();
@@ -1799,7 +1927,6 @@ function switchTab(id, btn) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  // Find the right button if not passed
   if (btn && btn.classList) {
     btn.classList.add('active');
   } else {
@@ -1808,7 +1935,6 @@ function switchTab(id, btn) {
     });
   }
   if (id==='yaml') {
-    // Auto-generate only if textarea is empty or not dirty
     const ta = document.getElementById('yamlOutput');
     if (!ta.value.trim() || !yamlDirty) {
       ta.value = generateYAML();
@@ -1832,6 +1958,7 @@ function clearAll() {
   if (!confirm('Clear all racks and wiring layers?')) return;
   state.racks = []; state.wiringLayers = []; state.nextRackId = 1;
   selectedDevRef = null;
+  exitPickMode();
   document.getElementById('propsEmpty').style.display = 'flex';
   document.getElementById('propsForm').style.display = 'none';
   renderAllRacks(); renderWiringLayers(); updateStatus();
@@ -1839,15 +1966,23 @@ function clearAll() {
 
 // ───── KEYBOARD ─────
 document.addEventListener('keydown', e => {
-  const tag = document.activeElement.tagName;
-  if (tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return;
-  if ((e.key==='Delete'||e.key==='Backspace') && selectedDevRef) deleteSelectedDevice();
-  if (e.key==='Escape') {
+  if (e.key === 'Escape') {
+    if (pickState) { exitPickMode(); return; }
     selectedDevRef = null;
     renderAllRacks();
     document.getElementById('propsEmpty').style.display = 'flex';
     document.getElementById('propsForm').style.display = 'none';
+    return;
   }
+  const tag = document.activeElement.tagName;
+  if (tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return;
+  if ((e.key==='Delete'||e.key==='Backspace') && selectedDevRef) deleteSelectedDevice();
+});
+
+// Click on canvas background in pick mode → cancel
+document.getElementById('canvasArea').addEventListener('click', e => {
+  if (!pickState) return;
+  if (!e.target.closest('.rack-device')) exitPickMode();
 });
 
 // ───── SAMPLE DATA ─────
@@ -1925,32 +2060,32 @@ function loadSampleData() {
 
   state.wiringLayers = [
     { name:'Visuals Subnet', edge_color:'#b551a9', cable_type:'Ethernet', collapsed:false, connections:[
-        {from:'Graphics Switch {N}',to:'Graphics Switch {N+1}'},
-        {from:'Graphics Switch 1',to:'Operator PC'},
-        {from:'Graphics Switch 1',to:'Physics PC'},
-        {from:'Graphics Switch 1',to:'Spectator IG'},
-        {from:'Graphics Switch 2',to:'RVD {N}'},
-        {from:'Graphics Switch 3',to:'IG {N}'},
-        {from:'Graphics Switch 4',to:'IG {N}'},
+        {from:'Graphics Switch {N}', to:'Graphics Switch {N+1}', start:1, end:3},
+        {from:'Graphics Switch 1', to:'Operator PC'},
+        {from:'Graphics Switch 1', to:'Physics PC'},
+        {from:'Graphics Switch 1', to:'Spectator IG'},
+        {from:'Graphics Switch 2', to:'RVD {N}', start:1, end:3},
+        {from:'Graphics Switch 3', to:'IG {N}', start:3, end:7},
+        {from:'Graphics Switch 4', to:'IG {N}', start:8, end:13},
     ]},
     { name:'Power Distribution', edge_color:'#f5c842', cable_type:'C13-C14', collapsed:true, connections:[
-        {from:'UPS',to:'KVM Shelf {N}'},
-        {from:'R1 16A PDU B',to:'Operator PC'},
-        {from:'R1 16A PDU B',to:'Physics PC'},
-        {from:'Mains in 1',to:'Vertical PDU 1'},
-        {from:'Vertical PDU 1',to:'R1 16A PDU A'},
-        {from:'Mains in 2',to:'Vertical PDU 2'},
-        {from:'Mains in 3',to:'Vertical PDU 3'},
-        {from:'Mains in 4',to:'Vertical PDU 4'},
+        {from:'UPS', to:'KVM Shelf {N}', start:1, end:3},
+        {from:'R1 16A PDU B', to:'Operator PC'},
+        {from:'R1 16A PDU B', to:'Physics PC'},
+        {from:'Mains in 1', to:'Vertical PDU 1'},
+        {from:'Vertical PDU 1', to:'R1 16A PDU A'},
+        {from:'Mains in 2', to:'Vertical PDU 2'},
+        {from:'Mains in 3', to:'Vertical PDU 3'},
+        {from:'Mains in 4', to:'Vertical PDU 4'},
     ]},
     { name:'Host Subnet', edge_color:'#5192b5', cable_type:'Ethernet', collapsed:true, connections:[
-        {from:'Operator PC',to:'dSPACE Controller'},
-        {from:'dSPACE Controller',to:'dSPACE'},
+        {from:'Operator PC', to:'dSPACE Controller'},
+        {from:'dSPACE Controller', to:'dSPACE'},
     ]},
     { name:'Company Network', edge_color:'#3ecf8e', cable_type:'Ethernet', collapsed:true, connections:[
-        {from:'Company Network Switch',to:'Operator PC'},
-        {from:'Company Network Switch',to:'Telemetry'},
-        {from:'Company Net in',to:'Company Network Switch'},
+        {from:'Company Network Switch', to:'Operator PC'},
+        {from:'Company Network Switch', to:'Telemetry'},
+        {from:'Company Net in', to:'Company Network Switch'},
     ]},
   ];
 
