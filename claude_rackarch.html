@@ -728,51 +728,6 @@
   }
 
   .status-item { display: flex; align-items: center; gap: 5px; }
-
-  .header-btn.run {
-    background: var(--green);
-    border-color: var(--green);
-    color: var(--bg);
-    font-weight: 700;
-    letter-spacing: 2px;
-    position: relative;
-    overflow: hidden;
-  }
-  .header-btn.run:hover { background: transparent; color: var(--green); }
-  .header-btn.run.running {
-    background: transparent;
-    color: var(--green);
-    border-color: var(--green);
-    animation: runPulse 0.8s infinite;
-  }
-  @keyframes runPulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(124,252,0,0.4); }
-    50% { box-shadow: 0 0 0 5px rgba(124,252,0,0); }
-  }
-
-  /* Toast notification */
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    padding: 10px 18px;
-    opacity: 0;
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-    z-index: 9999;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.success { border-left-color: var(--green); }
-  .toast.error { border-left-color: var(--red); }
   .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
 
   @keyframes pulse {
@@ -801,9 +756,6 @@
   <button class="header-btn" onclick="loadSampleData()">Load Example</button>
   <button class="header-btn" onclick="clearAll()">Clear</button>
   <button class="header-btn primary" onclick="exportYAML()">Export YAML</button>
-  <div class="header-divider"></div>
-  <input class="mini-input" id="outputFilename" value="rack-design.yaml" title="Output filename (must match watcher.py)" style="width:130px;color:var(--accent)">
-  <button class="header-btn run" id="runBtn" onclick="runGenerate()" title="Export YAML and trigger run.py via watcher">&#9654; Run</button>
 </header>
 
 <div class="app-body">
@@ -897,7 +849,7 @@
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
       <div class="yaml-toolbar" style="flex-wrap:wrap;gap:5px">
-        <button class="header-btn" onclick="refreshYAML()" title="Re-generate from canvas">Generate</button>
+        <button class="header-btn" onclick="refreshYAML()" title="Re-generate from canvas">Generate YAML</button>
         <button class="header-btn primary" onclick="applyYAMLToCanvas()" title="Parse YAML and update canvas">Apply to Canvas</button>
         <button class="header-btn" onclick="copyYAML()">Copy</button>
         <button class="header-btn" onclick="exportYAML()">Download</button>
@@ -1457,61 +1409,14 @@ function copyYAML() {
   });
 }
 
-function getOutputFilename() {
-  return (document.getElementById('outputFilename').value || 'rack-design.yaml').trim();
-}
-
 function exportYAML() {
+  refreshYAML();
   const text = document.getElementById('yamlOutput').value || generateYAML();
   const blob = new Blob([text], {type:'text/yaml'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = getOutputFilename();
+  a.download = 'rack-design.yaml';
   a.click();
-}
-
-function showToast(msg, type, duration) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + (type || '');
-  // force reflow
-  void t.offsetWidth;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), duration || 3000);
-}
-
-function runGenerate() {
-  const btn = document.getElementById('runBtn');
-  const yaml = generateYAML();
-  const filename = getOutputFilename();
-
-  // Write YAML to disk via download (browser-enforced)
-  const blob = new Blob([yaml], {type:'text/yaml'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-
-  // Visual feedback
-  btn.classList.add('running');
-  btn.textContent = '⟳ Exporting...';
-
-  setTimeout(() => {
-    btn.classList.remove('running');
-    btn.innerHTML = '&#9654; Run';
-    showToast(
-      `✓ Saved "${filename}" — watcher.py will now run run.py`,
-      'success', 4000
-    );
-  }, 800);
-
-  // Also sync the YAML textarea
-  const ta = document.getElementById('yamlOutput');
-  ta.value = yaml;
-  ta.classList.remove('dirty','has-error');
-  yamlDirty = false;
-  setYAMLStatus('', '');
 }
 
 // ───── LOAD FILE ─────
@@ -2055,6 +1960,5 @@ function loadSampleData() {
 
 init();
 </script>
-<div class="toast" id="toast"></div>
 </body>
 </html>
