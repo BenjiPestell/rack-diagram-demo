@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rack Designer  </title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  /* Core backgrounds */
+  --bg: #0b0d10;          /* Near-black charcoal */
+  --surface: #08090a;     /* Dark graphite */
+  --surface2: #181b20;    /* Mid dark panel */
+  --surface3: #2b3039;    /* Raised surface */
+
+  /* Borders / dividers */
+  --border: #2a2e34;      
+  --border2: #353a42;
+
+  /* Brand accents (Dynisma red theme) */
+  --accent: #c91622;      /* Primary red */
+  --accent2: #ffecec;     /* Bright highlight red */
+
+  /* Status colors */
+  --green: #3fdc6f;       /* Subtle tech green */
+  --red: #e10613;         /* Match brand red */
+
+  /* Text */
+  --text: #f1f3f5;        /* Primary white/grey */
+  --text2: #b3b7bd;       /* Secondary grey */
+  --text3: #6c7077;       /* Muted captions */
+
+  /* Typography */
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Rajdhani', sans-serif;
+  --display: 'Orbitron', monospace;
+
+  /* Layout */
+  --u-height: 22px;
+}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-weight: 500;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(0,212,255,0.35);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .logo-accent { color: var(--accent2); }
+  .logo-icon { display: none; }
+  .header-divider { width: 1px; height: 22px; background: var(--border); flex-shrink:0; }
+  .header-spacer { flex: 1; }
+
+  .global-settings {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: var(--text2);
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .global-settings label { white-space: nowrap; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; color: var(--text3); }
+
+  .mini-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 3px 6px;
+    border-radius: 1px;
+    font-family: var(--mono);
+    font-size: 15px;
+    width: 54px;
+    outline: none;
+  }
+
+  .mini-input:focus { border-color: var(--accent); box-shadow: 0 0 6px rgba(0,212,255,0.2); }
+
+  .header-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 5px 12px;
+    border-radius: 1px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-btn:hover { border-color: var(--accent); color: var(--accent); text-shadow: 0 0 8px rgba(0,212,255,0.4); }
+  .header-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 700; }
+  .header-btn.primary:hover { background: transparent; color: var(--accent); }
+
+  .app-body { display: flex; flex: 1; overflow: hidden; }
+
+  .left-panel {
+    width: 210px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .panel-header {
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .panel-scroll { overflow-y: auto; flex: 1; }
+  .panel-scroll::-webkit-scrollbar { width: 4px; }
+  .panel-scroll::-webkit-scrollbar-track { background: var(--bg); }
+  .panel-scroll::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  .palette-section { padding: 6px; }
+
+  .palette-label {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 4px 4px 6px;
+  }
+
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    cursor: grab;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    margin-bottom: 2px;
+    transition: all 0.15s;
+    user-select: none;
+    letter-spacing: 0.3px;
+  }
+
+  .palette-item:hover { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
+  .palette-item:active { cursor: grabbing; }
+
+  .palette-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
+
+  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 15px; font-weight: 600; color: var(--text2); }
+  .type-color-row:hover { background: var(--surface2); }
+
+  .color-swatch { width: 16px; height: 16px; border-radius: 1px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; padding: 0; }
+
+  /* CANVAS */
+  .canvas-area {
+    flex: 1;
+    overflow: auto;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 15% 15%, rgba(0,212,255,0.03) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(255,107,53,0.02) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 17px, rgba(30,42,53,0.4) 18px),
+      repeating-linear-gradient(90deg, transparent, transparent 17px, rgba(30,42,53,0.4) 18px);
+    position: relative;
+  }
+
+  /* PICK MODE */
+  .canvas-area.picking-device { cursor: crosshair; }
+  .canvas-area.picking-device .rack-device {
+    cursor: crosshair !important;
+    outline: 1px dashed rgba(0,212,255,0.35) !important;
+    transition: outline 0.1s, filter 0.1s !important;
+  }
+  .canvas-area.picking-device .rack-device:hover {
+    outline: 2px solid var(--accent) !important;
+    filter: brightness(1.35) !important;
+    z-index: 100 !important;
+    box-shadow: 0 0 12px rgba(0,212,255,0.35) !important;
+  }
+
+  .canvas-area::-webkit-scrollbar { width: 6px; height: 6px; }
+  .canvas-area::-webkit-scrollbar-thumb { background: var(--border2); }
+  .canvas-area::-webkit-scrollbar-track { background: var(--bg); }
+
+  .rack-canvas {
+    display: flex;
+    gap: 24px;
+    padding: 28px;
+    min-width: max-content;
+    min-height: 100%;
+    align-items: flex-start;
+  }
+
+  /* PICK BANNER */
+  #pickBanner {
+    display: none;
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 0 30px rgba(0,212,255,0.6);
+    animation: bannerPulse 1.4s ease-in-out infinite;
+  }
+  #pickBanner.visible { display: block; }
+
+  @keyframes bannerPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.5); }
+    50% { box-shadow: 0 0 40px rgba(0,212,255,0.9); }
+  }
+
+  .rack-wrapper { display: flex; flex-direction: column; align-items: stretch; }
+
+  .rack-title-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rack-title-input {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    flex: 1;
+    outline: none;
+    min-width: 0;
+  }
+
+  .rack-remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--mono);
+    padding: 2px 5px;
+    transition: all 0.2s;
+  }
+
+  .rack-remove-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .rack-views { display: flex; border: 1px solid var(--border); overflow: hidden; background: var(--surface2); }
+  .rack-view { display: flex; flex-direction: column; }
+
+  .rack-view-label {
+    text-align: center;
+    padding: 4px 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .rack-view-label.front-label { color: var(--accent); border-top: 2px solid var(--accent); }
+  .rack-view-label.rear-label { color: var(--accent2); border-top: 2px solid var(--accent2); }
+  .rack-view-divider { width: 1px; background: var(--border); }
+  .rack-column { width: 190px; display: flex; flex-direction: row; }
+
+  .u-numbers-strip {
+    width: 22px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .u-number {
+    width: 22px;
+    height: var(--u-height);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 3px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    border-bottom: 1px solid rgba(30,42,53,0.6);
+  }
+
+  .u-slots-area {
+    flex: 1;
+    position: relative;
+  }
+
+  .u-row { width: 100%; }
+
+  .u-slot {
+    width: 100%;
+    height: var(--u-height);
+    border-bottom: 1px solid rgba(30,42,53,0.5);
+    transition: background 0.1s;
+  }
+
+  .u-slot.drop-target { background: rgba(0,212,255,0.1); outline: 1px dashed var(--accent); }
+  .u-slot.occupied { pointer-events: none; }
+
+  .rack-device {
+    position: absolute;
+    left: 0; right: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    gap: 5px;
+    z-index: 10;
+    transition: filter 0.15s;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .rack-device:hover { filter: brightness(1.15); z-index: 20; }
+  .rack-device.selected { outline: 2px solid rgba(255,255,255,0.9); z-index: 30; box-shadow: 0 0 8px rgba(255,255,255,0.15); }
+  .rack-device.dragging { opacity: 0.35; }
+
+  .device-label {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  .device-u-badge { font-family: var(--mono); font-size: 12px; color: rgba(0,0,0,0.35); flex-shrink: 0; }
+
+  .add-rack-btn {
+    width: 200px;
+    height: 80px;
+    border: 1px dashed var(--text3);
+    background: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+    margin-top: 28px;
+    flex-shrink: 0;
+  }
+
+  .add-rack-btn:hover { border-color: var(--accent); color: var(--accent); text-shadow: 0 0 8px rgba(0,212,255,0.4); }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    width: 520px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+
+  .tab-btn {
+    flex: 1;
+    padding: 9px 4px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text3);
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: var(--text2); }
+
+  .tab-content { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
+  .tab-content.active { display: flex; }
+  .tab-content::-webkit-scrollbar { width: 4px; }
+  .tab-content::-webkit-scrollbar-track { background: var(--bg); }
+  .tab-content::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  .prop-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+
+  .prop-section-title {
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(0,212,255,0.3);
+    margin-bottom: 8px;
+  }
+
+  .prop-row { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+
+  .prop-label {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: 72px;
+    flex-shrink: 0;
+  }
+
+  .prop-input, .prop-select {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 7px;
+    font-family: var(--mono);
+    font-size: 15px;
+    outline: none;
+    min-width: 0;
+  }
+
+  .prop-input:focus, .prop-select:focus { border-color: var(--accent); box-shadow: 0 0 6px rgba(0,212,255,0.15); }
+  .prop-select { cursor: pointer; }
+  .prop-select option { background: var(--surface2); }
+
+  .prop-checkbox { display: flex; align-items: center; gap: 7px; font-family: var(--sans); font-size: 15px; font-weight: 600; color: var(--text2); cursor: pointer; margin-bottom: 7px; }
+  .prop-checkbox input { accent-color: var(--accent); }
+
+  .prop-btn {
+    width: 100%;
+    padding: 6px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+  }
+
+  .prop-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .prop-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 1px;
+    padding: 20px;
+    text-align: center;
+    min-height: 120px;
+    line-height: 2;
+    text-transform: uppercase;
+  }
+
+  /* WIRING */
+  .wiring-layer-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
+
+  .wiring-layer-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
+  .wiring-layer-header:hover { background: var(--surface3); }
+
+  .layer-color-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .wiring-layer-body { padding: 7px 8px; border-top: 1px solid var(--border); }
+
+  /* Connection card */
+  .connection-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    padding: 7px 8px;
+  }
+
+  .conn-main-row { display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
+
+  .conn-endpoint { flex: 1; display: flex; align-items: stretch; min-width: 0; }
+
+  .conn-field {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    min-width: 0;
+  }
+
+  .conn-field:focus { border-color: var(--accent); }
+
+  /* Pick button */
+  .conn-pick-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0 7px;
+    line-height: 1;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .conn-pick-btn:hover { background: var(--surface3); border-color: var(--accent); color: var(--accent); }
+
+  .conn-pick-btn.picking {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    animation: pickPulse 0.9s ease-in-out infinite;
+  }
+
+  @keyframes pickPulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .conn-arrow { color: var(--accent); font-size: 11px; flex-shrink: 0; padding: 0 2px; }
+
+  .conn-remove {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .conn-remove:hover { color: var(--red); }
+
+  /* Cluster toggle button */
+  .conn-cluster-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 3px 7px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+    margin-bottom: 0;
+  }
+
+  .conn-cluster-toggle:hover { border-color: var(--accent2); color: var(--accent2); }
+  .conn-cluster-toggle.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.07); }
+
+  /* Cluster range row */
+  .conn-cluster-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid var(--border);
+  }
+
+  .conn-cluster-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .conn-range-input {
+    width: 52px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    text-align: center;
+  }
+
+  .conn-range-input:focus { border-color: var(--accent2); color: var(--text); }
+
+  .conn-range-sep { font-family: var(--mono); font-size: 11px; color: var(--accent2); flex-shrink: 0; }
+
+  .conn-range-hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    margin-left: 2px;
+    letter-spacing: 0;
+  }
+
+  .add-conn-btn {
+    width: 100%;
+    padding: 5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    transition: all 0.2s;
+  }
+
+  .add-conn-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .add-layer-btn {
+    margin: 7px;
+    width: calc(100% - 14px);
+    padding: 7px;
+    background: none;
+    border: 1px dashed var(--border2);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .add-layer-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* YAML */
+  .yaml-toolbar { padding: 6px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 6px; flex-shrink: 0; background: var(--surface); flex-wrap: wrap; }
+
+  .yaml-area {
+    flex: 1;
+    background: var(--bg);
+    border: none;
+    color: #7ec8e3;
+    font-family: var(--mono);
+    font-size: 15px;
+    padding: 14px 16px;
+    resize: none;
+    outline: none;
+    line-height: 1.65;
+    caret-color: var(--accent);
+  }
+
+  .yaml-area.dirty { border-left: 2px solid var(--accent2); }
+  .yaml-area.has-error { border-left: 2px solid var(--red); }
+  .yaml-status-ok { color: var(--green); }
+  .yaml-status-err { color: var(--red); }
+  .yaml-status-info { color: var(--accent); }
+
+  .status-bar {
+    height: 22px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--text3);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .status-item { display: flex; align-items: center; gap: 5px; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RACK<span class="logo-accent">DESIGNER</span></div>
+  <div class="header-divider"></div>
+  <div class="global-settings">
+    <label>Rack Dist.</label>
+    <input class="mini-input" id="gInterRack" type="number" step="0.1" value="5.0">
+    <label>m</label>
+    <label style="margin-left:6px">Slack</label>
+    <input class="mini-input" id="gCableSlack" type="number" step="0.1" value="0.2">
+    <label>m</label>
+    <label style="margin-left:6px">Front→Back</label>
+    <input class="mini-input" id="gFrontBack" type="number" step="0.1" value="0.5">
+    <label>m</label>
+  </div>
+  <div class="header-spacer"></div>
+  <button class="header-btn" onclick="loadSampleData()">Load Example</button>
+  <button class="header-btn" onclick="clearAll()">Clear</button>
+  <button class="header-btn primary" onclick="exportYAML()">Export YAML</button>
+</header>
+
+<div class="app-body">
+
+  <div class="left-panel">
+    <div class="panel-header">Device Palette</div>
+    <div class="panel-scroll">
+      <div class="palette-section">
+        <div class="palette-label">Drag onto rack →</div>
+        <div class="palette-item" draggable="true" data-type="pc" data-units="4" data-name="New PC"><div class="palette-dot" style="background:#E8F4F8"></div>PC / Workstation</div>
+        <div class="palette-item" draggable="true" data-type="pdu" data-units="1" data-name="New PDU"><div class="palette-dot" style="background:#AAAAAA"></div>PDU</div>
+        <div class="palette-item" draggable="true" data-type="switch" data-units="1" data-name="New Switch"><div class="palette-dot" style="background:#B8D6D6"></div>Switch</div>
+        <div class="palette-item" draggable="true" data-type="realtime" data-units="2" data-name="New RT System"><div class="palette-dot" style="background:#FFE8D8"></div>Realtime System</div>
+        <div class="palette-item" draggable="true" data-type="Shelf" data-units="1" data-name="New Shelf"><div class="palette-dot" style="background:#ced3db"></div>Shelf</div>
+        <div class="palette-item" draggable="true" data-type="cable management" data-units="1" data-name="Cable Manager"><div class="palette-dot" style="background:#C4C4C4"></div>Cable Mgmt</div>
+        <div class="palette-item" draggable="true" data-type="customer" data-units="4" data-name="Customer Equipment"><div class="palette-dot" style="background:#ffd9d6"></div>Customer</div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:6px 6px 8px">
+        <div class="palette-label">Type Colors</div>
+        <div id="typeColorList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-area" id="canvasArea">
+    <div class="rack-canvas" id="rackCanvas">
+      <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">
+        <span style="font-size:24px;line-height:1">+</span>
+        <span>ADD RACK</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('props',this)">Properties</button>
+      <button class="tab-btn" onclick="switchTab('wiring',this)">Wiring</button>
+      <button class="tab-btn" onclick="switchTab('yaml',this)">YAML</button>
+    </div>
+
+    <div class="tab-content active" id="tab-props">
+      <div class="empty-state" id="propsEmpty">
+        <div>Select a device<br>to edit properties</div>
+      </div>
+      <div id="propsForm" style="display:none; flex-direction:column">
+        <div class="prop-section">
+          <div class="prop-section-title">Device</div>
+          <div class="prop-row"><span class="prop-label">Name</span><input class="prop-input" id="pName" type="text" placeholder="Device name"></div>
+          <div class="prop-row"><span class="prop-label">Type</span><select class="prop-select" id="pType"></select></div>
+          <div class="prop-row"><span class="prop-label">Units (U)</span><input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1"></div>
+          <div class="prop-row"><span class="prop-label">Start U</span><input class="prop-input" id="pStartU" type="number" min="1" max="42"></div>
+        </div>
+        <div class="prop-section">
+          <div class="prop-section-title">Pattern</div>
+          <label class="prop-checkbox"><input type="checkbox" id="pIsPattern" onchange="togglePatternFields()"> Numbered pattern {N}</label>
+          <div id="patternFields" style="display:none">
+            <div class="prop-row"><span class="prop-label">Start N</span><input class="prop-input" id="pStart" type="number" value="1"></div>
+            <div class="prop-row"><span class="prop-label">End N</span><input class="prop-input" id="pEnd" type="number" value="3"></div>
+            <div class="prop-row"><span class="prop-label">Spacing</span><input class="prop-input" id="pSpacing" type="number" value="0"></div>
+          </div>
+        </div>
+        <div class="prop-section">
+          <button class="prop-btn" onclick="applyProps()">✓ Apply Changes</button>
+          <button class="prop-btn danger" onclick="deleteSelectedDevice()">✕ Delete Device</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-wiring">
+      <div id="wiringLayerList"></div>
+      <button class="add-layer-btn" onclick="addWiringLayer()">＋ Add Wiring Layer</button>
+    </div>
+
+    <div class="tab-content" id="tab-yaml" style="flex-direction:column">
+      <div class="yaml-toolbar">
+        <label class="header-btn primary" style="cursor:pointer">
+          Load File<input type="file" id="yamlFileInput" accept=".yaml,.yml,.txt" style="display:none" onchange="loadYAMLFile(event)">
+        </label>
+        <button class="header-btn primary" onclick="applyYAMLToCanvas()">Apply to Canvas</button>
+        <button class="header-btn" onclick="refreshYAML()">Generate YAML</button>
+        <button class="header-btn" onclick="copyYAML()">Copy</button>
+        <button class="header-btn" onclick="exportYAML()">Download</button>
+      </div>
+      <div id="yamlStatus" style="display:none;padding:5px 10px;font-family:var(--mono);font-size:9px;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0"></div>
+      <textarea class="yaml-area" id="yamlOutput" spellcheck="false" oninput="markYAMLDirty()"></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-item"><div class="status-dot"></div>Ready</div>
+  <div class="status-item" id="statusRacks">0 racks</div>
+  <div class="status-item" id="statusDevices">0 devices</div>
+  <div class="status-item" id="statusLayers">0 wiring layers</div>
+  <div class="status-item" style="margin-left:auto">[ DEL ] Delete &nbsp;·&nbsp; [ ESC ] Deselect / Cancel Pick</div>
+</div>
+
+<!-- Pick mode banner -->
+<div id="pickBanner">⊕ Click a device on the canvas &nbsp;—&nbsp; ESC to cancel</div>
+
+<script>
+const state = {
+  racks: [],
+  wiringLayers: [],
+  typeColors: {
+    pc: "#E8F4F8",
+    pdu: "#AAAAAA",
+    Shelf: "#ced3db",
+    realtime: "#FFE8D8",
+    "cable management": "#C4C4C4",
+    switch: "#B8D6D6",
+    customer: "#ffd9d6"
+  },
+  nextRackId: 1
+};
+
+let selectedDevRef = null;
+let dragData = null;
+
+// ─── PICK MODE ───────────────────────────────────────────────────────
+// pickState: null | { layerIdx, connIdx, field: 'from'|'to' }
+let pickState = null;
+
+function enterPickMode(layerIdx, connIdx, field) {
+  pickState = { layerIdx, connIdx, field };
+  document.getElementById('canvasArea').classList.add('picking-device');
+  document.getElementById('pickBanner').classList.add('visible');
+  renderWiringLayers(); // re-render to highlight active pick button
+}
+
+function exitPickMode() {
+  pickState = null;
+  document.getElementById('canvasArea').classList.remove('picking-device');
+  document.getElementById('pickBanner').classList.remove('visible');
+  renderWiringLayers();
+}
+
+function handleDevicePickClick(devName) {
+  if (!pickState) return;
+  const { layerIdx, connIdx, field } = pickState;
+  state.wiringLayers[layerIdx].connections[connIdx][field] = devName;
+  exitPickMode();
+}
+
+// ───── INIT ─────
+function init() {
+  renderTypeColors();
+  setupPaletteDrag();
+  updateStatus();
+}
+
+function renderTypeColors() {
+  const c = document.getElementById('typeColorList');
+  c.innerHTML = '';
+  for (const [type, color] of Object.entries(state.typeColors)) {
+    const row = document.createElement('div');
+    row.className = 'type-color-row';
+    row.innerHTML = `<input type="color" class="color-swatch" value="${color}" onchange="updateTypeColor('${type.replace(/'/g,"\\'")}',this.value)" title="${type}"><span>${type}</span>`;
+    c.appendChild(row);
+  }
+  document.querySelectorAll('.palette-item').forEach(el => {
+    const dot = el.querySelector('.palette-dot');
+    if (dot && state.typeColors[el.dataset.type]) dot.style.background = state.typeColors[el.dataset.type];
+  });
+  populateTypeSelects();
+}
+
+function updateTypeColor(type, color) {
+  state.typeColors[type] = color;
+  renderAllRacks();
+}
+
+function populateTypeSelects() {
+  const el = document.getElementById('pType');
+  if (!el) return;
+  const cur = el.value;
+  el.innerHTML = Object.keys(state.typeColors).map(t => `<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');
+}
+
+// ───── RACKS ─────
+function addRack() {
+  const id = `rack${state.nextRackId++}`;
+  state.racks.push({ id, name: `Rack ${state.racks.length+1}`, total_u: 42, front: [], rear: [] });
+  renderAllRacks();
+  updateStatus();
+}
+
+function removeRack(id) {
+  if (!confirm('Remove this rack?')) return;
+  state.racks = state.racks.filter(r => r.id !== id);
+  if (selectedDevRef && selectedDevRef.rackId === id) {
+    selectedDevRef = null;
+    document.getElementById('propsEmpty').style.display = 'flex';
+    document.getElementById('propsForm').style.display = 'none';
+  }
+  renderAllRacks();
+  updateStatus();
+}
+
+function renderAllRacks() {
+  const canvas = document.getElementById('rackCanvas');
+  const addBtn = document.getElementById('addRackBtn');
+  canvas.querySelectorAll('.rack-wrapper').forEach(el => el.remove());
+  state.racks.forEach(rack => canvas.insertBefore(buildRackEl(rack), addBtn));
+  populateTypeSelects();
+}
+
+function buildRackEl(rack) {
+  const wrap = document.createElement('div');
+  wrap.className = 'rack-wrapper';
+  wrap.dataset.rackId = rack.id;
+
+  const tb = document.createElement('div');
+  tb.className = 'rack-title-bar';
+  tb.innerHTML = `
+    <input class="rack-title-input" value="${rack.name}" placeholder="Rack name"
+      onchange="state.racks.find(r=>r.id==='${rack.id}').name=this.value;updateStatus()">
+    <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${rack.total_u}U</span>
+    <input type="number" class="mini-input" value="${rack.total_u}" min="1" max="80" style="width:60px"
+      onchange="updateRackU('${rack.id}',this.value)">
+    <button class="rack-remove-btn" onclick="removeRack('${rack.id}')" title="Remove">✕</button>
+  `;
+  wrap.appendChild(tb);
+
+  const views = document.createElement('div');
+  views.className = 'rack-views';
+  views.appendChild(buildColumnEl(rack, 'front'));
+  const div = document.createElement('div');
+  div.className = 'rack-view-divider';
+  views.appendChild(div);
+  views.appendChild(buildColumnEl(rack, 'rear'));
+  wrap.appendChild(views);
+  return wrap;
+}
+
+function expandDeviceToRenderItems(dev) {
+  const isPattern = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
+  if (!isPattern) return [{ dev, displayName: dev.name, start_u: dev.start_u }];
+
+  const items = [];
+  const count = dev.end - dev.start + 1;
+  const spacing = dev.spacing || 0;
+  const step = dev.units + spacing;
+
+  for (let i = 0; i < count; i++) {
+    const n = dev.start + i;
+    const memberStartU = dev.start_u - i * step;
+    items.push({ dev, displayName: dev.name.replace('{N}', n), start_u: memberStartU, memberIndex: i, memberN: n });
+  }
+  return items;
+}
+
+function buildColumnEl(rack, face) {
+  const view = document.createElement('div');
+  view.className = 'rack-view';
+
+  const lbl = document.createElement('div');
+  lbl.className = 'rack-view-label ' + (face === 'front' ? 'front-label' : 'rear-label');
+  lbl.textContent = face === 'front' ? '▶ FRONT' : 'REAR ◀';
+  view.appendChild(lbl);
+
+  const col = document.createElement('div');
+  col.className = 'rack-column';
+  col.dataset.rackId = rack.id;
+  col.dataset.face = face;
+
+  const totalU = rack.total_u || 42;
+
+  const renderItems = [];
+  rack[face].forEach(dev => {
+    if (!dev.start_u || !dev.units) return;
+    expandDeviceToRenderItems(dev).forEach(item => renderItems.push(item));
+  });
+
+  const occupied = {};
+  renderItems.forEach(item => {
+    for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
+      if (u >= 1 && u <= totalU) occupied[u] = true;
+    }
+  });
+
+  // Numbers strip — always visible, devices positioned in slotsArea only
+  const numbersStrip = document.createElement('div');
+  numbersStrip.className = 'u-numbers-strip';
+
+  const slotsArea = document.createElement('div');
+  slotsArea.className = 'u-slots-area';
+
+  for (let u = totalU; u >= 1; u--) {
+    const num = document.createElement('div');
+    num.className = 'u-number';
+    num.textContent = u;
+    numbersStrip.appendChild(num);
+
+    const slot = document.createElement('div');
+    slot.className = 'u-slot' + (occupied[u] ? ' occupied' : '');
+    slot.dataset.u = u;
+    slot.dataset.rackId = rack.id;
+    slot.dataset.face = face;
+
+    if (!occupied[u]) {
+      slot.addEventListener('dragover', slotDragOver);
+      slot.addEventListener('drop', slotDrop);
+      slot.addEventListener('dragleave', e => e.target.classList.remove('drop-target'));
+    }
+
+    slotsArea.appendChild(slot);
+  }
+
+  renderItems.forEach(item => {
+    if (item.start_u < 1 || item.start_u > totalU) return;
+    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
+  });
+
+  col.appendChild(numbersStrip);
+  col.appendChild(slotsArea);
+  view.appendChild(col);
+  return view;
+}
+
+function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
+  displayName = displayName || dev.name;
+  startU = startU !== undefined ? startU : dev.start_u;
+
+  const el = document.createElement('div');
+  el.className = 'rack-device';
+  const color = state.typeColors[dev.type] || '#888';
+  el.style.background = color;
+  const uH = 22;
+  el.style.top = ((totalU - startU) * uH) + 'px';
+  el.style.height = (dev.units * uH - 1) + 'px';
+
+  const nm = displayName.length > 24 ? displayName.slice(0, 22) + '…' : displayName;
+  el.innerHTML = `<span class="device-label">${nm}</span><span class="device-u-badge">${dev.units}U</span>`;
+
+  el.setAttribute('draggable', 'true');
+
+  el.addEventListener('click', e => {
+    if (pickState) {
+      e.stopPropagation();
+      // Insert the base/pattern name for cluster devices so {N} syntax is preserved
+      handleDevicePickClick(displayName);
+      return;
+    }
+    selectDevice(dev, rackId, face);
+  });
+
+  el.addEventListener('dragstart', e => {
+    if (pickState) { e.preventDefault(); return; }
+    dragData = { source: 'rack', dev, rackId, face };
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => el.classList.add('dragging'), 0);
+  });
+
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    document.querySelectorAll('.u-slot.drop-target').forEach(s => s.classList.remove('drop-target'));
+  });
+
+  if (selectedDevRef && selectedDevRef.dev === dev) el.classList.add('selected');
+  return el;
+}
+
+// ───── DRAG & DROP ─────
+function setupPaletteDrag() {
+  document.querySelectorAll('.palette-item').forEach(el => {
+    el.addEventListener('dragstart', e => {
+      dragData = { source: 'palette', type: el.dataset.type, units: parseInt(el.dataset.units)||1, name: el.dataset.name };
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+    el.addEventListener('dragend', () => dragData = null);
+  });
+}
+
+function slotDragOver(e) {
+  if (!dragData) return;
+  e.preventDefault();
+  this.classList.add('drop-target');
+}
+
+function slotDrop(e) {
+  e.preventDefault();
+  this.classList.remove('drop-target');
+  if (!dragData) return;
+
+  const u = parseInt(this.dataset.u);
+  const rId = this.dataset.rackId;
+  const f = this.dataset.face;
+  const rack = state.racks.find(r => r.id === rId);
+  if (!rack) return;
+
+  if (dragData.source === 'palette') {
+    rack[f].push({ name: dragData.name, type: dragData.type, units: dragData.units, start_u: u });
+  } else {
+    const oldRack = state.racks.find(r => r.id === dragData.rackId);
+    if (oldRack) oldRack[dragData.face] = oldRack[dragData.face].filter(d => d !== dragData.dev);
+    dragData.dev.start_u = u;
+    rack[f].push(dragData.dev);
+    if (selectedDevRef && selectedDevRef.dev === dragData.dev) {
+      selectedDevRef.rackId = rId;
+      selectedDevRef.face = f;
+    }
+  }
+
+  dragData = null;
+  renderAllRacks();
+  updateStatus();
+}
+
+// ───── SELECTION ─────
+function selectDevice(dev, rackId, face) {
+  selectedDevRef = { dev, rackId, face };
+  renderAllRacks();
+
+  document.getElementById('propsEmpty').style.display = 'none';
+  document.getElementById('propsForm').style.display = 'flex';
+
+  document.getElementById('pName').value = dev.name || '';
+  document.getElementById('pUnits').value = dev.units || 1;
+  document.getElementById('pStartU').value = dev.start_u || '';
+
+  populateTypeSelects();
+  document.getElementById('pType').value = dev.type || 'pc';
+
+  const isPat = !!(dev.start !== undefined || (dev.name && dev.name.includes('{N}')));
+  document.getElementById('pIsPattern').checked = isPat;
+  document.getElementById('patternFields').style.display = isPat ? 'block' : 'none';
+  document.getElementById('pStart').value = dev.start ?? 1;
+  document.getElementById('pEnd').value = dev.end ?? 3;
+  document.getElementById('pSpacing').value = dev.spacing ?? 0;
+
+  switchTab('props', document.querySelector('.tab-btn'));
+}
+
+function togglePatternFields() {
+  document.getElementById('patternFields').style.display =
+    document.getElementById('pIsPattern').checked ? 'block' : 'none';
+}
+
+function applyProps() {
+  if (!selectedDevRef) return;
+  const dev = selectedDevRef.dev;
+  dev.name = document.getElementById('pName').value;
+  dev.type = document.getElementById('pType').value;
+  dev.units = parseInt(document.getElementById('pUnits').value) || 1;
+  const su = parseInt(document.getElementById('pStartU').value);
+  dev.start_u = isNaN(su) ? undefined : su;
+
+  if (document.getElementById('pIsPattern').checked) {
+    dev.start = parseInt(document.getElementById('pStart').value);
+    dev.end = parseInt(document.getElementById('pEnd').value);
+    dev.spacing = parseInt(document.getElementById('pSpacing').value);
+  } else {
+    delete dev.start; delete dev.end; delete dev.spacing;
+  }
+
+  renderAllRacks();
+  updateStatus();
+}
+
+function deleteSelectedDevice() {
+  if (!selectedDevRef) return;
+  const { rackId, face, dev } = selectedDevRef;
+  const rack = state.racks.find(r => r.id === rackId);
+  if (rack) rack[face] = rack[face].filter(d => d !== dev);
+  selectedDevRef = null;
+  document.getElementById('propsEmpty').style.display = 'flex';
+  document.getElementById('propsForm').style.display = 'none';
+  renderAllRacks();
+  updateStatus();
+}
+
+function updateRackU(id, val) {
+  const r = state.racks.find(r => r.id === id);
+  if (r) { r.total_u = parseInt(val)||42; renderAllRacks(); }
+}
+
+// ───── WIRING ─────
+function addWiringLayer() {
+  const hues = ['#b551a9','#5192b5','#3ecf8e','#f5c842','#ff7b5b','#7c9ef9'];
+  state.wiringLayers.push({
+    name: `Layer ${state.wiringLayers.length+1}`,
+    edge_color: hues[state.wiringLayers.length % hues.length],
+    cable_type: 'Ethernet',
+    connections: [],
+    collapsed: false
+  });
+  renderWiringLayers();
+  updateStatus();
+}
+
+function renderWiringLayers() {
+  const c = document.getElementById('wiringLayerList');
+  c.innerHTML = '';
+
+  state.wiringLayers.forEach((layer, li) => {
+    const card = document.createElement('div');
+    card.className = 'wiring-layer-card';
+
+    const header = document.createElement('div');
+    header.className = 'wiring-layer-header';
+    header.innerHTML = `
+      <div class="layer-color-dot" style="background:${layer.edge_color}"></div>
+      <input class="prop-input" style="background:none;border:none;flex:1;font-size:11px;padding:0"
+        value="${layer.name}" onclick="event.stopPropagation()"
+        onchange="state.wiringLayers[${li}].name=this.value">
+      <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
+        style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;outline:none;max-width:82px;letter-spacing:0.5px">
+        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI'].map(ct =>
+          `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
+      </select>
+      <input type="color" value="${layer.edge_color}" onclick="event.stopPropagation()"
+        onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers()"
+        style="width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0">
+      <button onclick="event.stopPropagation();removeLayer(${li})"
+        style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px">✕</button>
+      <span style="color:var(--text3);font-size:10px">${layer.collapsed?'▶':'▼'}</span>
+    `;
+    header.addEventListener('click', () => { state.wiringLayers[li].collapsed=!state.wiringLayers[li].collapsed; renderWiringLayers(); });
+    card.appendChild(header);
+
+    if (!layer.collapsed) {
+      const body = document.createElement('div');
+      body.className = 'wiring-layer-body';
+
+      layer.connections.forEach((conn, ci) => {
+        body.appendChild(buildConnectionCard(li, ci, conn));
+      });
+
+      const ab = document.createElement('button');
+      ab.className = 'add-conn-btn';
+      ab.textContent = '＋ Add Connection';
+      ab.onclick = () => {
+        state.wiringLayers[li].connections.push({ from: '', to: '' });
+        renderWiringLayers();
+      };
+      body.appendChild(ab);
+      card.appendChild(body);
+    }
+
+    c.appendChild(card);
+  });
+}
+
+function buildConnectionCard(li, ci, conn) {
+  const isPickingFrom = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field==='from';
+  const isPickingTo   = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field==='to';
+
+  const card = document.createElement('div');
+  card.className = 'connection-card';
+
+  // ── Main from → to row ──────────────────────
+  const mainRow = document.createElement('div');
+  mainRow.className = 'conn-main-row';
+
+  // FROM endpoint
+  const fromWrap = document.createElement('div');
+  fromWrap.className = 'conn-endpoint';
+
+  const fromInput = document.createElement('input');
+  fromInput.className = 'conn-field';
+  fromInput.placeholder = 'From device';
+  fromInput.value = conn.from || '';
+  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; });
+
+  const fromPick = document.createElement('button');
+  fromPick.className = 'conn-pick-btn' + (isPickingFrom ? ' picking' : '');
+  fromPick.title = 'Pick a device from the canvas';
+  fromPick.innerHTML = '⊕';
+  fromPick.addEventListener('click', e => {
+    e.stopPropagation();
+    if (isPickingFrom) { exitPickMode(); return; }
+    enterPickMode(li, ci, 'from');
+  });
+
+  fromWrap.appendChild(fromInput);
+  fromWrap.appendChild(fromPick);
+
+  const arrow = document.createElement('span');
+  arrow.className = 'conn-arrow';
+  arrow.textContent = '→';
+
+  // TO endpoint
+  const toWrap = document.createElement('div');
+  toWrap.className = 'conn-endpoint';
+
+  const toInput = document.createElement('input');
+  toInput.className = 'conn-field';
+  toInput.placeholder = 'To device';
+  toInput.value = Array.isArray(conn.to) ? conn.to.join(', ') : (conn.to || '');
+  toInput.addEventListener('change', e => {
+    const raw = e.target.value;
+    const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+    state.wiringLayers[li].connections[ci].to = parts.length > 1 ? parts : (parts[0] || '');
+  });
+
+  const toPick = document.createElement('button');
+  toPick.className = 'conn-pick-btn' + (isPickingTo ? ' picking' : '');
+  toPick.title = 'Pick a device from the canvas';
+  toPick.innerHTML = '⊕';
+  toPick.addEventListener('click', e => {
+    e.stopPropagation();
+    if (isPickingTo) { exitPickMode(); return; }
+    enterPickMode(li, ci, 'to');
+  });
+
+  toWrap.appendChild(toInput);
+  toWrap.appendChild(toPick);
+
+  // Remove button
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'conn-remove';
+  removeBtn.textContent = '✕';
+  removeBtn.title = 'Remove connection';
+  removeBtn.addEventListener('click', () => removeConn(li, ci));
+
+  mainRow.appendChild(fromWrap);
+  mainRow.appendChild(arrow);
+  mainRow.appendChild(toWrap);
+  mainRow.appendChild(removeBtn);
+  card.appendChild(mainRow);
+
+  // ── Cluster range toggle + fields ───────────
+  const hasCluster = conn.start !== undefined || conn.end !== undefined || conn._showCluster;
+
+  const clusterFooter = document.createElement('div');
+  clusterFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'conn-cluster-toggle' + (hasCluster ? ' active' : '');
+  toggleBtn.innerHTML = hasCluster
+    ? '<span style="color:var(--accent2)">{N}</span>&nbsp;cluster range ▾'
+    : '<span style="opacity:.5">{N}</span>&nbsp;add cluster range';
+  toggleBtn.title = 'Emit one connection per integer N in range — substituted into {N} in device names';
+  toggleBtn.addEventListener('click', () => {
+    if (hasCluster) {
+      delete state.wiringLayers[li].connections[ci].start;
+      delete state.wiringLayers[li].connections[ci].end;
+      state.wiringLayers[li].connections[ci]._showCluster = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showCluster = true;
+      if (state.wiringLayers[li].connections[ci].start === undefined)
+        state.wiringLayers[li].connections[ci].start = 1;
+      if (state.wiringLayers[li].connections[ci].end === undefined)
+        state.wiringLayers[li].connections[ci].end = 3;
+    }
+    renderWiringLayers();
+  });
+  clusterFooter.appendChild(toggleBtn);
+  card.appendChild(clusterFooter);
+
+  if (hasCluster) {
+    const clusterRow = document.createElement('div');
+    clusterRow.className = 'conn-cluster-row';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'conn-cluster-label';
+    lbl.textContent = 'N =';
+
+    const startIn = document.createElement('input');
+    startIn.className = 'conn-range-input';
+    startIn.type = 'number';
+    startIn.title = 'Start of N range (inclusive)';
+    startIn.placeholder = '1';
+    startIn.value = conn.start !== undefined ? conn.start : '';
+    startIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.wiringLayers[li].connections[ci].start = isNaN(v) ? undefined : v;
+    });
+
+    const sep = document.createElement('span');
+    sep.className = 'conn-range-sep';
+    sep.textContent = '→';
+
+    const endIn = document.createElement('input');
+    endIn.className = 'conn-range-input';
+    endIn.type = 'number';
+    endIn.title = 'End of N range (inclusive)';
+    endIn.placeholder = '3';
+    endIn.value = conn.end !== undefined ? conn.end : '';
+    endIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.wiringLayers[li].connections[ci].end = isNaN(v) ? undefined : v;
+    });
+
+    const hint = document.createElement('span');
+    hint.className = 'conn-range-hint';
+    const count = (conn.start !== undefined && conn.end !== undefined)
+      ? Math.max(0, conn.end - conn.start + 1)
+      : '?';
+    hint.textContent = `(${count} connection${count === 1 ? '' : 's'})`;
+
+    clusterRow.appendChild(lbl);
+    clusterRow.appendChild(startIn);
+    clusterRow.appendChild(sep);
+    clusterRow.appendChild(endIn);
+    clusterRow.appendChild(hint);
+    card.appendChild(clusterRow);
+  }
+
+  return card;
+}
+
+function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers(); updateStatus(); }
+function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
+
+// ───── YAML ─────
+let yamlDirty = false;
+
+function markYAMLDirty() {
+  yamlDirty = true;
+  const ta = document.getElementById('yamlOutput');
+  ta.classList.add('dirty');
+  ta.classList.remove('has-error');
+  setYAMLStatus('Unsaved edits — click Apply to Canvas to update', 'info');
+}
+
+function setYAMLStatus(msg, type) {
+  const el = document.getElementById('yamlStatus');
+  el.style.display = msg ? 'block' : 'none';
+  el.className = 'yaml-status-' + (type || 'info');
+  el.textContent = msg;
+}
+
+function generateYAML() {
+  const ir = document.getElementById('gInterRack').value||'5.0';
+  const cs = document.getElementById('gCableSlack').value||'0.2';
+  const fb = document.getElementById('gFrontBack').value||'0.5';
+
+  let y = '';
+  y += `inter_rack_distance: ${ir}  # m\n`;
+  y += `cable_slack_length: ${cs}  # m\n`;
+  y += `front_to_back_length: ${fb}  # m\n\n`;
+
+  y += 'type_colors:\n';
+  for (const [t, c] of Object.entries(state.typeColors)) y += `  ${t}: "${c}"\n`;
+  y += '\n';
+
+  y += 'racks:\n';
+  state.racks.forEach(rack => {
+    y += `  # ${rack.name}\n`;
+    y += `  - rack:\n`;
+    y += `      id: ${rack.id}\n`;
+    y += `      name: ${rack.name}\n`;
+    y += `      total_u: ${rack.total_u}\n`;
+
+    ['front','rear'].forEach(face => {
+      const devs = rack[face];
+      if (!devs || devs.length===0) return;
+      y += `    \n    ${face}:\n`;
+      devs.forEach(d => {
+        const nm = (d.name.includes(' ')||d.name.includes('{')) ? `"${d.name}"` : d.name;
+        y += `      - name: ${nm}\n`;
+        if (d.start_u !== undefined) y += `        start_u: ${d.start_u}\n`;
+        if (d.start !== undefined) y += `        start: ${d.start}\n`;
+        if (d.end !== undefined) y += `        end: ${d.end}\n`;
+        if (d.units !== undefined) y += `        units: ${d.units}\n`;
+        if (d.spacing !== undefined) y += `        spacing: ${d.spacing}\n`;
+        y += `        type: ${d.type}\n`;
+      });
+    });
+    y += '\n';
+  });
+
+  if (state.wiringLayers.length > 0) {
+    y += 'wiring_layers:\n';
+    state.wiringLayers.forEach(l => {
+      y += `\n  # ${l.name}\n`;
+      y += `  - name: ${l.name}\n`;
+      if (l.edge_color) y += `    edge_color: "${l.edge_color}"\n`;
+      y += `    cable_type: "${l.cable_type}"\n`;
+      const conns = l.connections.filter(c => c.from);
+      if (conns.length > 0) {
+        y += `    connections:\n`;
+        conns.forEach(c => {
+          y += `      - from: ${c.from}\n`;
+          if (Array.isArray(c.to)) {
+            y += `        to:\n`;
+            c.to.forEach(t => y += `          - ${t}\n`);
+          } else {
+            y += `        to: ${c.to}\n`;
+          }
+          if (c.start !== undefined) y += `        start: ${c.start}\n`;
+          if (c.end !== undefined) y += `        end: ${c.end}\n`;
+        });
+      }
+    });
+  }
+  return y;
+}
+
+function refreshYAML() {
+  if (yamlDirty) {
+    if (!confirm('This will overwrite your YAML edits with the current canvas state. Continue?')) return;
+  }
+  const ta = document.getElementById('yamlOutput');
+  ta.value = generateYAML();
+  ta.classList.remove('dirty','has-error');
+  yamlDirty = false;
+  setYAMLStatus('', '');
+}
+
+function copyYAML() {
+  const text = document.getElementById('yamlOutput').value || generateYAML();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; btn.style.borderColor = ''; }, 1500);
+  });
+}
+
+function exportYAML() {
+  refreshYAML();
+  const text = document.getElementById('yamlOutput').value || generateYAML();
+  const blob = new Blob([text], {type:'text/yaml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rack-design.yaml';
+  a.click();
+}
+
+// ───── LOAD FILE ─────
+function loadYAMLFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ta = document.getElementById('yamlOutput');
+    ta.value = e.target.result;
+    ta.classList.add('dirty');
+    ta.classList.remove('has-error');
+    yamlDirty = true;
+    setYAMLStatus(`Loaded: ${file.name} — click Apply to Canvas`, 'info');
+    switchTab('yaml', null);
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ───── YAML PARSER ─────
+function parseYAMLToState(text) {
+  const lines = text.split('\n');
+
+  function scalar(s) {
+    if (s === undefined || s === null) return null;
+    s = s.trim().replace(/\s+#.*$/, '').trim();
+    if (!s) return null;
+    if ((s[0] === '"' && s.slice(-1) === '"') || (s[0] === "'" && s.slice(-1) === "'"))
+      s = s.slice(1, -1);
+    if (s === 'true') return true;
+    if (s === 'false') return false;
+    if (s === 'null' || s === '~') return null;
+    const n = Number(s);
+    return (!isNaN(n) && s !== '') ? n : s;
+  }
+
+  function indent(line) { return line.length - line.trimStart().length; }
+
+  function parseDeviceList(baseIndent) {
+    const devs = [];
+    let cur = null;
+    while (i < lines.length) {
+      const ln = lines[i];
+      const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind < baseIndent) break;
+      if (tr.startsWith('- ')) {
+        cur = {};
+        devs.push(cur);
+        const rest = tr.slice(2).trim();
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) cur[rest.slice(0, ci2).trim()] = scalar(rest.slice(ci2 + 1));
+        i++;
+      } else if (cur !== null) {
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) cur[tr.slice(0, ci2).trim()] = scalar(tr.slice(ci2 + 1));
+        i++;
+      } else {
+        i++;
+      }
+    }
+    return devs;
+  }
+
+  function parseConnections(baseIndent) {
+    const conns = [];
+    let cur = null;
+    while (i < lines.length) {
+      const ln = lines[i];
+      const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind < baseIndent) break;
+      if (tr.startsWith('- ')) {
+        const rest = tr.slice(2).trim();
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) {
+          const k = rest.slice(0, ci2).trim();
+          const v = rest.slice(ci2 + 1).trim();
+          cur = {};
+          cur[k] = scalar(v) || null;
+          conns.push(cur);
+        }
+        i++;
+      } else if (cur !== null) {
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
+          if (!v || v.startsWith('#')) {
+            i++;
+            const toItems = [];
+            while (i < lines.length) {
+              const ln2 = lines[i]; const tr2 = ln2.trim();
+              if (!tr2 || tr2.startsWith('#')) { i++; continue; }
+              if (indent(ln2) <= ind) break;
+              if (tr2.startsWith('- ')) toItems.push(scalar(tr2.slice(2).trim()));
+              i++;
+            }
+            cur[k] = toItems.length === 1 ? toItems[0] : toItems;
+            continue;
+          } else {
+            cur[k] = scalar(v);
+          }
+        }
+        i++;
+      } else {
+        i++;
+      }
+    }
+    return conns;
+  }
+
+  const result = {};
+  let i = 0;
+
+  while (i < lines.length) {
+    const ln = lines[i];
+    const tr = ln.trim();
+    if (!tr || tr.startsWith('#')) { i++; continue; }
+    const ind = indent(ln);
+    if (ind !== 0) { i++; continue; }
+
+    const ci = tr.indexOf(':');
+    if (ci === -1) { i++; continue; }
+    const key = tr.slice(0, ci).trim();
+    const val = tr.slice(ci + 1).trim();
+    i++;
+
+    if (val && !val.startsWith('#')) {
+      result[key] = scalar(val);
+      continue;
+    }
+
+    if (key === 'type_colors') {
+      const obj = {};
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        const ci2 = t2.indexOf(':');
+        if (ci2 !== -1) obj[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
+        i++;
+      }
+      result.type_colors = obj;
+
+    } else if (key === 'racks') {
+      const racks = [];
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (indent(l2) === 2 && t2 === '- rack:') {
+          const rackEntry = { rack: {}, front: [], rear: [] };
+          racks.push(rackEntry);
+          i++;
+          while (i < lines.length) {
+            const l3 = lines[i]; const t3 = l3.trim();
+            if (!t3 || t3.startsWith('#')) { i++; continue; }
+            const ind3 = indent(l3);
+            if (ind3 < 4) break;
+            const ci3 = t3.indexOf(':');
+            if (ci3 === -1) { i++; continue; }
+            const k3 = t3.slice(0, ci3).trim();
+            const v3 = t3.slice(ci3 + 1).trim();
+            if (ind3 === 4 && (k3 === 'front' || k3 === 'rear')) {
+              i++;
+              rackEntry[k3] = parseDeviceList(6);
+            } else if (ind3 >= 6) {
+              rackEntry.rack[k3] = scalar(v3);
+              i++;
+            } else {
+              i++;
+            }
+          }
+        } else {
+          i++;
+        }
+      }
+      result.racks = racks;
+
+    } else if (key === 'wiring_layers') {
+      const layers = [];
+      let curLayer = null;
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        const ind2 = indent(l2);
+        if (ind2 === 0) break;
+        if (ind2 === 2 && t2.startsWith('- ')) {
+          curLayer = { name: '', edge_color: null, cable_type: 'Ethernet', connections: [] };
+          layers.push(curLayer);
+          const rest2 = t2.slice(2).trim();
+          const ci2 = rest2.indexOf(':');
+          if (ci2 !== -1) curLayer[rest2.slice(0, ci2).trim()] = scalar(rest2.slice(ci2 + 1));
+          i++;
+        } else if (ind2 === 4 && curLayer) {
+          const ci2 = t2.indexOf(':');
+          if (ci2 !== -1) {
+            const k2 = t2.slice(0, ci2).trim();
+            const v2 = t2.slice(ci2 + 1).trim();
+            if (k2 === 'connections') {
+              i++;
+              curLayer.connections = parseConnections(6);
+            } else {
+              curLayer[k2] = scalar(v2);
+              i++;
+            }
+          } else {
+            i++;
+          }
+        } else {
+          i++;
+        }
+      }
+      result.wiring_layers = layers;
+    }
+  }
+
+  return result;
+}
+
+function applyYAMLToCanvas() {
+  const text = document.getElementById('yamlOutput').value.trim();
+  if (!text) { setYAMLStatus('YAML is empty', 'err'); return; }
+
+  let parsed;
+  try {
+    parsed = parseYAMLToState(text);
+  } catch(e) {
+    document.getElementById('yamlOutput').classList.add('has-error');
+    setYAMLStatus('Parse error: ' + e.message, 'err');
+    return;
+  }
+
+  try {
+    applyParsedToState(parsed);
+    document.getElementById('yamlOutput').classList.remove('dirty','has-error');
+    yamlDirty = false;
+    setYAMLStatus('✓ Canvas updated successfully', 'ok');
+    setTimeout(() => setYAMLStatus('', ''), 3000);
+  } catch(e) {
+    document.getElementById('yamlOutput').classList.add('has-error');
+    setYAMLStatus('Apply error: ' + e.message, 'err');
+    console.error(e);
+  }
+}
+
+function applyParsedToState(parsed) {
+  if (parsed.inter_rack_distance !== undefined) document.getElementById('gInterRack').value = parsed.inter_rack_distance;
+  if (parsed.cable_slack_length !== undefined) document.getElementById('gCableSlack').value = parsed.cable_slack_length;
+  if (parsed.front_to_back_length !== undefined) document.getElementById('gFrontBack').value = parsed.front_to_back_length;
+
+  if (parsed.type_colors && typeof parsed.type_colors === 'object') {
+    state.typeColors = {};
+    for (const [k, v] of Object.entries(parsed.type_colors)) state.typeColors[k] = String(v);
+  }
+
+  if (Array.isArray(parsed.racks)) {
+    state.racks = [];
+    let rackIdMax = 1;
+    parsed.racks.forEach((rackEntry, ri) => {
+      const meta = (rackEntry.rack && typeof rackEntry.rack === 'object') ? rackEntry.rack : rackEntry;
+      const id = String(meta.id || ('rack' + (ri + 1)));
+      const name = String(meta.name || ('Rack ' + (ri + 1)));
+      const total_u = parseInt(meta.total_u) || 42;
+      const idNum = parseInt(id.replace(/\D/g, ''));
+      if (!isNaN(idNum) && idNum >= rackIdMax) rackIdMax = idNum + 1;
+
+      const parseDevList = (arr) => {
+        if (!Array.isArray(arr)) return [];
+        return arr.map(d => {
+          if (typeof d !== 'object' || d === null) return null;
+          const dev = {};
+          dev.name = String(d.name || 'Device');
+          if (d.start_u != null) dev.start_u = parseInt(d.start_u);
+          if (d.units != null) dev.units = parseInt(d.units);
+          if (d.start != null) dev.start = parseInt(d.start);
+          if (d.end != null) dev.end = parseInt(d.end);
+          if (d.spacing != null) dev.spacing = parseInt(d.spacing);
+          dev.type = String(d.type || 'pc');
+          return dev;
+        }).filter(Boolean);
+      };
+
+      state.racks.push({ id, name, total_u, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
+    });
+    state.nextRackId = rackIdMax;
+  }
+
+  if (Array.isArray(parsed.wiring_layers)) {
+    state.wiringLayers = [];
+    parsed.wiring_layers.forEach(l => {
+      if (!l) return;
+      const layer = {
+        name: String(l.name || 'Layer'),
+        edge_color: l.edge_color ? String(l.edge_color) : '#888888',
+        cable_type: l.cable_type ? String(l.cable_type) : 'Ethernet',
+        connections: [],
+        collapsed: false
+      };
+      if (Array.isArray(l.connections)) {
+        l.connections.forEach(c => {
+          if (!c || !c.from) return;
+          const conn = { from: String(c.from) };
+          if (Array.isArray(c.to)) conn.to = c.to.map(String);
+          else if (c.to != null) conn.to = String(c.to);
+          else conn.to = '';
+          if (c.start !== undefined) conn.start = parseInt(c.start);
+          if (c.end !== undefined) conn.end = parseInt(c.end);
+          layer.connections.push(conn);
+        });
+      }
+      state.wiringLayers.push(layer);
+    });
+  }
+
+  selectedDevRef = null;
+  exitPickMode();
+  document.getElementById('propsEmpty').style.display = 'flex';
+  document.getElementById('propsForm').style.display = 'none';
+  renderTypeColors();
+  renderAllRacks();
+  renderWiringLayers();
+  updateStatus();
+}
+
+// ───── TABS ─────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if (btn && btn.classList) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+    });
+  }
+  if (id==='yaml') {
+    const ta = document.getElementById('yamlOutput');
+    if (!ta.value.trim() || !yamlDirty) {
+      ta.value = generateYAML();
+      ta.classList.remove('dirty','has-error');
+      yamlDirty = false;
+      setYAMLStatus('', '');
+    }
+  }
+}
+
+// ───── STATUS ─────
+function updateStatus() {
+  const td = state.racks.reduce((s,r)=>s+r.front.length+r.rear.length, 0);
+  document.getElementById('statusRacks').textContent = `${state.racks.length} rack${state.racks.length!==1?'s':''}`;
+  document.getElementById('statusDevices').textContent = `${td} device${td!==1?'s':''}`;
+  document.getElementById('statusLayers').textContent = `${state.wiringLayers.length} wiring layer${state.wiringLayers.length!==1?'s':''}`;
+}
+
+// ───── CLEAR ─────
+function clearAll() {
+  if (!confirm('Clear all racks and wiring layers?')) return;
+  state.racks = []; state.wiringLayers = []; state.nextRackId = 1;
+  selectedDevRef = null;
+  exitPickMode();
+  document.getElementById('propsEmpty').style.display = 'flex';
+  document.getElementById('propsForm').style.display = 'none';
+  renderAllRacks(); renderWiringLayers(); updateStatus();
+}
+
+// ───── KEYBOARD ─────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (pickState) { exitPickMode(); return; }
+    selectedDevRef = null;
+    renderAllRacks();
+    document.getElementById('propsEmpty').style.display = 'flex';
+    document.getElementById('propsForm').style.display = 'none';
+    return;
+  }
+  const tag = document.activeElement.tagName;
+  if (tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return;
+  if ((e.key==='Delete'||e.key==='Backspace') && selectedDevRef) deleteSelectedDevice();
+});
+
+// Click on canvas background in pick mode → cancel
+document.getElementById('canvasArea').addEventListener('click', e => {
+  if (!pickState) return;
+  if (!e.target.closest('.rack-device')) exitPickMode();
+});
+
+// ───── SAMPLE DATA ─────
+function loadSampleData() {
+  state.racks = [
+    { id:'rack1', name:'Rack 1', total_u:42, front:[
+        {name:'UPS',start_u:42,units:3,type:'pdu'},
+        {name:'KVM Shelf {N}',start_u:39,units:1,start:1,end:3,spacing:0,type:'Shelf'},
+        {name:'Operator PC',start_u:27,units:4,type:'pc'},
+        {name:'Physics PC',start_u:23,units:4,type:'pc'},
+        {name:'Spectator IG',start_u:19,units:4,type:'pc'},
+        {name:'Telemetry',start_u:12,units:3,type:'pc'},
+        {name:'dSPACE Controller',start_u:9,units:3,type:'realtime'},
+        {name:'dSPACE',start_u:6,units:6,type:'realtime'},
+      ], rear:[
+        {name:'R1 16A PDU A',start_u:42,units:1,type:'pdu'},
+        {name:'Company Network Switch',start_u:41,units:1,type:'switch'},
+        {name:'CCTV Switch',start_u:40,units:1,type:'switch'},
+        {name:'KVM Switch',start_u:39,units:1,type:'switch'},
+        {name:'Audio Switch',start_u:38,units:1,type:'switch'},
+        {name:'R1 EU PDU',start_u:37,units:1,type:'pdu'},
+        {name:'RME Digiface',start_u:36,units:2,type:'Shelf'},
+        {name:'Media Converters',start_u:34,units:4,type:'Shelf'},
+        {name:'Cable Manager',start_u:24,units:1,type:'cable management'},
+        {name:'R1 16A PDU B',start_u:22,units:1,type:'pdu'},
+        {name:'Cable Manager',start_u:6,units:1,type:'cable management'},
+        {name:'Graphics Switch 1',start_u:3,units:1,type:'switch'},
+        {name:'R1 16A PDU C',start_u:1,units:1,type:'pdu'},
+        {name:'Vertical PDU 1',type:'pdu'},
+        {name:'Mains in 1',type:'pdu'},
+        {name:'Company Net in',type:'switch'},
+      ]},
+    { id:'rack2', name:'Rack 2', total_u:42, front:[
+        {name:'Customer 2',start_u:42,units:15,type:'customer'},
+        {name:'RVD {N}',start_u:20,units:4,start:1,end:3,spacing:0,type:'pc'},
+        {name:'IG {N}',start_u:8,units:4,start:1,end:2,spacing:0,type:'pc'},
+      ], rear:[
+        {name:'R2 16A PDU A',start_u:42,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:24,units:1,type:'cable management'},
+        {name:'R2 16A PDU B',start_u:21,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:6,units:1,type:'cable management'},
+        {name:'Graphics Switch 2',start_u:3,units:1,type:'switch'},
+        {name:'R2 16A PDU C',start_u:1,units:1,type:'pdu'},
+        {name:'Vertical PDU 2',type:'pdu'},
+        {name:'Mains in 2',type:'pdu'},
+      ]},
+    { id:'rack3', name:'Rack 3', total_u:42, front:[
+        {name:'Customer 3',start_u:42,units:15,type:'customer'},
+        {name:'IG {N}',start_u:20,units:4,start:3,end:7,spacing:0,type:'pc'},
+      ], rear:[
+        {name:'R3 16A PDU A',start_u:42,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:24,units:1,type:'cable management'},
+        {name:'R3 16A PDU B',start_u:21,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:6,units:1,type:'cable management'},
+        {name:'Graphics Switch 3',start_u:3,units:1,type:'switch'},
+        {name:'R3 16A PDU C',start_u:1,units:1,type:'pdu'},
+        {name:'Vertical PDU 3',type:'pdu'},
+        {name:'Mains in 3',type:'pdu'},
+      ]},
+    { id:'rack4', name:'Rack 4', total_u:42, front:[
+        {name:'Customer 4',start_u:39,units:1,type:'customer'},
+        {name:'IG {N}',start_u:24,units:4,start:8,end:13,spacing:0,type:'pc'},
+      ], rear:[
+        {name:'R4 16A PDU A',start_u:42,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:24,units:1,type:'cable management'},
+        {name:'R4 16A PDU B',start_u:21,units:1,type:'pdu'},
+        {name:'Cable manager',start_u:6,units:1,type:'cable management'},
+        {name:'Graphics Switch 4',start_u:3,units:1,type:'switch'},
+        {name:'R4 16A PDU C',start_u:1,units:1,type:'pdu'},
+        {name:'Vertical PDU 4',type:'pdu'},
+        {name:'Mains in 4',type:'pdu'},
+      ]},
+  ];
+  state.nextRackId = 5;
+
+  state.wiringLayers = [
+    { name:'Visuals Subnet', edge_color:'#b551a9', cable_type:'Ethernet', collapsed:false, connections:[
+        {from:'Graphics Switch {N}', to:'Graphics Switch {N+1}', start:1, end:3},
+        {from:'Graphics Switch 1', to:'Operator PC'},
+        {from:'Graphics Switch 1', to:'Physics PC'},
+        {from:'Graphics Switch 1', to:'Spectator IG'},
+        {from:'Graphics Switch 2', to:'RVD {N}', start:1, end:3},
+        {from:'Graphics Switch 3', to:'IG {N}', start:3, end:7},
+        {from:'Graphics Switch 4', to:'IG {N}', start:8, end:13},
+    ]},
+    { name:'Power Distribution', edge_color:'#f5c842', cable_type:'C13-C14', collapsed:true, connections:[
+        {from:'UPS', to:'KVM Shelf {N}', start:1, end:3},
+        {from:'R1 16A PDU B', to:'Operator PC'},
+        {from:'R1 16A PDU B', to:'Physics PC'},
+        {from:'Mains in 1', to:'Vertical PDU 1'},
+        {from:'Vertical PDU 1', to:'R1 16A PDU A'},
+        {from:'Mains in 2', to:'Vertical PDU 2'},
+        {from:'Mains in 3', to:'Vertical PDU 3'},
+        {from:'Mains in 4', to:'Vertical PDU 4'},
+    ]},
+    { name:'Host Subnet', edge_color:'#5192b5', cable_type:'Ethernet', collapsed:true, connections:[
+        {from:'Operator PC', to:'dSPACE Controller'},
+        {from:'dSPACE Controller', to:'dSPACE'},
+    ]},
+    { name:'Company Network', edge_color:'#3ecf8e', cable_type:'Ethernet', collapsed:true, connections:[
+        {from:'Company Network Switch', to:'Operator PC'},
+        {from:'Company Network Switch', to:'Telemetry'},
+        {from:'Company Net in', to:'Company Network Switch'},
+    ]},
+  ];
+
+  renderAllRacks();
+  renderWiringLayers();
+  updateStatus();
+}
+
+init();
+</script>
+</body>
+</html>

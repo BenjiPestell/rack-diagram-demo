@@ -4,7 +4,7 @@ graph "Visuals Subnet" {
     bgcolor="white",
     label="Visuals Subnet",
     labelloc=t,
-    fontsize=16,
+    fontsize=15,
     fontname="Sinkin Sans 400 Regular",
     overlap=false,
     sep=0.5
@@ -13,7 +13,7 @@ graph "Visuals Subnet" {
   node [
     shape=box,
     style="rounded,filled",
-    fontsize=12,
+    fontsize=11,
     fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
@@ -164,76 +164,76 @@ graph "Visuals Subnet" {
 
   // Connections
   Graphics_Switch_1 -- Graphics_Switch_2 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- Graphics_Switch_3 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- Graphics_Switch_4 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_1 -- Operator_PC [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_1 -- Physics_PC [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_1 -- Spectator_IG [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_1 -- Telemetry [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_1 -- dSPACE [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- RVD_1 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- RVD_2 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- RVD_3 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- IG_1 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_2 -- IG_2 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- IG_3 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- IG_4 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- IG_5 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- IG_6 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_3 -- IG_7 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_8 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_9 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_10 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_11 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_12 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Graphics_Switch_4 -- IG_13 [
-    color="#b551a9", style=solid, penwidth=2.0
+    color="#b551a9", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

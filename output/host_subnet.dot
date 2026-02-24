@@ -4,7 +4,7 @@ graph "Host Subnet" {
     bgcolor="white",
     label="Host Subnet",
     labelloc=t,
-    fontsize=16,
+    fontsize=15,
     fontname="Sinkin Sans 400 Regular",
     overlap=false,
     sep=0.5
@@ -13,7 +13,7 @@ graph "Host Subnet" {
   node [
     shape=box,
     style="rounded,filled",
-    fontsize=12,
+    fontsize=11,
     fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
@@ -49,10 +49,10 @@ graph "Host Subnet" {
 
   // Connections
   Operator_PC -- dSPACE_Controller [
-    color="#5192b5", style=solid, penwidth=2.0
+    color="#5192b5", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   dSPACE_Controller -- dSPACE [
-    color="#5192b5", style=solid, penwidth=2.0
+    color="#5192b5", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
 
 }

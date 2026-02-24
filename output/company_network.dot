@@ -4,7 +4,7 @@ graph "Company Network" {
     bgcolor="white",
     label="Company Network",
     labelloc=t,
-    fontsize=16,
+    fontsize=15,
     fontname="Sinkin Sans 400 Regular",
     overlap=false,
     sep=0.5
@@ -13,13 +13,13 @@ graph "Company Network" {
   node [
     shape=box,
     style="rounded,filled",
-    fontsize=12,
+    fontsize=11,
     fontname="Sinkin Sans 400 Regular",
     margin=0.2
   ];
 
   edge [
-    color="#333333",
+    color="#888888",
     style=solid,
     penwidth=2.0
   ];
@@ -33,7 +33,7 @@ graph "Company Network" {
     fontname="Sinkin Sans 400 Regular";
 
     "Company_Network_Switch" [
-      label="Company Network Switch\n(3 conn)",
+      label="Company Network Switch\n(4 conn)",
       fillcolor="#B8D6D6",
       penwidth=2.5
     ];
@@ -51,15 +51,30 @@ graph "Company Network" {
     ];
   }
 
+  subgraph cluster_rack3 {
+    label="Rack 3";
+    style=filled;
+    color="#F5F5F5";
+    fontname="Sinkin Sans 400 Regular";
+
+    "IG_4" [
+      label="IG 4",
+      fillcolor="#E8F4F8"
+    ];
+  }
+
   // Connections
   Company_Network_Switch -- Operator_PC [
-    color="#333333", style=solid, penwidth=2.0
+    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Company_Network_Switch -- Telemetry [
-    color="#333333", style=solid, penwidth=2.0
+    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
   Company_Net_in -- Company_Network_Switch [
-    color="#333333", style=solid, penwidth=2.0
+    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
+  ];
+  Company_Network_Switch -- IG_4 [
+    color="#888888", style=solid, penwidth=2.0, label="   Ethernet", fontsize=8, fontname="Sinkin Sans 400 Regular"
   ];
 
 }
