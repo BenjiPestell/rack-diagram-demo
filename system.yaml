@@ -417,5 +417,3 @@ wiring_layers:
         to: Telemetry
       - from: Company Net in
         to: Company Network Switch
-      - from: Company Network Switch
-        to: IG 4
