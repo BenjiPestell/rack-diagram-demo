@@ -31,7 +31,8 @@ def main():
 
             cmd = [
                 "dot",
-                "-Tpng",
+                "-Tpng:cairo",
+                "-Gdpi=300",
                 dot_path,
                 "-o",
                 png_path
