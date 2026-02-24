@@ -379,7 +379,7 @@
   }
 
   .rack-device:hover { filter: brightness(1.15); z-index: 20; }
-  .rack-device.selected { outline: 2px solid #fff; outline-offset: 0px; z-index: 30; }
+  .rack-device.selected { outline: 2px solid rgba(255,255,255,0.9); outline-offset: 0px; z-index: 30; box-shadow: 0 0 8px rgba(255,255,255,0.15); }
   .rack-device.dragging { opacity: 0.35; }
 
   .device-label {
@@ -403,7 +403,7 @@
 
   .add-rack-btn {
     width: 200px;
-    height: 60px;
+    height: 80px;
     border: 1px dashed var(--text3);
     border-radius: 0;
     background: none;
@@ -417,7 +417,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
     transition: all 0.2s;
     margin-top: 28px;
     flex-shrink: 0;
@@ -478,6 +478,7 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--accent);
+    text-shadow: 0 0 8px rgba(0,212,255,0.3);
     margin-bottom: 8px;
   }
 
@@ -565,9 +566,8 @@
     text-align: center;
     min-height: 120px;
     line-height: 2;
+    text-transform: uppercase;
   }
-
-  .empty-icon { font-size: 22px; opacity: 0.4; }
 
   /* WIRING */
   .wiring-layer-card {
@@ -645,17 +645,17 @@
 
   .add-conn-btn {
     width: 100%;
-    padding: 4px;
+    padding: 5px;
     background: none;
-    border: 1px dashed var(--border2);
+    border: 1px solid var(--border);
     color: var(--text3);
     border-radius: 0;
     cursor: pointer;
     font-family: var(--mono);
     font-size: 9px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-top: 3px;
+    margin-top: 4px;
     transition: all 0.2s;
   }
 
@@ -713,14 +713,19 @@
     gap: 20px;
     font-family: var(--mono);
     font-size: 9px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     color: var(--text3);
     flex-shrink: 0;
     text-transform: uppercase;
   }
 
   .status-item { display: flex; align-items: center; gap: 5px; }
-  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
 </style>
 </head>
 <body>
@@ -740,9 +745,9 @@
     <label>m</label>
   </div>
   <div class="header-spacer"></div>
-  <button class="header-btn" onclick="loadSampleData()">📂 Load Sample</button>
-  <button class="header-btn" onclick="clearAll()">🗑 Clear</button>
-  <button class="header-btn primary" onclick="exportYAML()">⬇ Export YAML</button>
+  <button class="header-btn" onclick="loadSampleData()">Load Example</button>
+  <button class="header-btn" onclick="clearAll()">Clear</button>
+  <button class="header-btn primary" onclick="exportYAML()">Export YAML</button>
 </header>
 
 <div class="app-body">
@@ -772,7 +777,10 @@
   <!-- CANVAS -->
   <div class="canvas-area" id="canvasArea">
     <div class="rack-canvas" id="rackCanvas">
-      <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">＋ Add Rack</button>
+      <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">
+        <span style="font-size:24px;line-height:1">+</span>
+        <span>ADD RACK</span>
+      </button>
     </div>
   </div>
 
@@ -786,8 +794,7 @@
 
     <div class="tab-content active" id="tab-props">
       <div class="empty-state" id="propsEmpty">
-        <div class="empty-icon">🖱</div>
-        <div>Click a device to<br>edit its properties</div>
+        <div>Select a device<br>to edit properties</div>
       </div>
       <div id="propsForm" style="display:none; flex-direction:column">
         <div class="prop-section">
@@ -834,8 +841,8 @@
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
       <div class="yaml-toolbar">
-        <button class="header-btn" onclick="refreshYAML()">⟳ Refresh</button>
-        <button class="header-btn" onclick="copyYAML()">📋 Copy</button>
+        <button class="header-btn" onclick="refreshYAML()">Generate</button>
+        <button class="header-btn" onclick="copyYAML()">Copy</button>
       </div>
       <textarea class="yaml-area" id="yamlOutput" readonly spellcheck="false"></textarea>
     </div>
@@ -847,7 +854,7 @@
   <div class="status-item" id="statusRacks">0 racks</div>
   <div class="status-item" id="statusDevices">0 devices</div>
   <div class="status-item" id="statusLayers">0 wiring layers</div>
-  <div class="status-item" style="margin-left:auto;color:var(--text3)">DEL = delete selected · ESC = deselect</div>
+  <div class="status-item" style="margin-left:auto">[ DEL ] Delete Selected &nbsp;·&nbsp; [ ESC ] Deselect</div>
 </div>
 
 <script>
@@ -962,6 +969,30 @@ function buildRackEl(rack) {
   return wrap;
 }
 
+// Expand a device entry into one or more render items (clusters → multiple)
+function expandDeviceToRenderItems(dev) {
+  const isPattern = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
+  if (!isPattern) return [{ dev, displayName: dev.name, start_u: dev.start_u }];
+
+  const items = [];
+  const count = dev.end - dev.start + 1;
+  const spacing = dev.spacing || 0;
+  const step = dev.units + spacing; // U slots per member
+
+  for (let i = 0; i < count; i++) {
+    const n = dev.start + i;
+    const memberStartU = dev.start_u - i * step;
+    items.push({
+      dev,
+      displayName: dev.name.replace('{N}', n),
+      start_u: memberStartU,
+      memberIndex: i,
+      memberN: n
+    });
+  }
+  return items;
+}
+
 function buildColumnEl(rack, face) {
   const view = document.createElement('div');
   view.className = 'rack-view';
@@ -977,10 +1008,19 @@ function buildColumnEl(rack, face) {
   col.dataset.face = face;
 
   const totalU = rack.total_u || 42;
-  const occupied = {};
+
+  // Build the full set of render items (expanding clusters)
+  const renderItems = [];
   rack[face].forEach(dev => {
-    if (dev.start_u && dev.units) {
-      for (let u = dev.start_u; u >= dev.start_u - dev.units + 1; u--) occupied[u] = true;
+    if (!dev.start_u || !dev.units) return;
+    expandDeviceToRenderItems(dev).forEach(item => renderItems.push(item));
+  });
+
+  // Mark occupied slots
+  const occupied = {};
+  renderItems.forEach(item => {
+    for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
+      if (u >= 1 && u <= totalU) occupied[u] = true;
     }
   });
 
@@ -1009,26 +1049,29 @@ function buildColumnEl(rack, face) {
     col.appendChild(row);
   }
 
-  // Render devices
-  rack[face].forEach(dev => {
-    if (!dev.start_u || !dev.units) return;
-    col.appendChild(buildDeviceEl(dev, rack.id, face, totalU));
+  // Render each item as its own block
+  renderItems.forEach(item => {
+    if (item.start_u < 1 || item.start_u > totalU) return;
+    col.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
   });
 
   view.appendChild(col);
   return view;
 }
 
-function buildDeviceEl(dev, rackId, face, totalU) {
+function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
+  displayName = displayName || dev.name;
+  startU = startU !== undefined ? startU : dev.start_u;
+
   const el = document.createElement('div');
   el.className = 'rack-device';
   const color = state.typeColors[dev.type] || '#888';
   el.style.background = color;
   const uH = 22;
-  el.style.top = ((totalU - dev.start_u) * uH) + 'px';
+  el.style.top = ((totalU - startU) * uH) + 'px';
   el.style.height = (dev.units * uH - 1) + 'px';
 
-  const nm = dev.name.length > 24 ? dev.name.slice(0,22)+'…' : dev.name;
+  const nm = displayName.length > 24 ? displayName.slice(0, 22) + '…' : displayName;
   el.innerHTML = `<span class="device-label">${nm}</span><span class="device-u-badge">${dev.units}U</span>`;
 
   el.setAttribute('draggable', 'true');
@@ -1198,7 +1241,7 @@ function renderWiringLayers() {
         value="${layer.name}" onclick="event.stopPropagation()"
         onchange="state.wiringLayers[${li}].name=this.value">
       <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
-        style="background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-size:9px;padding:2px 4px;border-radius:3px;outline:none;max-width:80px">
+        style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;border-radius:0;outline:none;max-width:82px;letter-spacing:0.5px">
         ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI'].map(ct =>
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
       </select>
@@ -1312,8 +1355,10 @@ function copyYAML() {
   refreshYAML();
   navigator.clipboard.writeText(document.getElementById('yamlOutput').value).then(() => {
     const btn = event.target;
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = '📋 Copy', 1500);
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; btn.style.borderColor = ''; }, 1500);
   });
 }
 
