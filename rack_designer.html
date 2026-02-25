@@ -991,6 +991,60 @@
   }
   .add-ext-group-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+
+  /* Editable type row */
+  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600; color: var(--text2); }
+  .type-color-row:hover { background: var(--surface2); }
+  .type-name-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    min-width: 0;
+    padding: 0;
+  }
+  .type-name-input:focus {
+    color: var(--text);
+    border-bottom: 1px solid var(--border2);
+  }
+  .type-delete-btn {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 2px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .type-color-row:hover .type-delete-btn { opacity: 1; }
+  .type-delete-btn:hover { color: var(--red); }
+  .add-type-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 5px 8px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.15s;
+    text-align: left;
+  }
+  .add-type-btn:hover { color: var(--accent); }
+
 </style>
 </head>
 <body>
@@ -1033,6 +1087,7 @@
       <div style="border-top:1px solid var(--border);padding:6px 6px 8px">
         <div class="palette-label">Type Colors</div>
         <div id="typeColorList"></div>
+        <button class="add-type-btn" onclick="addNewType()">＋ new type</button>
       </div>
     </div>
   </div>
@@ -1181,7 +1236,33 @@ function renderTypeColors() {
   for (const [type, color] of Object.entries(state.typeColors)) {
     const row = document.createElement('div');
     row.className = 'type-color-row';
-    row.innerHTML = `<input type="color" class="color-swatch" value="${color}" onchange="updateTypeColor('${type.replace(/'/g,"\\'")}',this.value)" title="${type}"><span>${type}</span>`;
+
+    // Color picker
+    const swatch = document.createElement('input');
+    swatch.type = 'color';
+    swatch.className = 'color-swatch';
+    swatch.value = color;
+    swatch.title = 'Change colour';
+    swatch.addEventListener('change', e => updateTypeColor(type, e.target.value));
+
+    // Editable name
+    const nameInput = document.createElement('input');
+    nameInput.className = 'type-name-input';
+    nameInput.value = type;
+    nameInput.title = 'Click to rename type';
+    nameInput.addEventListener('change', e => renameType(type, e.target.value.trim()));
+    nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+
+    // Delete button
+    const delBtn = document.createElement('button');
+    delBtn.className = 'type-delete-btn';
+    delBtn.textContent = '✕';
+    delBtn.title = 'Delete type';
+    delBtn.addEventListener('click', () => deleteType(type));
+
+    row.appendChild(swatch);
+    row.appendChild(nameInput);
+    row.appendChild(delBtn);
     c.appendChild(row);
   }
   document.querySelectorAll('.palette-item').forEach(el => {
@@ -1196,6 +1277,63 @@ function updateTypeColor(type, color) {
   renderAllRacks();
   renderExtGroupWidgets();
 }
+
+function renameType(oldName, newName) {
+  if (!newName || newName === oldName) { renderTypeColors(); return; }
+  if (state.typeColors[newName] !== undefined) {
+    alert(`Type "${newName}" already exists.`);
+    renderTypeColors();
+    return;
+  }
+  // Rebuild typeColors preserving order
+  const entries = Object.entries(state.typeColors);
+  state.typeColors = {};
+  entries.forEach(([k, v]) => { state.typeColors[k === oldName ? newName : k] = v; });
+  // Update all devices using old type name
+  state.racks.forEach(rack => {
+    ['front','rear'].forEach(face => {
+      rack[face].forEach(dev => { if (dev.type === oldName) dev.type = newName; });
+    });
+  });
+  state.externalGroups.forEach(group => {
+    group.devices.forEach(dev => { if (dev.type === oldName) dev.type = newName; });
+  });
+  renderTypeColors();
+  renderAllRacks();
+  renderExtGroupWidgets();
+}
+
+function deleteType(type) {
+  if (!confirm(`Delete type "${type}"? Devices using it will show as unstyled.`)) return;
+  delete state.typeColors[type];
+  renderTypeColors();
+  renderAllRacks();
+  renderExtGroupWidgets();
+}
+
+function addNewType() {
+  // Generate unique default name
+  let n = 1;
+  while (state.typeColors[`type${n}`] !== undefined) n++;
+  const name = `type${n}`;
+  // Pick a pleasant hue cycling through the spectrum
+  const hues = [210, 150, 30, 280, 0, 60, 180, 330];
+  const hue = hues[Object.keys(state.typeColors).length % hues.length];
+  state.typeColors[name] = hslToHex(hue, 40, 70);
+  renderTypeColors();
+  // Focus the new row's name input so the user can rename it immediately
+  const inputs = document.querySelectorAll('#typeColorList .type-name-input');
+  const last = inputs[inputs.length - 1];
+  if (last) { last.focus(); last.select(); }
+}
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => { const k = (n + h / 30) % 12; const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(255 * c).toString(16).padStart(2, '0'); };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
 
 function populateTypeSelects() {
   const el = document.getElementById('pType');
