@@ -1045,6 +1045,55 @@
   }
   .add-type-btn:hover { color: var(--accent); }
 
+
+  /* Per-connection overrides (cable type + label) */
+  .conn-overrides-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .conn-override-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    width: 34px;
+  }
+  .conn-override-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    outline: none;
+    min-width: 0;
+  }
+  .conn-override-input:focus { border-color: var(--accent); color: var(--text); }
+  .conn-override-input::placeholder { color: var(--text3); }
+
+  .conn-overrides-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 3px 7px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+  }
+  .conn-overrides-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .conn-overrides-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(201,22,34,0.07); }
+
 </style>
 </head>
 <body>
@@ -1785,6 +1834,83 @@ function buildConnectionCard(li, ci, conn) {
   mainRow.appendChild(removeBtn);
   card.appendChild(mainRow);
 
+  // ── Per-connection cable type + label overrides ───────────
+  const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn._showOverrides;
+
+  const overridesFooter = document.createElement('div');
+  overridesFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;';
+
+  const overridesToggle = document.createElement('button');
+  overridesToggle.className = 'conn-overrides-toggle' + (hasOverrides ? ' active' : '');
+  overridesToggle.innerHTML = hasOverrides
+    ? '✎&nbsp;overrides ▾'
+    : '<span style="opacity:.5">✎</span>&nbsp;cable / label';
+  overridesToggle.title = 'Override the layer cable type or add a label for this connection';
+  overridesToggle.addEventListener('click', () => {
+    if (hasOverrides) {
+      delete state.wiringLayers[li].connections[ci].cable_type;
+      delete state.wiringLayers[li].connections[ci].label;
+      state.wiringLayers[li].connections[ci]._showOverrides = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showOverrides = true;
+    }
+    renderWiringLayers();
+  });
+  overridesFooter.appendChild(overridesToggle);
+  card.appendChild(overridesFooter);
+
+  if (hasOverrides) {
+    const overridesBox = document.createElement('div');
+    overridesBox.style.cssText = 'margin-top:5px;padding-top:5px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
+
+    // Cable type override row
+    const cableRow = document.createElement('div');
+    cableRow.className = 'conn-overrides-row';
+    const cableLbl = document.createElement('span');
+    cableLbl.className = 'conn-override-label';
+    cableLbl.textContent = 'Cable';
+    const cableSelect = document.createElement('select');
+    cableSelect.className = 'conn-override-input';
+    cableSelect.style.cursor = 'pointer';
+    const cableTypes = ['', 'Ethernet', 'C13-C14', 'C19-C20', 'Included', 'Fibre', 'USB', 'HDMI'];
+    cableTypes.forEach(ct => {
+      const opt = document.createElement('option');
+      opt.value = ct;
+      opt.textContent = ct || '— inherit from layer —';
+      if (ct === (conn.cable_type || '')) opt.selected = true;
+      cableSelect.appendChild(opt);
+    });
+    cableSelect.addEventListener('change', e => {
+      const v = e.target.value;
+      if (v) state.wiringLayers[li].connections[ci].cable_type = v;
+      else delete state.wiringLayers[li].connections[ci].cable_type;
+    });
+    cableRow.appendChild(cableLbl);
+    cableRow.appendChild(cableSelect);
+    overridesBox.appendChild(cableRow);
+
+    // Label override row
+    const labelRow = document.createElement('div');
+    labelRow.className = 'conn-overrides-row';
+    const labelLbl = document.createElement('span');
+    labelLbl.className = 'conn-override-label';
+    labelLbl.textContent = 'Label';
+    const labelIn = document.createElement('input');
+    labelIn.className = 'conn-override-input';
+    labelIn.placeholder = 'e.g. DC adapter';
+    labelIn.value = conn.label || '';
+    labelIn.addEventListener('change', e => {
+      const v = e.target.value.trim();
+      if (v) state.wiringLayers[li].connections[ci].label = v;
+      else delete state.wiringLayers[li].connections[ci].label;
+    });
+    labelRow.appendChild(labelLbl);
+    labelRow.appendChild(labelIn);
+    overridesBox.appendChild(labelRow);
+
+    card.appendChild(overridesBox);
+  }
+
   // ── Cluster range toggle + fields ───────────
   const hasCluster = conn.start !== undefined || conn.end !== undefined || conn._showCluster;
 
@@ -2254,6 +2380,8 @@ function generateYAML() {
           } else {
             y += `        to: ${c.to}\n`;
           }
+          if (c.cable_type !== undefined) y += `        cable_type: "${c.cable_type}"\n`;
+          if (c.label !== undefined) y += `        label: "${c.label}"\n`;
           if (c.start !== undefined) y += `        start: ${c.start}\n`;
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
         });
@@ -2663,6 +2791,8 @@ function applyParsedToState(parsed) {
           if (Array.isArray(c.to)) conn.to = c.to.map(String);
           else if (c.to != null) conn.to = String(c.to);
           else conn.to = '';
+          if (c.cable_type != null) conn.cable_type = String(c.cable_type);
+          if (c.label != null) conn.label = String(c.label);
           if (c.start !== undefined) conn.start = parseInt(c.start);
           if (c.end !== undefined) conn.end = parseInt(c.end);
           layer.connections.push(conn);
