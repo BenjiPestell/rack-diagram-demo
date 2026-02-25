@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
-:root {
+  :root {
   /* Core backgrounds */
   --bg: #0b0d10;          /* Near-black charcoal */
   --surface: #08090a;     /* Dark graphite */
@@ -32,13 +32,11 @@
   --text3: #6c7077;       /* Muted captions */
 
   /* Typography */
-  --mono: 'Share Tech Mono', monospace;
-  --sans: 'Rajdhani', sans-serif;
-  --display: 'Orbitron', monospace;
-
-  /* Layout */
-  --u-height: 22px;
-}
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Rajdhani', sans-serif;
+    --display: 'Orbitron', monospace;
+    --u-height: 22px;
+  }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -763,6 +761,236 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+
+  /* PICK MODE — external device rows */
+  .canvas-area.picking-device .ext-device-row {
+    cursor: crosshair !important;
+    outline: 1px dashed rgba(0,212,255,0.35) !important;
+  }
+  .canvas-area.picking-device .ext-device-row:hover {
+    outline: 2px solid var(--accent) !important;
+    filter: brightness(1.2) !important;
+  }
+
+  /* External group widget (canvas) */
+  .ext-group-widget {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+  }
+  .ext-group-header-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ext-group-label {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ext-group-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 1px 4px;
+    flex-shrink: 0;
+  }
+  .ext-group-body {
+    border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .ext-device-row {
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+    transition: background 0.1s;
+    user-select: none;
+  }
+  .ext-device-row:last-child { border-bottom: none; }
+  .ext-device-row:hover { background: var(--surface3); }
+  .ext-device-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+  .ext-device-name {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ext-device-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+
+  /* External devices tab — right panel */
+  .ext-group-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
+  .ext-group-card-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
+  .ext-group-card-header:hover { background: var(--surface3); }
+  .ext-group-name-input {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    flex: 1;
+    outline: none;
+    min-width: 0;
+  }
+  .ext-group-name-input::placeholder { color: var(--text3); }
+  .ext-group-body-panel { border-top: 1px solid var(--border); padding: 6px 8px; }
+  .ext-remove-group-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 5px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .ext-remove-group-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* Ext device rows in right panel editor */
+  .ext-dev-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .ext-dev-name-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    min-width: 0;
+  }
+  .ext-dev-name-input:focus { border-color: var(--accent); }
+  .ext-dev-type-input {
+    width: 90px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    flex-shrink: 0;
+  }
+  .ext-dev-type-input:focus { border-color: var(--accent); }
+  .ext-dev-remove {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 4px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+  .ext-dev-remove:hover { color: var(--red); }
+
+  /* Cluster fields for ext devices */
+  .ext-dev-cluster-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+  }
+  .ext-dev-cluster-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .ext-dev-cluster-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(212,137,10,0.07); }
+  .ext-dev-range-input {
+    width: 46px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    text-align: center;
+  }
+  .ext-dev-range-input:focus { border-color: var(--accent); }
+
+  .add-ext-dev-btn {
+    width: 100%;
+    padding: 5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    transition: all 0.2s;
+  }
+  .add-ext-dev-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .add-ext-group-btn {
+    margin: 7px;
+    width: calc(100% - 14px);
+    padding: 7px;
+    background: none;
+    border: 1px dashed var(--border2);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .add-ext-group-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 </style>
 </head>
 <body>
@@ -822,6 +1050,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('props',this)">Properties</button>
       <button class="tab-btn" onclick="switchTab('wiring',this)">Wiring</button>
+      <button class="tab-btn" onclick="switchTab('external',this)">External</button>
       <button class="tab-btn" onclick="switchTab('yaml',this)">YAML</button>
     </div>
 
@@ -858,6 +1087,12 @@
       <button class="add-layer-btn" onclick="addWiringLayer()">＋ Add Wiring Layer</button>
     </div>
 
+    <!-- EXTERNAL DEVICES TAB -->
+    <div class="tab-content" id="tab-external">
+      <div id="extGroupList"></div>
+      <button class="add-ext-group-btn" onclick="addExtGroup()">＋ Add External Group</button>
+    </div>
+
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
       <div class="yaml-toolbar">
         <label class="header-btn primary" style="cursor:pointer">
@@ -879,16 +1114,18 @@
   <div class="status-item" id="statusRacks">0 racks</div>
   <div class="status-item" id="statusDevices">0 devices</div>
   <div class="status-item" id="statusLayers">0 wiring layers</div>
+  <div class="status-item" id="statusExtGroups">0 ext groups</div>
   <div class="status-item" style="margin-left:auto">[ DEL ] Delete &nbsp;·&nbsp; [ ESC ] Deselect / Cancel Pick</div>
 </div>
 
 <!-- Pick mode banner -->
-<div id="pickBanner">⊕ Click a device on the canvas &nbsp;—&nbsp; ESC to cancel</div>
+<div id="pickBanner">⊕ Click a device on the canvas or external group &nbsp;—&nbsp; ESC to cancel</div>
 
 <script>
 const state = {
   racks: [],
   wiringLayers: [],
+  externalGroups: [],   // [{ name, collapsed, devices: [{name, type, start?, end?}] }]
   typeColors: {
     pc: "#E8F4F8",
     pdu: "#AAAAAA",
@@ -913,6 +1150,7 @@ function enterPickMode(layerIdx, connIdx, field) {
   document.getElementById('canvasArea').classList.add('picking-device');
   document.getElementById('pickBanner').classList.add('visible');
   renderWiringLayers(); // re-render to highlight active pick button
+  renderExtGroupWidgets(); // re-render ext widgets to show pickable state
 }
 
 function exitPickMode() {
@@ -920,6 +1158,7 @@ function exitPickMode() {
   document.getElementById('canvasArea').classList.remove('picking-device');
   document.getElementById('pickBanner').classList.remove('visible');
   renderWiringLayers();
+  renderExtGroupWidgets();
 }
 
 function handleDevicePickClick(devName) {
@@ -955,6 +1194,7 @@ function renderTypeColors() {
 function updateTypeColor(type, color) {
   state.typeColors[type] = color;
   renderAllRacks();
+  renderExtGroupWidgets();
 }
 
 function populateTypeSelects() {
@@ -1491,6 +1731,296 @@ function buildConnectionCard(li, ci, conn) {
 function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers(); updateStatus(); }
 function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
 
+// ─── EXTERNAL GROUP WIDGETS (on canvas) ────────────────────────────────────
+function renderExtGroupWidgets() {
+  const canvas = document.getElementById('rackCanvas');
+  canvas.querySelectorAll('.ext-group-widget').forEach(el => el.remove());
+  const addBtn = document.getElementById('addRackBtn');
+
+  state.externalGroups.forEach((group, gi) => {
+    const widget = document.createElement('div');
+    widget.className = 'ext-group-widget';
+
+    // Header bar
+    const hdr = document.createElement('div');
+    hdr.className = 'ext-group-header-bar';
+    const lbl = document.createElement('span');
+    lbl.className = 'ext-group-label';
+    lbl.textContent = group.name || 'External Group';
+    const tag = document.createElement('span');
+    tag.className = 'ext-group-tag';
+    tag.textContent = 'EXT';
+    hdr.appendChild(lbl);
+    hdr.appendChild(tag);
+    widget.appendChild(hdr);
+
+    // Body: list devices (clusters expanded for display)
+    const body = document.createElement('div');
+    body.className = 'ext-group-body';
+
+    const displayDevs = [];
+    group.devices.forEach(dev => {
+      const isCluster = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
+      if (isCluster) {
+        for (let n = dev.start; n <= dev.end; n++) {
+          displayDevs.push({ dev, displayName: dev.name.replace('{N}', n) });
+        }
+      } else {
+        displayDevs.push({ dev, displayName: dev.name });
+      }
+    });
+
+    if (displayDevs.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:8px;font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:1px;';
+      empty.textContent = 'No devices';
+      body.appendChild(empty);
+    } else {
+      displayDevs.forEach(({ dev, displayName }) => {
+        const row = document.createElement('div');
+        row.className = 'ext-device-row';
+
+        const dot = document.createElement('div');
+        dot.className = 'ext-device-dot';
+        dot.style.background = state.typeColors[dev.type] || '#888';
+
+        const name = document.createElement('span');
+        name.className = 'ext-device-name';
+        name.textContent = displayName;
+
+        const badge = document.createElement('span');
+        badge.className = 'ext-device-badge';
+        badge.textContent = dev.type;
+
+        row.appendChild(dot);
+        row.appendChild(name);
+        row.appendChild(badge);
+
+        // In pick mode, clicking inserts the display name
+        row.addEventListener('click', e => {
+          if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
+        });
+
+        body.appendChild(row);
+      });
+    }
+
+    widget.appendChild(body);
+    canvas.insertBefore(widget, addBtn);
+  });
+}
+
+// ─── EXTERNAL GROUPS TAB (right panel editor) ───────────────────────────────
+function addExtGroup() {
+  state.externalGroups.push({ name: `Group ${state.externalGroups.length + 1}`, devices: [], collapsed: false });
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+  updateStatus();
+}
+
+function renderExtGroupPanel() {
+  const c = document.getElementById('extGroupList');
+  c.innerHTML = '';
+
+  state.externalGroups.forEach((group, gi) => {
+    const card = document.createElement('div');
+    card.className = 'ext-group-card';
+
+    // Card header
+    const hdr = document.createElement('div');
+    hdr.className = 'ext-group-card-header';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'ext-group-name-input';
+    nameInput.placeholder = 'Group name';
+    nameInput.value = group.name || '';
+    nameInput.addEventListener('click', e => e.stopPropagation());
+    nameInput.addEventListener('change', e => {
+      state.externalGroups[gi].name = e.target.value;
+      renderExtGroupWidgets();
+    });
+
+    const countBadge = document.createElement('span');
+    countBadge.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;flex-shrink:0;';
+    countBadge.textContent = `${group.devices.length} dev`;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'ext-remove-group-btn';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'Remove group';
+    removeBtn.addEventListener('click', e => { e.stopPropagation(); removeExtGroup(gi); });
+
+    const chevron = document.createElement('span');
+    chevron.style.cssText = 'color:var(--text3);font-size:10px;flex-shrink:0;';
+    chevron.textContent = group.collapsed ? '▶' : '▼';
+
+    hdr.appendChild(nameInput);
+    hdr.appendChild(countBadge);
+    hdr.appendChild(removeBtn);
+    hdr.appendChild(chevron);
+    hdr.addEventListener('click', () => {
+      state.externalGroups[gi].collapsed = !state.externalGroups[gi].collapsed;
+      renderExtGroupPanel();
+    });
+    card.appendChild(hdr);
+
+    if (!group.collapsed) {
+      const body = document.createElement('div');
+      body.className = 'ext-group-body-panel';
+
+      group.devices.forEach((dev, di) => {
+        body.appendChild(buildExtDevRow(gi, di, dev));
+      });
+
+      const addDevBtn = document.createElement('button');
+      addDevBtn.className = 'add-ext-dev-btn';
+      addDevBtn.textContent = '＋ Add Device';
+      addDevBtn.onclick = () => {
+        state.externalGroups[gi].devices.push({ name: '', type: 'pc' });
+        renderExtGroupPanel();
+        renderExtGroupWidgets();
+      };
+      body.appendChild(addDevBtn);
+      card.appendChild(body);
+    }
+
+    c.appendChild(card);
+  });
+}
+
+function buildExtDevRow(gi, di, dev) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'margin-bottom:5px;';
+
+  const row = document.createElement('div');
+  row.className = 'ext-dev-row';
+
+  const nameIn = document.createElement('input');
+  nameIn.className = 'ext-dev-name-input';
+  nameIn.placeholder = 'Device name (use {N} for cluster)';
+  nameIn.value = dev.name || '';
+  nameIn.addEventListener('change', e => {
+    state.externalGroups[gi].devices[di].name = e.target.value;
+    renderExtGroupWidgets();
+  });
+
+  const typeIn = document.createElement('input');
+  typeIn.className = 'ext-dev-type-input';
+  typeIn.placeholder = 'type';
+  typeIn.value = dev.type || '';
+  typeIn.title = 'Device type (used for colour lookup)';
+  typeIn.addEventListener('change', e => {
+    state.externalGroups[gi].devices[di].type = e.target.value;
+    renderExtGroupWidgets();
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'ext-dev-remove';
+  removeBtn.textContent = '✕';
+  removeBtn.addEventListener('click', () => removeExtDevice(gi, di));
+
+  row.appendChild(nameIn);
+  row.appendChild(typeIn);
+  row.appendChild(removeBtn);
+  wrapper.appendChild(row);
+
+  // Cluster toggle
+  const hasCluster = dev.start !== undefined || dev.end !== undefined || dev._showCluster;
+
+  const clusterFooter = document.createElement('div');
+  clusterFooter.style.cssText = 'display:flex;align-items:center;gap:5px;margin-top:3px;margin-left:6px;';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'ext-dev-cluster-toggle' + (hasCluster ? ' active' : '');
+  toggleBtn.innerHTML = hasCluster
+    ? '<span style="color:var(--accent)">{N}</span>&nbsp;cluster ▾'
+    : '<span style="opacity:.5">{N}</span>&nbsp;add cluster';
+  toggleBtn.addEventListener('click', () => {
+    if (hasCluster) {
+      delete state.externalGroups[gi].devices[di].start;
+      delete state.externalGroups[gi].devices[di].end;
+      state.externalGroups[gi].devices[di]._showCluster = false;
+    } else {
+      state.externalGroups[gi].devices[di]._showCluster = true;
+      if (state.externalGroups[gi].devices[di].start === undefined)
+        state.externalGroups[gi].devices[di].start = 1;
+      if (state.externalGroups[gi].devices[di].end === undefined)
+        state.externalGroups[gi].devices[di].end = 3;
+    }
+    renderExtGroupPanel();
+    renderExtGroupWidgets();
+  });
+  clusterFooter.appendChild(toggleBtn);
+  wrapper.appendChild(clusterFooter);
+
+  if (hasCluster) {
+    const clusterRow = document.createElement('div');
+    clusterRow.className = 'conn-cluster-row';
+    clusterRow.style.marginLeft = '6px';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'conn-cluster-label';
+    lbl.textContent = 'N =';
+
+    const startIn = document.createElement('input');
+    startIn.className = 'ext-dev-range-input';
+    startIn.type = 'number';
+    startIn.title = 'Start N (inclusive)';
+    startIn.placeholder = '1';
+    startIn.value = dev.start !== undefined ? dev.start : '';
+    startIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.externalGroups[gi].devices[di].start = isNaN(v) ? undefined : v;
+      renderExtGroupWidgets();
+    });
+
+    const sep = document.createElement('span');
+    sep.className = 'conn-range-sep';
+    sep.textContent = '→';
+
+    const endIn = document.createElement('input');
+    endIn.className = 'ext-dev-range-input';
+    endIn.type = 'number';
+    endIn.title = 'End N (inclusive)';
+    endIn.placeholder = '3';
+    endIn.value = dev.end !== undefined ? dev.end : '';
+    endIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.externalGroups[gi].devices[di].end = isNaN(v) ? undefined : v;
+      renderExtGroupWidgets();
+    });
+
+    const hint = document.createElement('span');
+    hint.className = 'conn-range-hint';
+    const cnt = (dev.start !== undefined && dev.end !== undefined)
+      ? Math.max(0, dev.end - dev.start + 1) : '?';
+    hint.textContent = `(${cnt} device${cnt === 1 ? '' : 's'})`;
+
+    clusterRow.appendChild(lbl);
+    clusterRow.appendChild(startIn);
+    clusterRow.appendChild(sep);
+    clusterRow.appendChild(endIn);
+    clusterRow.appendChild(hint);
+    wrapper.appendChild(clusterRow);
+  }
+
+  return wrapper;
+}
+
+function removeExtGroup(gi) {
+  if (!confirm('Remove this external group?')) return;
+  state.externalGroups.splice(gi, 1);
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+  updateStatus();
+}
+
+function removeExtDevice(gi, di) {
+  state.externalGroups[gi].devices.splice(di, 1);
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+}
+
 // ───── YAML ─────
 let yamlDirty = false;
 
@@ -1548,6 +2078,25 @@ function generateYAML() {
     });
     y += '\n';
   });
+
+  // External devices
+  if (state.externalGroups.length > 0) {
+    y += 'external_devices:\n';
+    state.externalGroups.forEach(group => {
+      y += `  - name: ${(group.name.includes(' ') || group.name.includes('{')) ? '"' + group.name + '"' : group.name}\n`;
+      if (group.devices.length > 0) {
+        y += `    devices:\n`;
+        group.devices.forEach(d => {
+          const nm = (d.name.includes(' ') || d.name.includes('{')) ? `"${d.name}"` : d.name;
+          y += `      - name: ${nm}\n`;
+          if (d.start !== undefined) y += `        start: ${d.start}\n`;
+          if (d.end !== undefined) y += `        end: ${d.end}\n`;
+          y += `        type: ${d.type}\n`;
+        });
+      }
+    });
+    y += '\n';
+  }
 
   if (state.wiringLayers.length > 0) {
     y += 'wiring_layers:\n';
@@ -1721,6 +2270,44 @@ function parseYAMLToState(text) {
     return conns;
   }
 
+  // Parse external_devices groups
+  function parseExtGroups() {
+    const groups = [];
+    let curGroup = null;
+    while (i < lines.length) {
+      const ln = lines[i]; const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind === 0) break;
+      if (ind === 2 && tr.startsWith('- ')) {
+        curGroup = { name: '', devices: [] };
+        groups.push(curGroup);
+        const rest = tr.slice(2).trim();
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) curGroup[rest.slice(0, ci2).trim()] = scalar(rest.slice(ci2 + 1));
+        i++;
+      } else if (ind === 4 && curGroup) {
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
+          if (k === 'devices') {
+            i++;
+            curGroup.devices = parseDeviceList(6);
+          } else {
+            curGroup[k] = scalar(v);
+            i++;
+          }
+        } else {
+          i++;
+        }
+      } else {
+        i++;
+      }
+    }
+    return groups;
+  }
+
   const result = {};
   let i = 0;
 
@@ -1788,6 +2375,9 @@ function parseYAMLToState(text) {
         }
       }
       result.racks = racks;
+
+    } else if (key === 'external_devices') {
+      result.external_devices = parseExtGroups();
 
     } else if (key === 'wiring_layers') {
       const layers = [];
@@ -1898,6 +2488,25 @@ function applyParsedToState(parsed) {
     state.nextRackId = rackIdMax;
   }
 
+  // External devices
+  if (Array.isArray(parsed.external_devices)) {
+    state.externalGroups = [];
+    parsed.external_devices.forEach(g => {
+      if (!g) return;
+      const group = { name: String(g.name || 'Group'), devices: [], collapsed: false };
+      if (Array.isArray(g.devices)) {
+        g.devices.forEach(d => {
+          if (!d) return;
+          const dev = { name: String(d.name || 'Device'), type: String(d.type || 'pc') };
+          if (d.start != null) dev.start = parseInt(d.start);
+          if (d.end != null) dev.end = parseInt(d.end);
+          group.devices.push(dev);
+        });
+      }
+      state.externalGroups.push(group);
+    });
+  }
+
   if (Array.isArray(parsed.wiring_layers)) {
     state.wiringLayers = [];
     parsed.wiring_layers.forEach(l => {
@@ -1931,6 +2540,8 @@ function applyParsedToState(parsed) {
   document.getElementById('propsForm').style.display = 'none';
   renderTypeColors();
   renderAllRacks();
+  renderExtGroupWidgets();
+  renderExtGroupPanel();
   renderWiringLayers();
   updateStatus();
 }
@@ -1964,17 +2575,18 @@ function updateStatus() {
   document.getElementById('statusRacks').textContent = `${state.racks.length} rack${state.racks.length!==1?'s':''}`;
   document.getElementById('statusDevices').textContent = `${td} device${td!==1?'s':''}`;
   document.getElementById('statusLayers').textContent = `${state.wiringLayers.length} wiring layer${state.wiringLayers.length!==1?'s':''}`;
+  document.getElementById('statusExtGroups').textContent = `${state.externalGroups.length} ext group${state.externalGroups.length!==1?'s':''}`;
 }
 
 // ───── CLEAR ─────
 function clearAll() {
-  if (!confirm('Clear all racks and wiring layers?')) return;
-  state.racks = []; state.wiringLayers = []; state.nextRackId = 1;
+  if (!confirm('Clear all racks, wiring layers and external devices?')) return;
+  state.racks = []; state.wiringLayers = []; state.externalGroups = []; state.nextRackId = 1;
   selectedDevRef = null;
   exitPickMode();
   document.getElementById('propsEmpty').style.display = 'flex';
   document.getElementById('propsForm').style.display = 'none';
-  renderAllRacks(); renderWiringLayers(); updateStatus();
+  renderAllRacks(); renderExtGroupWidgets(); renderExtGroupPanel(); renderWiringLayers(); updateStatus();
 }
 
 // ───── KEYBOARD ─────
@@ -1995,7 +2607,7 @@ document.addEventListener('keydown', e => {
 // Click on canvas background in pick mode → cancel
 document.getElementById('canvasArea').addEventListener('click', e => {
   if (!pickState) return;
-  if (!e.target.closest('.rack-device')) exitPickMode();
+  if (!e.target.closest('.rack-device') && !e.target.closest('.ext-device-row')) exitPickMode();
 });
 
 // ───── SAMPLE DATA ─────
@@ -2102,7 +2714,20 @@ function loadSampleData() {
     ]},
   ];
 
+  state.externalGroups = [
+    { name: 'Operator Room', collapsed: false, devices: [
+        { name: 'Operator room beltpack {N}', type: 'beltpack', start: 1, end: 7 },
+        { name: 'Director headset', type: 'headset' },
+    ]},
+    { name: 'Chassis', collapsed: false, devices: [
+        { name: 'Driver beltpack', type: 'beltpack' },
+        { name: 'Co-driver beltpack', type: 'beltpack' },
+    ]},
+  ];
+
   renderAllRacks();
+  renderExtGroupWidgets();
+  renderExtGroupPanel();
   renderWiringLayers();
   updateStatus();
 }
