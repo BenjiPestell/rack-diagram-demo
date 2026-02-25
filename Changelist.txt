@@ -6,4 +6,3 @@
 - Port / power capacity / usage
 - Implement Pydantic
 - Add individual connection cable type support
-- Add external devices support
