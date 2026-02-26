@@ -238,6 +238,7 @@
     min-width: max-content;
     min-height: 100%;
     align-items: flex-start;
+    position: relative;
   }
 
   /* PICK BANNER */
@@ -1140,6 +1141,66 @@
     flex-shrink: 0;
   }
 
+
+  /* Wiring overlay SVG — lives inside rack-canvas, scrolls with it */
+  #wiringOverlay {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 50;
+  }
+
+  /* Active layer highlight on wiring layer header */
+  .wiring-layer-card.active-layer > .wiring-layer-header {
+    background: var(--surface3);
+    border-left: 3px solid var(--layer-color, var(--accent));
+  }
+
+  /* Device highlight when it appears in the active layer */
+  .rack-device.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    z-index: 25 !important;
+  }
+  .ext-device-row.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
+
+  /* Wiring overlay arc tooltip */
+  .wire-tip {
+    position: fixed;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    letter-spacing: 0.5px;
+    max-width: 220px;
+    white-space: nowrap;
+  }
+
+  /* Layer viz toggle button in header */
+  .layer-viz-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .layer-viz-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .layer-viz-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
 </style>
 </head>
 <body>
@@ -1189,6 +1250,7 @@
 
   <div class="canvas-area" id="canvasArea">
     <div class="rack-canvas" id="rackCanvas">
+      <svg id="wiringOverlay" xmlns="http://www.w3.org/2000/svg"></svg>
       <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">
         <span style="font-size:24px;line-height:1">+</span>
         <span>ADD RACK</span>
@@ -1290,6 +1352,7 @@ const state = {
 
 let selectedDevRef = null;
 let dragData = null;
+let activeLayerIdx = null;  // index of layer currently shown in wiring overlay
 
 // ─── PICK MODE ───────────────────────────────────────────────────────
 // pickState: null | { layerIdx, connIdx, field: 'from'|'to' }
@@ -1323,6 +1386,10 @@ function init() {
   renderTypeColors();
   setupPaletteDrag();
   updateStatus();
+  // Redraw wiring overlay on window resize (layout may shift)
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(renderWiringOverlay);
+  });
 }
 
 function renderTypeColors() {
@@ -1463,6 +1530,8 @@ function renderAllRacks() {
   canvas.querySelectorAll('.rack-wrapper').forEach(el => el.remove());
   state.racks.forEach(rack => canvas.insertBefore(buildRackEl(rack), addBtn));
   populateTypeSelects();
+  // Defer overlay redraw until after layout paint
+  requestAnimationFrame(renderWiringOverlay);
 }
 
 function buildRackEl(rack) {
@@ -1736,6 +1805,256 @@ function updateRackU(id, val) {
 }
 
 // ───── WIRING ─────
+// ─── WIRING OVERLAY ─────────────────────────────────────────────────────────
+
+function setActiveLayer(li) {
+  activeLayerIdx = (activeLayerIdx === li) ? null : li;
+  renderWiringLayers();
+  renderWiringOverlay();
+}
+
+// Resolve all device names referenced in a connection, expanding {N} clusters.
+// Returns array of resolved string names.
+function resolveConnNames(conn) {
+  const names = [];
+  const expand = (raw) => {
+    if (!raw) return;
+    const str = Array.isArray(raw) ? raw : [raw];
+    str.forEach(s => {
+      const sStr = String(s);
+      if (sStr.includes('{N}') && conn.start !== undefined && conn.end !== undefined) {
+        for (let n = conn.start; n <= conn.end; n++) names.push(sStr.replace('{N}', n));
+      } else {
+        names.push(sStr);
+      }
+    });
+  };
+  expand(conn.from);
+  expand(conn.to);
+  return [...new Set(names)];
+}
+
+// Find the centre point of a named device in canvas coordinates (relative to rackCanvas).
+// Uses offsetLeft/offsetTop chain so coordinates are scroll-independent.
+function getElementOffsetInCanvas(el) {
+  const canvas = document.getElementById('rackCanvas');
+  let x = 0, y = 0;
+  let cur = el;
+  while (cur && cur !== canvas) {
+    x += cur.offsetLeft;
+    y += cur.offsetTop;
+    cur = cur.offsetParent;
+  }
+  return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+}
+
+function getDeviceCanvasPoint(devName) {
+  const canvas = document.getElementById('rackCanvas');
+
+  // Search rack devices
+  for (const el of canvas.querySelectorAll('.rack-device')) {
+    const label = el.querySelector('.device-label');
+    if (!label) continue;
+    const text = label.textContent.trim();
+    if (text === devName || (text.endsWith('…') && devName.startsWith(text.slice(0, -1)) && devName !== text.slice(0, -1))) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
+
+  // Search external device rows
+  for (const el of canvas.querySelectorAll('.ext-device-row')) {
+    const nameEl = el.querySelector('.ext-device-name');
+    if (!nameEl) continue;
+    if (nameEl.textContent.trim() === devName) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
+  return null;
+}
+
+function renderWiringOverlay() {
+  const svg = document.getElementById('wiringOverlay');
+  svg.innerHTML = '';
+
+  // Clear all device highlights
+  document.querySelectorAll('.rack-device.wired, .ext-device-row.wired').forEach(el => {
+    el.classList.remove('wired');
+    el.style.removeProperty('--wire-color');
+  });
+
+  if (activeLayerIdx === null || !state.wiringLayers[activeLayerIdx]) return;
+
+  const layer = state.wiringLayers[activeLayerIdx];
+  const color = layer.edge_color || '#888';
+
+  // Expand all connections in this layer (resolve {N} clusters)
+  const resolvedConns = [];
+  layer.connections.forEach(conn => {
+    if (!conn.from) return;
+    const froms = [];
+    const tos   = [];
+
+    const expandSide = (raw, arr) => {
+      if (!raw) return;
+      const items = Array.isArray(raw) ? raw : [raw];
+      items.forEach(s => {
+        const sStr = String(s);
+        if (sStr.includes('{N}') && conn.start !== undefined && conn.end !== undefined) {
+          for (let n = conn.start; n <= conn.end; n++) arr.push(sStr.replace('{N}', n));
+        } else {
+          arr.push(sStr);
+        }
+      });
+    };
+
+    expandSide(conn.from, froms);
+    expandSide(conn.to,   tos);
+
+    // If both sides expanded to the same count, zip by index (IG {N} → Projector {N}).
+    // If one side is singular and the other is a cluster, cross-product (1 → many).
+    // If counts differ and neither is 1, zip up to the shorter length.
+    if (froms.length === tos.length) {
+      froms.forEach((f, i) => resolvedConns.push({ from: f, to: tos[i], conn }));
+    } else if (froms.length === 1) {
+      tos.forEach(t => resolvedConns.push({ from: froms[0], to: t, conn }));
+    } else if (tos.length === 1) {
+      froms.forEach(f => resolvedConns.push({ from: f, to: tos[0], conn }));
+    } else {
+      // Mismatched multi → zip up to shorter length
+      const len = Math.min(froms.length, tos.length);
+      for (let i = 0; i < len; i++) resolvedConns.push({ from: froms[i], to: tos[i], conn });
+    }
+  });
+
+  // Collect unique device names for highlighting
+  const wiredNames = new Set();
+  resolvedConns.forEach(({ from, to }) => { wiredNames.add(from); wiredNames.add(to); });
+
+  // Highlight devices
+  document.querySelectorAll('.rack-device').forEach(el => {
+    const label = el.querySelector('.device-label');
+    if (!label) return;
+    const text = label.textContent.trim();
+    // Match exact or truncated
+    const matched = [...wiredNames].some(n => n === text || (text.endsWith('…') && n.startsWith(text.slice(0, -1)) && n !== text.slice(0, -1)));
+    if (matched) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+  document.querySelectorAll('.ext-device-row').forEach(el => {
+    const nameEl = el.querySelector('.ext-device-name');
+    if (!nameEl) return;
+    if (wiredNames.has(nameEl.textContent.trim())) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+
+  // Draw arcs for each resolved connection
+  const canvas = document.getElementById('rackCanvas');
+  const canvasW = canvas.scrollWidth;
+  const canvasH = canvas.scrollHeight;
+  svg.setAttribute('viewBox', `0 0 ${canvasW} ${canvasH}`);
+  svg.style.width  = canvasW + 'px';
+  svg.style.height = canvasH + 'px';
+
+  // Build a defs block for arrowhead marker
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const markerId = `arrow-${activeLayerIdx}`;
+  defs.innerHTML = `
+    <marker id="${markerId}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="${color}" opacity="0.85"/>
+    </marker>`;
+  svg.appendChild(defs);
+
+  // Group resolved conns by from→to pair, deduplicate
+  const drawn = new Set();
+  resolvedConns.forEach(({ from, to, conn }) => {
+    const key = from + '|||' + to;
+    const keyRev = to + '|||' + from;
+    if (drawn.has(key) || drawn.has(keyRev)) return;
+    drawn.add(key);
+
+    const ptA = getDeviceCanvasPoint(from);
+    const ptB = getDeviceCanvasPoint(to);
+    if (!ptA || !ptB) return;
+
+    const x1 = ptA.x, y1 = ptA.y;
+    const x2 = ptB.x, y2 = ptB.y;
+
+    // Curved arc — control point offset perpendicular to the line
+    const dx = x2 - x1, dy = y2 - y1;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    // Curve amount scales with distance but is capped
+    const curve = Math.min(dist * 0.35, 120);
+    // Perpendicular direction
+    const px = -dy / dist * curve;
+    const py =  dx / dist * curve;
+    const cx = (x1 + x2) / 2 + px;
+    const cy = (y1 + y2) / 2 + py;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-opacity', '0.75');
+    path.setAttribute('marker-end', `url(#${markerId})`);
+
+    // Label — override or layer cable type
+    const label = conn.label || conn.cable_type || '';
+
+    // Invisible wider hit-path for hover
+    const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hitPath.setAttribute('d', d);
+    hitPath.setAttribute('fill', 'none');
+    hitPath.setAttribute('stroke', 'transparent');
+    hitPath.setAttribute('stroke-width', '12');
+    hitPath.style.pointerEvents = 'stroke';
+    hitPath.style.cursor = 'default';
+
+    const tip = document.getElementById('wireTip');
+    hitPath.addEventListener('mousemove', e => {
+      const tipText = `${from} → ${to}` + (label ? `
+${label}` : '');
+      tip.textContent = tipText;
+      tip.style.display = 'block';
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top  = (e.clientY - 8)  + 'px';
+      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('stroke-opacity', '1');
+    });
+    hitPath.addEventListener('mouseleave', () => {
+      tip.style.display = 'none';
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('stroke-opacity', '0.75');
+    });
+
+    svg.appendChild(path);
+    svg.appendChild(hitPath);
+
+    // Label text at midpoint of curve
+    if (label) {
+      const tx = (x1 + 2*cx + x2) / 4; // quadratic bezier midpoint
+      const ty = (y1 + 2*cy + y2) / 4;
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', tx);
+      text.setAttribute('y', ty - 5);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-family', 'Share Tech Mono, monospace');
+      text.setAttribute('font-size', '9');
+      text.setAttribute('fill', color);
+      text.setAttribute('opacity', '0.8');
+      text.textContent = label;
+      svg.appendChild(text);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function addWiringLayer() {
   const hues = ['#b551a9','#5192b5','#3ecf8e','#f5c842','#ff7b5b','#7c9ef9'];
   state.wiringLayers.push({
@@ -1755,7 +2074,9 @@ function renderWiringLayers() {
 
   state.wiringLayers.forEach((layer, li) => {
     const card = document.createElement('div');
-    card.className = 'wiring-layer-card';
+    const isActive = (activeLayerIdx === li);
+    card.className = 'wiring-layer-card' + (isActive ? ' active-layer' : '');
+    card.style.setProperty('--layer-color', layer.edge_color);
 
     const header = document.createElement('div');
     header.className = 'wiring-layer-header';
@@ -1770,8 +2091,11 @@ function renderWiringLayers() {
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
       </select>
       <input type="color" value="${layer.edge_color}" onclick="event.stopPropagation()"
-        onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers()"
+        onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers();renderWiringOverlay()"
         style="width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0">
+      <button class="layer-viz-btn${isActive ? ' active' : ''}"
+        onclick="event.stopPropagation();setActiveLayer(${li})"
+        title="${isActive ? 'Hide wiring overlay' : 'Show wiring overlay on canvas'}">Visualise</button>
       <button onclick="event.stopPropagation();removeLayer(${li})"
         style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px">✕</button>
       <span style="color:var(--text3);font-size:10px">${layer.collapsed?'▶':'▼'}</span>
@@ -1793,6 +2117,7 @@ function renderWiringLayers() {
       ab.onclick = () => {
         state.wiringLayers[li].connections.push({ from: '', to: '' });
         renderWiringLayers();
+        renderWiringOverlay();
       };
       body.appendChild(ab);
       card.appendChild(body);
@@ -1821,7 +2146,7 @@ function buildConnectionCard(li, ci, conn) {
   fromInput.className = 'conn-field';
   fromInput.placeholder = 'From device';
   fromInput.value = conn.from || '';
-  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; });
+  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; renderWiringOverlay(); });
 
   const fromPick = document.createElement('button');
   fromPick.className = 'conn-pick-btn' + (isPickingFrom ? ' picking' : '');
@@ -1852,6 +2177,7 @@ function buildConnectionCard(li, ci, conn) {
     const raw = e.target.value;
     const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
     state.wiringLayers[li].connections[ci].to = parts.length > 1 ? parts : (parts[0] || '');
+    renderWiringOverlay();
   });
 
   const toPick = document.createElement('button');
@@ -2038,8 +2364,15 @@ function buildConnectionCard(li, ci, conn) {
   return card;
 }
 
-function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers(); updateStatus(); }
-function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
+function removeLayer(li) {
+  state.wiringLayers.splice(li, 1);
+  if (activeLayerIdx === li) activeLayerIdx = null;
+  else if (activeLayerIdx > li) activeLayerIdx--;
+  renderWiringLayers();
+  renderWiringOverlay();
+  updateStatus();
+}
+function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); renderWiringOverlay(); }
 
 // ─── EXTERNAL GROUP WIDGETS (on canvas) ────────────────────────────────────
 function renderExtGroupWidgets() {
@@ -2892,6 +3225,7 @@ function applyParsedToState(parsed) {
   renderExtGroupWidgets();
   renderExtGroupPanel();
   renderWiringLayers();
+  requestAnimationFrame(renderWiringOverlay);
   updateStatus();
 }
 
@@ -2935,7 +3269,7 @@ function clearAll() {
   exitPickMode();
   document.getElementById('propsEmpty').style.display = 'flex';
   document.getElementById('propsForm').style.display = 'none';
-  renderAllRacks(); renderExtGroupWidgets(); renderExtGroupPanel(); renderWiringLayers(); updateStatus();
+  renderAllRacks(); renderExtGroupWidgets(); renderExtGroupPanel(); renderWiringLayers(); renderWiringOverlay(); updateStatus();
 }
 
 // ───── KEYBOARD ─────
@@ -3083,5 +3417,6 @@ function loadSampleData() {
 
 init();
 </script>
+  <div id="wireTip" class="wire-tip"></div>
 </body>
 </html>

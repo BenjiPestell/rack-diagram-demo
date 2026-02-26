@@ -10,6 +10,7 @@ type_colors:
   cable management: "#C4C4C4"
   switch: "#B8D6D6"
   customer: "#ffd9d6"
+  projector: "#d194b3"
 
 racks:
   # Rack 1
@@ -269,6 +270,15 @@ racks:
         units: 1
         type: pdu
 
+external_devices:
+  - name: Projectors
+    distance_from_racks: 30  # m
+    devices:
+      - name: "Projector {N}"
+        start: 1
+        end: 13
+        type: projector
+
 wiring_layers:
 
   # Visuals Subnet
@@ -417,3 +427,13 @@ wiring_layers:
         to: Telemetry
       - from: Company Net in
         to: Company Network Switch
+
+  # Video
+  - name: Video
+    edge_color: "#ff7b5b"
+    cable_type: "Display Port"
+    connections:
+      - from: IG {N}
+        to: Projector {N}
+        start: 1
+        end: 13
