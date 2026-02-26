@@ -1094,6 +1094,52 @@
   .conn-overrides-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .conn-overrides-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(201,22,34,0.07); }
 
+
+  /* Ext group distance field */
+  .ext-group-dist-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 0 7px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .ext-group-dist-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .ext-group-dist-input {
+    width: 64px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 3px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .ext-group-dist-input:focus { border-color: var(--accent); }
+  .ext-group-dist-unit {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+  /* Show distance badge on canvas widget header */
+  .ext-group-dist-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: #d4890a;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
 </style>
 </head>
 <body>
@@ -2014,7 +2060,12 @@ function renderExtGroupWidgets() {
     const tag = document.createElement('span');
     tag.className = 'ext-group-tag';
     tag.textContent = 'EXT';
+    const distBadge = document.createElement('span');
+    distBadge.className = 'ext-group-dist-badge';
+    distBadge.textContent = group.distance_from_racks !== undefined ? `${group.distance_from_racks}m` : '';
+    distBadge.title = 'Distance from racks';
     hdr.appendChild(lbl);
+    hdr.appendChild(distBadge);
     hdr.appendChild(tag);
     widget.appendChild(hdr);
 
@@ -2076,7 +2127,7 @@ function renderExtGroupWidgets() {
 
 // ─── EXTERNAL GROUPS TAB (right panel editor) ───────────────────────────────
 function addExtGroup() {
-  state.externalGroups.push({ name: `Group ${state.externalGroups.length + 1}`, devices: [], collapsed: false });
+  state.externalGroups.push({ name: `Group ${state.externalGroups.length + 1}`, distance_from_racks: 5, devices: [], collapsed: false });
   renderExtGroupPanel();
   renderExtGroupWidgets();
   updateStatus();
@@ -2131,6 +2182,34 @@ function renderExtGroupPanel() {
     if (!group.collapsed) {
       const body = document.createElement('div');
       body.className = 'ext-group-body-panel';
+
+      // Distance from racks field
+      const distRow = document.createElement('div');
+      distRow.className = 'ext-group-dist-row';
+      const distLabel = document.createElement('span');
+      distLabel.className = 'ext-group-dist-label';
+      distLabel.textContent = 'Distance from racks';
+      const distInput = document.createElement('input');
+      distInput.className = 'ext-group-dist-input';
+      distInput.type = 'number';
+      distInput.min = '0';
+      distInput.step = '0.5';
+      distInput.placeholder = '0';
+      distInput.value = group.distance_from_racks !== undefined ? group.distance_from_racks : '';
+      distInput.title = 'Distance from the rack(s) to this external group in metres — used for cable length calculations';
+      distInput.addEventListener('click', e => e.stopPropagation());
+      distInput.addEventListener('change', e => {
+        const v = parseFloat(e.target.value);
+        state.externalGroups[gi].distance_from_racks = isNaN(v) ? undefined : v;
+        renderExtGroupWidgets();
+      });
+      const distUnit = document.createElement('span');
+      distUnit.className = 'ext-group-dist-unit';
+      distUnit.textContent = 'm';
+      distRow.appendChild(distLabel);
+      distRow.appendChild(distInput);
+      distRow.appendChild(distUnit);
+      body.appendChild(distRow);
 
       group.devices.forEach((dev, di) => {
         body.appendChild(buildExtDevRow(gi, di, dev));
@@ -2348,6 +2427,7 @@ function generateYAML() {
     y += 'external_devices:\n';
     state.externalGroups.forEach(group => {
       y += `  - name: ${(group.name.includes(' ') || group.name.includes('{')) ? '"' + group.name + '"' : group.name}\n`;
+      if (group.distance_from_racks !== undefined) y += `    distance_from_racks: ${group.distance_from_racks}  # m\n`;
       if (group.devices.length > 0) {
         y += `    devices:\n`;
         group.devices.forEach(d => {
@@ -2760,6 +2840,7 @@ function applyParsedToState(parsed) {
     parsed.external_devices.forEach(g => {
       if (!g) return;
       const group = { name: String(g.name || 'Group'), devices: [], collapsed: false };
+      if (g.distance_from_racks != null) group.distance_from_racks = parseFloat(g.distance_from_racks);
       if (Array.isArray(g.devices)) {
         g.devices.forEach(d => {
           if (!d) return;

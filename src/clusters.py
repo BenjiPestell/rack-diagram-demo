@@ -82,6 +82,7 @@ def expand_external_devices(external_devices_config):
     
     Grouped format (nested):
     - name: Operator Room
+      distance_from_racks: 30  # m
       devices:
         - name: "Operator room beltpack {N}"
           start: 1
@@ -89,7 +90,8 @@ def expand_external_devices(external_devices_config):
           type: beltpack
     
     Returns a dict with group names as keys and lists of expanded devices as values.
-    Ungrouped devices go into "default" group.
+    Each device dict includes a "distance_from_racks" key (float, metres) inherited
+    from its group.  Ungrouped devices go into "default" group with distance 0.
     """
     expanded = {}
     
@@ -100,6 +102,7 @@ def expand_external_devices(external_devices_config):
         # Check if this is a grouped entry
         if "devices" in entry:
             group_name = entry.get("name", "External Devices")
+            distance_from_racks = float(entry.get("distance_from_racks", 0) or 0)
             group_devices = []
             
             # Expand devices within the group
@@ -115,15 +118,21 @@ def expand_external_devices(external_devices_config):
                         dev_name = name_template.replace("{N}", str(n))
                         group_devices.append({
                             "name": dev_name,
-                            "type": dev_type
+                            "type": dev_type,
+                            "distance_from_racks": distance_from_racks,
                         })
                 else:
-                    # Regular device entry
-                    group_devices.append(dev_template)
+                    # Regular device entry — merge in the group distance
+                    group_devices.append({
+                        **dev_template,
+                        "distance_from_racks": distance_from_racks,
+                    })
             
             expanded[group_name] = group_devices
         else:
-            # Ungrouped device (flat format)
+            # Ungrouped device (flat format) — no group-level distance available
+            distance_from_racks = float(entry.get("distance_from_racks", 0) or 0)
+
             if "start" in entry and "end" in entry:
                 # This is a cluster definition
                 name_template = entry.get("name", "Device {N}")
@@ -136,7 +145,8 @@ def expand_external_devices(external_devices_config):
                     dev_name = name_template.replace("{N}", str(n))
                     group_devices.append({
                         "name": dev_name,
-                        "type": dev_type
+                        "type": dev_type,
+                        "distance_from_racks": distance_from_racks,
                     })
                 
                 expanded["External Devices"] = group_devices
@@ -144,7 +154,10 @@ def expand_external_devices(external_devices_config):
                 # Regular ungrouped device
                 if "External Devices" not in expanded:
                     expanded["External Devices"] = []
-                expanded["External Devices"].append(entry)
+                expanded["External Devices"].append({
+                    **entry,
+                    "distance_from_racks": distance_from_racks,
+                })
     
     return expanded
 
