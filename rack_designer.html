@@ -1720,7 +1720,7 @@ function renderWiringLayers() {
         onchange="state.wiringLayers[${li}].name=this.value">
       <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
         style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;outline:none;max-width:82px;letter-spacing:0.5px">
-        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI'].map(ct =>
+        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI','Display Port'].map(ct =>
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
       </select>
       <input type="color" value="${layer.edge_color}" onclick="event.stopPropagation()"
