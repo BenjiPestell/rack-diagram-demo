@@ -74,7 +74,8 @@ def build_all_devices(rack_configs, external_device_groups=None):
 
     # --- External devices ---
     for group in (external_device_groups or []):
-        dist = float(group.get("distance_from_racks", 0) or 0)
+        dist       = float(group.get("distance_from_racks", 0) or 0)
+        group_name = group.get("name", "External Devices")
         for dev in group.get("devices", []):
             name    = dev.get("name", "")
             start_n = dev.get("start")
@@ -89,6 +90,7 @@ def build_all_devices(rack_configs, external_device_groups=None):
                         "start_u":             None,
                         "units":               1,
                         "distance_from_racks": dist,
+                        "group_name":          group_name,
                     }
             else:
                 all_devices[name] = {
@@ -97,6 +99,7 @@ def build_all_devices(rack_configs, external_device_groups=None):
                     "start_u":             None,
                     "units":               1,
                     "distance_from_racks": dist,
+                    "group_name":          group_name,
                 }
 
     return all_devices
@@ -180,9 +183,9 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
     from_is_ext = (from_rack == "external")
     to_is_ext   = (to_rack   == "external")
 
-    # Rack display names (show "External" for external endpoints)
-    from_rack_name = "External" if from_is_ext else rack_name_map.get(from_rack, from_rack)
-    to_rack_name   = "External" if to_is_ext   else rack_name_map.get(to_rack,   to_rack)
+    # Rack display names — external devices show their group name
+    from_rack_name = from_info.get("group_name", "External") if from_is_ext else rack_name_map.get(from_rack, from_rack)
+    to_rack_name   = to_info.get("group_name",   "External") if to_is_ext   else rack_name_map.get(to_rack,   to_rack)
 
     # ------------------------------------------------------------------
     # 1. Unit delta

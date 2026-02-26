@@ -120,12 +120,14 @@ def expand_external_devices(external_devices_config):
                             "name": dev_name,
                             "type": dev_type,
                             "distance_from_racks": distance_from_racks,
+                            "group_name": group_name,
                         })
                 else:
-                    # Regular device entry — merge in the group distance
+                    # Regular device entry — merge in the group distance and name
                     group_devices.append({
                         **dev_template,
                         "distance_from_racks": distance_from_racks,
+                        "group_name": group_name,
                     })
             
             expanded[group_name] = group_devices
@@ -147,6 +149,7 @@ def expand_external_devices(external_devices_config):
                         "name": dev_name,
                         "type": dev_type,
                         "distance_from_racks": distance_from_racks,
+                        "group_name": "External Devices",
                     })
                 
                 expanded["External Devices"] = group_devices
@@ -157,6 +160,7 @@ def expand_external_devices(external_devices_config):
                 expanded["External Devices"].append({
                     **entry,
                     "distance_from_racks": distance_from_racks,
+                    "group_name": "External Devices",
                 })
     
     return expanded
