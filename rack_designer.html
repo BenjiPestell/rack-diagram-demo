@@ -2099,8 +2099,16 @@ function renderWiringOverlay() {
       const items = Array.isArray(raw) ? raw : [raw];
       items.forEach(s => {
         const sStr = String(s);
-        if (sStr.includes('{N}') && conn.start !== undefined && conn.end !== undefined) {
-          for (let n = conn.start; n <= conn.end; n++) arr.push(sStr.replace('{N}', n));
+        const hasCluster = conn.start !== undefined && conn.end !== undefined;
+        const hasPlaceholder = /\{N([+-]\d+)?\}/.test(sStr);
+        if (hasPlaceholder && hasCluster) {
+          for (let n = conn.start; n <= conn.end; n++) {
+            const resolved = sStr
+              .replace(/\{N\+(\d+)\}/g, (_, d) => n + parseInt(d))
+              .replace(/\{N-(\d+)\}/g, (_, d) => n - parseInt(d))
+              .replace(/\{N\}/g, n);
+            arr.push(resolved);
+          }
         } else {
           arr.push(sStr);
         }
@@ -2184,14 +2192,14 @@ function renderWiringOverlay() {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
     path.setAttribute('d', d);
+    const arcColor = conn.edge_color || color;  // per-connection override or layer colour
+    const label = conn.label || conn.cable_type || '';
+
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', arcColor);
     path.setAttribute('stroke-width', '1.5');
     path.setAttribute('stroke-opacity', '0.75');
     path.setAttribute('marker-end', `url(#${markerId})`);
-
-    const arcColor = conn.edge_color || color;  // per-connection override or layer colour
-    const label = conn.label || conn.cable_type || '';
 
     const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     hitPath.setAttribute('d', d);
