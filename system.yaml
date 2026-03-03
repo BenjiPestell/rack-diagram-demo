@@ -5,7 +5,7 @@ front_to_back_length: 0.5  # m
 type_colors:
   pc:
     color: "#E8F4F8"
-    units: 1
+    units: 4
     label: "pc"
   pdu:
     color: "#AAAAAA"
@@ -17,7 +17,7 @@ type_colors:
     label: "Shelf"
   realtime:
     color: "#FFE8D8"
-    units: 1
+    units: 4
     label: "realtime"
   cable management:
     color: "#C4C4C4"

@@ -923,7 +923,7 @@
   }
   .ext-dev-name-input:focus { border-color: var(--accent); }
   .ext-dev-type-input {
-    width: 90px;
+    width: 110px;
     background: var(--surface2);
     border: 1px solid var(--border);
     color: var(--text2);
@@ -932,6 +932,7 @@
     font-size: 11px;
     outline: none;
     flex-shrink: 0;
+    cursor: pointer;
   }
   .ext-dev-type-input:focus { border-color: var(--accent); }
   .ext-dev-remove {
@@ -2863,11 +2864,21 @@ function buildExtDevRow(gi, di, dev) {
     renderExtGroupWidgets();
   });
 
-  const typeIn = document.createElement('input');
+  const typeIn = document.createElement('select');
   typeIn.className = 'ext-dev-type-input';
-  typeIn.placeholder = 'type';
-  typeIn.value = dev.type || '';
   typeIn.title = 'Device type (used for colour lookup)';
+  // Blank option so an unset type is visible
+  const blankOpt = document.createElement('option');
+  blankOpt.value = '';
+  blankOpt.textContent = '— type —';
+  typeIn.appendChild(blankOpt);
+  state.typeEntries.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = entry.type;
+    opt.textContent = entry.label || entry.type;
+    if (entry.type === (dev.type || '')) opt.selected = true;
+    typeIn.appendChild(opt);
+  });
   typeIn.addEventListener('change', e => {
     state.externalGroups[gi].devices[di].type = e.target.value;
     renderExtGroupWidgets();
