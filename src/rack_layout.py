@@ -66,8 +66,10 @@ def build_occupancy(devices, total_u, u_order='bottom_top'):
             start = dev["start_u"]
             units = dev["units"]
 
-            if units < 1:
+            if units < 0:
                 raise ValueError(f"{name} has invalid unit size")
+            if units == 0:
+                continue  # 0U device — no rack slot, skip occupancy
 
             if u_order == 'top_bottom':
                 # U1 at top: device occupies start_u through start_u+units-1

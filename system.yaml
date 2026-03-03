@@ -47,6 +47,10 @@ type_colors:
     color: "#86a4ca"
     units: 1
     label: "mirror display"
+  vertical pdu:
+    color: "#8a8a8a"
+    units: 1
+    label: "vertical pdu"
 
 racks:
   # Rack 1

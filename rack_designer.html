@@ -315,6 +315,60 @@
 
   .rack-remove-btn:hover { border-color: var(--red); color: var(--red); }
 
+  .zero-u-strip {
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    min-height: 36px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .zero-u-strip.drop-target {
+    background: rgba(0,212,255,0.06);
+    border-color: var(--accent);
+    outline: 1px dashed var(--accent);
+  }
+  .zero-u-header {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .zero-u-device {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    cursor: grab;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    user-select: none;
+  }
+  .zero-u-device:last-child { border-bottom: none; }
+  .zero-u-device:hover { background: var(--surface2); color: var(--text); }
+  .zero-u-device.selected { background: rgba(201,22,34,0.1); color: var(--text); }
+  .zero-u-device:active { cursor: grabbing; }
+  .zero-u-dot {
+    width: 8px; height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+  .zero-u-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    margin-left: auto;
+    letter-spacing: 0.5px;
+  }
+
   .rack-order-btn {
     background: none;
     border: 1px solid var(--border);
@@ -1171,6 +1225,10 @@
     outline: 2px solid var(--wire-color, #fff) !important;
     background: rgba(255,255,255,0.06) !important;
   }
+  .zero-u-device.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
 
   .wire-tip {
     position: fixed;
@@ -1441,8 +1499,17 @@
           <div class="prop-section-title">Device</div>
           <div class="prop-row"><span class="prop-label">Name</span><input class="prop-input" id="pName" type="text" placeholder="Device name"></div>
           <div class="prop-row"><span class="prop-label">Type</span><select class="prop-select" id="pType"></select></div>
-          <div class="prop-row"><span class="prop-label">Units (U)</span><input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1"></div>
-          <div class="prop-row"><span class="prop-label">Start U</span><input class="prop-input" id="pStartU" type="number" min="1" max="42"></div>
+          <div class="prop-row">
+            <span class="prop-label">Units (U)</span>
+            <input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1">
+          </div>
+          <div class="prop-row" id="startURow">
+            <span class="prop-label">Start U</span>
+            <input class="prop-input" id="pStartU" type="number" min="1" max="42">
+          </div>
+          <div id="zeroUNote" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text3);padding:2px 0 6px;letter-spacing:0.5px;">
+            ⚠ Unpositioned — no rack slot assigned
+          </div>
         </div>
         <div class="prop-section">
           <div class="prop-section-title">Pattern</div>
@@ -1852,8 +1919,9 @@ function buildColumnEl(rack, face) {
   const uOrder = rack.u_order || 'bottom_top';  // 'bottom_top' | 'top_bottom'
 
   const renderItems = [];
+  const zeroUDevs = [];
   rack[face].forEach(dev => {
-    if (!dev.start_u || !dev.units) return;
+    if (!dev.units || !dev.start_u) { zeroUDevs.push(dev); return; }
     expandDeviceToRenderItems(dev, uOrder).forEach(item => renderItems.push(item));
   });
 
@@ -1915,6 +1983,90 @@ function buildColumnEl(rack, face) {
   col.appendChild(numbersStrip);
   col.appendChild(slotsArea);
   view.appendChild(col);
+
+  // 0U device strip
+  // Always show the unpositioned strip — it's also a drop target
+  const strip = document.createElement('div');
+  strip.className = 'zero-u-strip';
+  strip.dataset.rackId = rack.id;
+  strip.dataset.face = face;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'zero-u-header';
+  hdr.textContent = zeroUDevs.length
+    ? `Unpositioned (${zeroUDevs.length})`
+    : 'Unpositioned — drop here';
+  strip.appendChild(hdr);
+
+  zeroUDevs.forEach(dev => {
+    const row = document.createElement('div');
+    row.className = 'zero-u-device' + (selectedDevRef && selectedDevRef.dev === dev ? ' selected' : '');
+    row.draggable = true;
+
+    const dot = document.createElement('div');
+    dot.className = 'zero-u-dot';
+    dot.style.background = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
+    const name = document.createElement('span');
+    name.className = 'zero-u-name';
+    name.textContent = dev.name;
+    const badge = document.createElement('span');
+    badge.className = 'zero-u-badge';
+    badge.textContent = dev.type || '';
+
+    row.appendChild(dot);
+    row.appendChild(name);
+    row.appendChild(badge);
+
+    row.addEventListener('click', () => selectDevice(dev, rack.id, face));
+
+    // Drag out of strip — treated like a rack device drag so it can be dropped onto a slot
+    row.addEventListener('dragstart', e => {
+      dragData = { source: 'rack', dev, rackId: rack.id, face };
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => { dragData = null; });
+
+    strip.appendChild(row);
+  });
+
+  // Drop onto strip — from palette or from a positioned rack device
+  strip.addEventListener('dragover', e => {
+    if (!dragData) return;
+    e.preventDefault();
+    strip.classList.add('drop-target');
+  });
+  strip.addEventListener('dragleave', () => strip.classList.remove('drop-target'));
+  strip.addEventListener('drop', e => {
+    e.preventDefault();
+    strip.classList.remove('drop-target');
+    if (!dragData) return;
+
+    const targetRack = state.racks.find(r => r.id === rack.id);
+    if (!targetRack) return;
+
+    if (dragData.source === 'palette') {
+      // New device from palette — add unpositioned
+      targetRack[face].push({ name: dragData.name, type: dragData.type });
+    } else {
+      // Existing device — move to this rack/face and strip start_u/units
+      const srcRack = state.racks.find(r => r.id === dragData.rackId);
+      if (srcRack) srcRack[dragData.face] = srcRack[dragData.face].filter(d => d !== dragData.dev);
+      delete dragData.dev.start_u;
+      delete dragData.dev.units;
+      targetRack[face].push(dragData.dev);
+      if (selectedDevRef && selectedDevRef.dev === dragData.dev) {
+        selectedDevRef.rackId = rack.id;
+        selectedDevRef.face = face;
+      }
+    }
+
+    dragData = null;
+    renderAllRacks();
+    updateStatus();
+  });
+
+  view.appendChild(strip);
+
   return view;
 }
 
@@ -1986,7 +2138,12 @@ function slotDrop(e) {
   if (!rack) return;
 
   if (dragData.source === 'palette') {
-    rack[f].push({ name: dragData.name, type: dragData.type, units: dragData.units, start_u: u });
+    if (!dragData.units) {
+      // Unpositioned device — add without a slot; user sets position via the props panel
+      rack[f].push({ name: dragData.name, type: dragData.type });
+    } else {
+      rack[f].push({ name: dragData.name, type: dragData.type, units: dragData.units, start_u: u });
+    }
   } else {
     const oldRack = state.racks.find(r => r.id === dragData.rackId);
     if (oldRack) oldRack[dragData.face] = oldRack[dragData.face].filter(d => d !== dragData.dev);
@@ -2012,8 +2169,11 @@ function selectDevice(dev, rackId, face) {
   document.getElementById('propsForm').style.display = 'flex';
 
   document.getElementById('pName').value = dev.name || '';
-  document.getElementById('pUnits').value = dev.units || 1;
+  const isZeroU = !dev.units || !dev.start_u;
+  document.getElementById('pUnits').value = isZeroU ? '' : (dev.units || 1);
   document.getElementById('pStartU').value = dev.start_u || '';
+  document.getElementById('startURow').style.display = isZeroU ? 'none' : '';
+  document.getElementById('zeroUNote').style.display = isZeroU ? 'flex' : 'none';
 
   populateTypeSelects();
   document.getElementById('pType').value = dev.type || 'pc';
@@ -2033,14 +2193,17 @@ function togglePatternFields() {
     document.getElementById('pIsPattern').checked ? 'block' : 'none';
 }
 
+// onUnitsChange removed — unpositioned state is set via applyProps, not live
+
 function applyProps() {
   if (!selectedDevRef) return;
   const dev = selectedDevRef.dev;
   dev.name = document.getElementById('pName').value;
   dev.type = document.getElementById('pType').value;
-  dev.units = parseInt(document.getElementById('pUnits').value) || 1;
+  const parsedUnits = parseInt(document.getElementById('pUnits').value);
+  dev.units = isNaN(parsedUnits) || parsedUnits < 1 ? undefined : parsedUnits;
   const su = parseInt(document.getElementById('pStartU').value);
-  dev.start_u = isNaN(su) ? undefined : su;
+  dev.start_u = isNaN(su) || !dev.units ? undefined : su;
 
   if (document.getElementById('pIsPattern').checked) {
     dev.start = parseInt(document.getElementById('pStart').value);
@@ -2135,6 +2298,14 @@ function getDeviceCanvasPoint(devName) {
       return { ...getElementOffsetInCanvas(el), el };
     }
   }
+
+  for (const el of canvas.querySelectorAll('.zero-u-device')) {
+    const nameEl = el.querySelector('.zero-u-name');
+    if (!nameEl) continue;
+    if (nameEl.textContent.trim() === devName) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
   return null;
 }
 
@@ -2142,7 +2313,7 @@ function renderWiringOverlay() {
   const svg = document.getElementById('wiringOverlay');
   svg.innerHTML = '';
 
-  document.querySelectorAll('.rack-device.wired, .ext-device-row.wired').forEach(el => {
+  document.querySelectorAll('.rack-device.wired, .ext-device-row.wired, .zero-u-device.wired').forEach(el => {
     el.classList.remove('wired');
     el.style.removeProperty('--wire-color');
   });
@@ -2209,6 +2380,14 @@ function renderWiringOverlay() {
   });
   document.querySelectorAll('.ext-device-row').forEach(el => {
     const nameEl = el.querySelector('.ext-device-name');
+    if (!nameEl) return;
+    if (wiredNames.has(nameEl.textContent.trim())) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+  document.querySelectorAll('.zero-u-device').forEach(el => {
+    const nameEl = el.querySelector('.zero-u-name');
     if (!nameEl) return;
     if (wiredNames.has(nameEl.textContent.trim())) {
       el.classList.add('wired');
