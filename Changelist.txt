@@ -1,4 +1,3 @@
 - Graph inter-rack connections serperately
-- Support for patch panel (some ethernet connections)
 - Port / power capacity / usage
 - Implement Pydantic

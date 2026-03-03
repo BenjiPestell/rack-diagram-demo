@@ -841,6 +841,7 @@ function parseYAML(text) {
             if (!t3 || t3.startsWith('#')) { i++; continue; }
             if (indent(l3) <= 2) break;
             if (indent(l3) === 4) {
+              // indent-4 keys are rack-level: front/rear device lists
               const ci3 = t3.indexOf(':');
               if (ci3 === -1) { i++; continue; }
               const k3 = t3.slice(0, ci3).trim();
@@ -852,6 +853,12 @@ function parseYAML(text) {
                 rackEntry.rack[k3] = scalar(v3);
                 i++;
               }
+            } else if (indent(l3) === 6) {
+              // indent-6 keys are rack metadata: id, name, total_u, u_order
+              const ci3 = t3.indexOf(':');
+              if (ci3 === -1) { i++; continue; }
+              rackEntry.rack[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1).trim());
+              i++;
             } else { i++; }
           }
         } else { i++; }
@@ -924,14 +931,16 @@ function parseYAML(text) {
 // ═══════════════════════════════════════════════════════════════════
 // CLUSTER EXPANSION
 // ═══════════════════════════════════════════════════════════════════
-function expandClusters(devices) {
+function expandClusters(devices, uOrder) {
+  const topBottom = uOrder === 'top_bottom';
   const out = [];
   for (const dev of devices) {
     if (dev.start !== undefined && dev.end !== undefined && dev.name && dev.name.includes('{N}')) {
       for (let n = dev.start; n <= dev.end; n++) {
         const step = dev.units ? dev.units + (dev.spacing || 0) : 1;
+        const offset = (n - dev.start) * step;
         const su = dev.start_u !== undefined
-          ? dev.start_u - (n - dev.start) * step
+          ? topBottom ? dev.start_u + offset : dev.start_u - offset
           : undefined;
         out.push({ ...dev, name: dev.name.replace(/\{N\}/g, n), start_u: su, start: undefined, end: undefined });
       }
@@ -984,7 +993,7 @@ function buildDeviceMap(parsed) {
     rackOrder.push({ rackId, rackName, totalU, uOrder, rackIdx: ri });
 
     for (const face of ['front', 'rear']) {
-      const devs = expandClusters(re[face] || []);
+      const devs = expandClusters(re[face] || [], uOrder);
       devs.forEach(dev => {
         if (!dev.name) return;
         map[dev.name] = {
@@ -1311,7 +1320,7 @@ function renderCanvas() {
       uSeq.forEach(u => {
         const d = document.createElement('div');
         d.className = 'u-num';
-        d.textContent = (u % 5 === 0 || u === 1) ? u : '';
+        d.textContent = u;
         uNums.appendChild(d);
       });
 
@@ -1325,7 +1334,7 @@ function renderCanvas() {
         slotsArea.appendChild(bg);
       }
 
-      const devs = expandClusters(rackEntry[face] || []);
+      const devs = expandClusters(rackEntry[face] || [], uOrder);
       devs.forEach(dev => {
         if (!dev.start_u || !dev.units) return;
         const color = typeColor(dev.type, colorMap);
@@ -1350,7 +1359,7 @@ function renderCanvas() {
       faceWrap.appendChild(col);
 
       // Unpositioned strip
-      const unpos = expandClusters(rackEntry[face] || []).filter(d => !d.start_u || !d.units);
+      const unpos = expandClusters(rackEntry[face] || [], uOrder).filter(d => !d.start_u || !d.units);
       const strip = buildUnpositionedStrip(rackId, face, unpos, colorMap);
       faceWrap.appendChild(strip);
 
