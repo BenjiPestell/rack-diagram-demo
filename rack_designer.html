@@ -2243,7 +2243,7 @@ function addWiringLayer() {
     edge_color: hues[state.wiringLayers.length % hues.length],
     cable_type: 'Ethernet',
     connections: [],
-    collapsed: false
+    collapsed: true
   });
   renderWiringLayers();
   updateStatus();
@@ -3375,7 +3375,7 @@ function applyParsedToState(parsed) {
         edge_color: l.edge_color ? String(l.edge_color) : '#888888',
         cable_type: l.cable_type ? String(l.cable_type) : 'Ethernet',
         connections: [],
-        collapsed: false
+        collapsed: true
       };
       if (Array.isArray(l.connections)) {
         l.connections.forEach(c => {

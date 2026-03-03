@@ -13,6 +13,7 @@ type_colors:
   projector: "#d194b3"
   beltpack: "#969696"
   fibre converter: "#d19494"
+  mirror display: "#86a4ca"
 
 racks:
   # Rack 1
@@ -292,6 +293,10 @@ external_devices:
     devices:
       - name: "Driver beltpack"
         type: beltpack
+      - name: "Driver RVD {N}"
+        start: 1
+        end: 3
+        type: mirror display
   - name: "chassis media converters"
     distance_from_racks: 20  # m
     devices:
@@ -449,13 +454,17 @@ wiring_layers:
 
   # Video
   - name: Video
-    edge_color: "#ff7b5b"
+    edge_color: "#ffb35c"
     cable_type: "Display Port"
     connections:
       - from: IG {N}
         to: Projector {N}
         start: 1
         end: 13
+      - from: RVD {N}
+        to: Driver RVD {N}
+        start: 1
+        end: 3
 
   # Intercom
   - name: Intercom
@@ -468,8 +477,10 @@ wiring_layers:
         to: Operator beltpack {N}
         start: 1
         end: 5
-      - from: Audio Switch
+      - from: Media Converters
         to: Audio fibre converter
         cable_type: "Fibre"
       - from: Audio fibre converter
         to: Driver beltpack
+      - from: Audio Switch
+        to: Media Converters
