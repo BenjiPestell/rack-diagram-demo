@@ -1590,18 +1590,18 @@ const state = {
   wiringLayers: [],
   externalGroups: [],
   typeEntries: [
-    { type: 'pc',               color: '#E8F4F8', units: 4,  label: 'PC / Workstation' },
-    { type: 'server',           color: '#dde8f4', units: 2,  label: 'Server (2U)' },
-    { type: 'pdu',              color: '#AAAAAA', units: 1,  label: 'PDU' },
-    { type: 'ups',              color: '#c8c8d8', units: 2,  label: 'UPS' },
-    { type: 'switch',           color: '#B8D6D6', units: 1,  label: 'Switch (1U)' },
-    { type: 'switch_2u',        color: '#9ecece', units: 2,  label: 'Switch (2U)' },
-    { type: 'patch panel',      color: '#d4c9e8', units: 1,  label: 'Patch Panel' },
-    { type: 'realtime',         color: '#FFE8D8', units: 2,  label: 'Realtime System' },
-    { type: 'Shelf',            color: '#ced3db', units: 1,  label: 'Shelf (1U)' },
-    { type: 'shelf_2u',         color: '#bec3cb', units: 2,  label: 'Shelf (2U)' },
-    { type: 'cable management', color: '#C4C4C4', units: 1,  label: 'Cable Mgmt' },
-    { type: 'customer',         color: '#ffd9d6', units: 4,  label: 'Customer' },
+    { type: 'PC / Workstation',  color: '#E8F4F8', units: 4  },
+    { type: 'Server',            color: '#dde8f4', units: 2  },
+    { type: 'PDU',               color: '#AAAAAA', units: 1  },
+    { type: 'UPS',               color: '#c8c8d8', units: 2  },
+    { type: 'Switch (1U)',       color: '#B8D6D6', units: 1  },
+    { type: 'Switch (2U)',       color: '#9ecece', units: 2  },
+    { type: 'Patch Panel',       color: '#d4c9e8', units: 1  },
+    { type: 'Realtime System',   color: '#FFE8D8', units: 2  },
+    { type: 'Shelf (1U)',        color: '#ced3db', units: 1  },
+    { type: 'Shelf (2U)',        color: '#bec3cb', units: 2  },
+    { type: 'Cable Management',  color: '#C4C4C4', units: 1  },
+    { type: 'Customer',          color: '#ffd9d6', units: 4  },
   ],
   // Convenience accessor — kept so external code can still read typeColors[type]
   get typeColors() {
@@ -1673,7 +1673,8 @@ function renderPalette() {
     // Drag-to-rack listeners
     row.addEventListener('dragstart', e => {
       const entry = state.typeEntries[idx];
-      dragData = { source: 'palette', type: entry.type, units: parseInt(entry.units) || 1, name: `New ${entry.label || entry.type}` };
+      if (!entry.type) return;  // don't drag unnamed types
+      dragData = { source: 'palette', type: entry.type, units: parseInt(entry.units) || 1, name: `New ${entry.type}` };
       e.dataTransfer.effectAllowed = 'copy';
     });
     row.addEventListener('dragend', () => dragData = null);
@@ -1700,36 +1701,38 @@ function renderPalette() {
     // Label / type-name input
     const nameInput = document.createElement('input');
     nameInput.className = 'type-name-input';
-    nameInput.value = label || type;
-    nameInput.title = 'Display label (rename type with Shift+Enter)';
+    nameInput.value = type;
+    nameInput.placeholder = 'Type name…';
+    nameInput.title = 'Type name — used in YAML and on devices';
     nameInput.addEventListener('mousedown', e => e.stopPropagation());
     nameInput.addEventListener('change', e => {
-      state.typeEntries[idx].label = e.target.value.trim() || type;
+      const newType = e.target.value.trim();
+      if (!newType) {
+        // User left it blank — remove this entry if it was never named
+        if (!type) { state.typeEntries.splice(idx, 1); renderPalette(); }
+        else { e.target.value = type; }
+        return;
+      }
+      if (newType === type) return;
+      if (state.typeEntries.some((en, i) => i !== idx && en.type === newType)) {
+        alert(`Type "${newType}" already exists.`); e.target.value = type; return;
+      }
+      // Rename type key and update all devices using it
+      state.racks.forEach(rack => {
+        ['front','rear'].forEach(face => {
+          rack[face].forEach(dev => { if (dev.type === type) dev.type = newType; });
+        });
+      });
+      state.externalGroups.forEach(group => {
+        group.devices.forEach(dev => { if (dev.type === type) dev.type = newType; });
+      });
+      state.typeEntries[idx].type = newType;
       renderPalette();
+      renderAllRacks();
+      renderExtGroupWidgets();
     });
     nameInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && e.shiftKey) {
-        // Shift+Enter renames the type key itself
-        const newType = e.target.value.trim();
-        if (!newType || newType === type) { e.target.blur(); return; }
-        if (state.typeEntries.some((en, i) => i !== idx && en.type === newType)) {
-          alert(`Type "${newType}" already exists.`); e.target.blur(); return;
-        }
-        state.racks.forEach(rack => {
-          ['front','rear'].forEach(face => {
-            rack[face].forEach(dev => { if (dev.type === type) dev.type = newType; });
-          });
-        });
-        state.externalGroups.forEach(group => {
-          group.devices.forEach(dev => { if (dev.type === type) dev.type = newType; });
-        });
-        state.typeEntries[idx].type = newType;
-        renderPalette();
-        renderAllRacks();
-        renderExtGroupWidgets();
-      } else if (e.key === 'Enter') {
-        e.target.blur();
-      }
+      if (e.key === 'Enter') e.target.blur();
     });
 
     // Units input
@@ -1780,12 +1783,9 @@ function renderPalette() {
 
 
 function addNewType() {
-  let n = 1;
-  while (state.typeEntries.some(e => e.type === `type${n}`)) n++;
-  const name = `type${n}`;
   const hues = [210, 150, 30, 280, 0, 60, 180, 330];
   const hue = hues[state.typeEntries.length % hues.length];
-  state.typeEntries.push({ type: name, color: hslToHex(hue, 40, 70), units: 1, label: name });
+  state.typeEntries.push({ type: '', color: hslToHex(hue, 40, 70), units: 1 });
   renderPalette();
   const inputs = document.querySelectorAll('#typeColorList .type-name-input');
   const last = inputs[inputs.length - 1];
@@ -3054,7 +3054,7 @@ function buildExtDevRow(gi, di, dev) {
   state.typeEntries.forEach(entry => {
     const opt = document.createElement('option');
     opt.value = entry.type;
-    opt.textContent = entry.label || entry.type;
+    opt.textContent = entry.type;
     if (entry.type === (dev.type || '')) opt.selected = true;
     typeIn.appendChild(opt);
   });
@@ -3198,7 +3198,7 @@ function generateYAML() {
   y += `front_to_back_length: ${fb}  # m\n\n`;
 
   y += 'type_colors:\n';
-  state.typeEntries.forEach(e => y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n    label: "${e.label || e.type}"\n`);
+  state.typeEntries.forEach(e => y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n`);
   y += '\n';
 
   y += 'racks:\n';
@@ -3635,10 +3635,10 @@ function applyParsedToState(parsed) {
     for (const [k, v] of Object.entries(parsed.type_colors)) {
       if (v && typeof v === 'object') {
         // New format: { color, units, label }
-        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1, label: String(v.label || k) });
+        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1 });
       } else {
         // Legacy flat format: just a color string
-        state.typeEntries.push({ type: k, color: String(v), units: 1, label: k });
+        state.typeEntries.push({ type: k, color: String(v), units: 1 });
       }
     }
   }
