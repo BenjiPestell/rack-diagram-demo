@@ -480,6 +480,7 @@ wiring_layers:
       - from: Media Converters
         to: Audio fibre converter
         cable_type: "Fibre"
+        edge_color: "#ffffb8"
       - from: Audio fibre converter
         to: Driver beltpack
       - from: Audio Switch

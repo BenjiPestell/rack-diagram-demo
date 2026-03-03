@@ -2185,11 +2185,12 @@ function renderWiringOverlay() {
     const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
     path.setAttribute('d', d);
     path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', color);
+    path.setAttribute('stroke', arcColor);
     path.setAttribute('stroke-width', '1.5');
     path.setAttribute('stroke-opacity', '0.75');
     path.setAttribute('marker-end', `url(#${markerId})`);
 
+    const arcColor = conn.edge_color || color;  // per-connection override or layer colour
     const label = conn.label || conn.cable_type || '';
 
     const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -2228,7 +2229,7 @@ function renderWiringOverlay() {
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('font-family', 'Share Tech Mono, monospace');
       text.setAttribute('font-size', '9');
-      text.setAttribute('fill', color);
+      text.setAttribute('fill', arcColor);
       text.setAttribute('opacity', '0.8');
       text.textContent = label;
       svg.appendChild(text);
@@ -2383,7 +2384,7 @@ function buildConnectionCard(li, ci, conn) {
   mainRow.appendChild(removeBtn);
   card.appendChild(mainRow);
 
-  const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn._showOverrides;
+  const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn.edge_color !== undefined || conn._showOverrides;
 
   const overridesFooter = document.createElement('div');
   overridesFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;';
@@ -2398,6 +2399,7 @@ function buildConnectionCard(li, ci, conn) {
     if (hasOverrides) {
       delete state.wiringLayers[li].connections[ci].cable_type;
       delete state.wiringLayers[li].connections[ci].label;
+      delete state.wiringLayers[li].connections[ci].edge_color;
       state.wiringLayers[li].connections[ci]._showOverrides = false;
     } else {
       state.wiringLayers[li].connections[ci]._showOverrides = true;
@@ -2453,6 +2455,39 @@ function buildConnectionCard(li, ci, conn) {
     labelRow.appendChild(labelLbl);
     labelRow.appendChild(labelIn);
     overridesBox.appendChild(labelRow);
+
+    // Colour override row
+    const colorRow = document.createElement('div');
+    colorRow.className = 'conn-overrides-row';
+    const colorLbl = document.createElement('span');
+    colorLbl.className = 'conn-override-label';
+    colorLbl.textContent = 'Colour';
+    // Swatch — shows layer colour when no override is set
+    const colorSwatch = document.createElement('input');
+    colorSwatch.type = 'color';
+    colorSwatch.className = 'color-swatch';
+    colorSwatch.style.cssText = 'width:28px;height:24px;cursor:pointer;flex-shrink:0;';
+    colorSwatch.value = conn.edge_color || state.wiringLayers[li].edge_color || '#888888';
+    colorSwatch.title = conn.edge_color ? 'Override active — click to change' : 'Inheriting layer colour — click to override';
+    colorSwatch.addEventListener('input', e => {
+      state.wiringLayers[li].connections[ci].edge_color = e.target.value;
+      renderWiringOverlay();
+    });
+    // Clear button — removes the override and resets swatch to layer colour
+    const colorClear = document.createElement('button');
+    colorClear.textContent = conn.edge_color ? '✕ clear' : '— inherit';
+    colorClear.style.cssText = 'background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;font-family:var(--mono);font-size:9px;padding:2px 6px;letter-spacing:1px;transition:all 0.15s;';
+    colorClear.addEventListener('mouseenter', () => { colorClear.style.borderColor = 'var(--red)'; colorClear.style.color = 'var(--red)'; });
+    colorClear.addEventListener('mouseleave', () => { colorClear.style.borderColor = ''; colorClear.style.color = ''; });
+    colorClear.addEventListener('click', () => {
+      delete state.wiringLayers[li].connections[ci].edge_color;
+      renderWiringLayers();
+      renderWiringOverlay();
+    });
+    colorRow.appendChild(colorLbl);
+    colorRow.appendChild(colorSwatch);
+    colorRow.appendChild(colorClear);
+    overridesBox.appendChild(colorRow);
 
     card.appendChild(overridesBox);
   }
@@ -2971,6 +3006,7 @@ function generateYAML() {
           }
           if (c.cable_type !== undefined) y += `        cable_type: "${c.cable_type}"\n`;
           if (c.label !== undefined) y += `        label: "${c.label}"\n`;
+          if (c.edge_color !== undefined) y += `        edge_color: "${c.edge_color}"\n`;
           if (c.start !== undefined) y += `        start: ${c.start}\n`;
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
         });
@@ -3386,6 +3422,7 @@ function applyParsedToState(parsed) {
           else conn.to = '';
           if (c.cable_type != null) conn.cable_type = String(c.cable_type);
           if (c.label != null) conn.label = String(c.label);
+          if (c.edge_color != null) conn.edge_color = String(c.edge_color);
           if (c.start !== undefined) conn.start = parseInt(c.start);
           if (c.end !== undefined) conn.end = parseInt(c.end);
           layer.connections.push(conn);
