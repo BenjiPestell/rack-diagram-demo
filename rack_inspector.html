@@ -523,6 +523,65 @@
     color: var(--text3);
     line-height: 1.6;
   }
+  .conn-breakdown-indent {
+    margin-left: 12px;
+    border-left: 2px solid var(--border);
+    padding-left: 6px;
+    margin-top: 2px;
+  }
+  .conn-card-patched {
+    border-left: 3px solid #4a7fcb;
+  }
+  .conn-patch-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #4a7fcb;
+    background: rgba(74,127,203,0.12);
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    font-family: var(--mono);
+  }
+  .conn-patch-route {
+    font-size: 9px;
+    color: var(--text3);
+    font-style: italic;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .conn-patch-seg {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+  .conn-patch-seg-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #4a7fcb;
+    font-weight: 700;
+    min-width: 22px;
+    flex-shrink: 0;
+  }
+  .conn-patch-seg-names {
+    color: var(--text2);
+    flex: 1;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .conn-patch-seg-len {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .conn-patch-seg-len.unknown { color: var(--text3); }
   .conn-breakdown span { color: var(--text2); margin-right: 10px; }
 
   .no-conns {
@@ -638,7 +697,10 @@ function parseYAML(text) {
   const scalar = v => {
     v = (v || '').trim();
     if (!v) return undefined;
-    v = v.replace(/^["']|["']$/g, '');
+    const wasQuoted = /^["']/.test(v);
+    v = v.replace(/^["']|["']$/g, '').trim();
+    // Strip inline YAML comments (# ...) only when value wasn't quoted and isn't a hex colour
+    if (!wasQuoted && !/^#[0-9a-fA-F]{3,8}$/.test(v)) v = v.replace(/\s*#.*$/, '').trim();
     const n = Number(v);
     return isNaN(n) ? v : n;
   };
@@ -897,6 +959,8 @@ function expandWiringConn(conn) {
         ...conn,
         from: expand(fromStr),
         to: typeof conn.to === 'string' ? expand(toStr) : conn.to,
+        via_patch_from: conn.via_patch_from ? expand(String(conn.via_patch_from)) : conn.via_patch_from,
+        via_patch_to:   conn.via_patch_to   ? expand(String(conn.via_patch_to))   : conn.via_patch_to,
         start: undefined, end: undefined
       });
     }
@@ -957,7 +1021,7 @@ function buildDeviceMap(parsed) {
 // ═══════════════════════════════════════════════════════════════════
 // CABLE LENGTH CALCULATION
 // ═══════════════════════════════════════════════════════════════════
-const U_HEIGHT = 0.04445;  // 1U = 44.45mm
+const U_HEIGHT = 0.045;  // 1U = 45mm (matches Python pipeline standard_u_height)
 
 function getConfig() {
   return {
@@ -1000,7 +1064,8 @@ function calcCableLength(devA, devB) {
       return { length: null, note: 'unpositioned' };
     }
     const rackVertical = deviceMidpointU(rackDev) * U_HEIGHT;
-    const length = groupDist + rackVertical + cfg.slack;
+    let length = groupDist + rackVertical + cfg.slack;
+    length = Math.ceil(length * 2) / 2;
     return { length, note: 'ext', breakdown: { groupDist, rackVertical, slack: cfg.slack } };
   }
 
@@ -1050,8 +1115,61 @@ function calcCableLength(devA, devB) {
     }
   }
 
+  length = Math.ceil(length * 2) / 2;
   return { length, breakdown };
 }
+
+// Patch-aware cable length: returns { segments, total, isPatched }
+// segments = [{from, to, length, breakdown, note}]
+function calcPatchedCableLength(conn, thisName, deviceMap) {
+  const patchFrom = conn.patchFrom;
+  const patchTo   = conn.patchTo;
+
+  if (!patchFrom && !patchTo) {
+    const devA = deviceMap[thisName] || {};
+    const devB = deviceMap[conn.peer] || {};
+    const { length, breakdown, note } = calcCableLength(devA, devB);
+    return { segments: [{ from: thisName, to: conn.peer, length, breakdown, note }],
+             total: length, isPatched: false };
+  }
+
+  // Build ordered segment list based on original from→to direction
+  let orderedNames;
+  if (conn.direction === '→') {
+    // thisName is the "from" end
+    orderedNames = patchFrom && patchTo
+      ? [thisName, patchFrom, patchTo, conn.peer]
+      : patchFrom
+        ? [thisName, patchFrom, conn.peer]
+        : [thisName, patchTo,   conn.peer];
+  } else {
+    // thisName is the "to" end — reverse
+    orderedNames = patchFrom && patchTo
+      ? [conn.peer, patchFrom, patchTo, thisName]
+      : patchFrom
+        ? [conn.peer, patchFrom, thisName]
+        : [conn.peer, patchTo,   thisName];
+  }
+
+  const segments = [];
+  let total = 0;
+  let anyNull = false;
+
+  for (let i = 0; i < orderedNames.length - 1; i++) {
+    const aName = orderedNames[i];
+    const bName = orderedNames[i + 1];
+    const devA  = deviceMap[aName] || {};
+    const devB  = deviceMap[bName] || {};
+    const result = calcCableLength(devA, devB);
+    segments.push({ from: aName, to: bName, ...result });
+    if (result.length == null) anyNull = true;
+    else total += result.length;
+  }
+
+  // Round total to 2dp like individual lengths
+  return { segments, total: anyNull ? null : Math.round(total * 100) / 100, isPatched: true };
+}
+
 
 // ═══════════════════════════════════════════════════════════════════
 // CONNECTION EXPANSION
@@ -1079,8 +1197,39 @@ function buildConnectionIndex(parsed) {
         const toName = String(t);
         ensure(fromName);
         ensure(toName);
-        index[fromName].push({ peer: toName, layer: layerName, cableType, layerColor, direction: '→' });
-        index[toName].push({ peer: fromName, layer: layerName, cableType, layerColor, direction: '←' });
+        const patchFrom = c.via_patch_from || null;
+        const patchTo   = c.via_patch_to   || null;
+        index[fromName].push({ peer: toName, layer: layerName, cableType, layerColor, direction: '→', patchFrom, patchTo });
+        index[toName].push({ peer: fromName, layer: layerName, cableType, layerColor, direction: '←', patchFrom, patchTo });
+
+        // Register patch panel entries so selecting a PP shows its hosted connections.
+        // Build the full ordered chain and add each PP's two immediate neighbours.
+        if (patchFrom || patchTo) {
+          const chain = patchFrom && patchTo
+            ? [fromName, patchFrom, patchTo, toName]
+            : patchFrom
+              ? [fromName, patchFrom, toName]
+              : [fromName, patchTo,   toName];
+
+          // For each intermediate node (the patch panels), add both neighbours
+          for (let ci = 1; ci < chain.length - 1; ci++) {
+            const ppName = chain[ci];
+            const prevName = chain[ci - 1];
+            const nextName = chain[ci + 1];
+            ensure(ppName);
+            // Show as a patch leg: peer is the end-to-end destination device,
+            // with explicit prevName/nextName so the card can describe the segment
+            index[ppName].push({
+              peer: toName,           // end device of the full connection
+              peerFrom: fromName,     // start device of the full connection
+              segFrom: prevName,      // this patch panel's upstream neighbour
+              segTo:   nextName,      // this patch panel's downstream neighbour
+              layer: layerName, cableType, layerColor,
+              direction: '↔', patchFrom, patchTo,
+              isPatchLeg: true,
+            });
+          }
+        }
       });
     });
   });
@@ -1386,15 +1535,27 @@ function renderSheet() {
 
     layerConns.forEach(c => {
       const peerDev = deviceMap[c.peer];
-      const thisDev = deviceMap[selectedDevName];
-      const { length, note, breakdown } = calcCableLength(thisDev || {}, peerDev || {});
-      if (length != null) lengths.push(length);
+
+      // For patch-leg entries (PP selected), run the full chain calc then filter
+      // to only the segments that touch this patch panel.
+      let { segments, total, isPatched } = calcPatchedCableLength(c, selectedDevName, deviceMap);
+      if (c.isPatchLeg) {
+        // Only show segments adjacent to this PP
+        const adjSegs = segments.filter(s => s.from === selectedDevName || s.to === selectedDevName);
+        const adjTotal = adjSegs.every(s => s.length != null)
+          ? Math.ceil(adjSegs.reduce((a, s) => a + s.length, 0) * 2) / 2
+          : null;
+        segments = adjSegs;
+        total = adjTotal;
+        isPatched = true;
+      }
+      if (total != null) lengths.push(total);
 
       const card = document.createElement('div');
-      card.className = 'conn-card';
+      card.className = 'conn-card' + (isPatched ? ' conn-card-patched' : '');
       card.addEventListener('click', () => selectDevice(c.peer));
 
-      // Top row: dot + name + length
+      // Top row: dot + peer name + total length
       const top = document.createElement('div');
       top.className = 'conn-top';
       const dot = document.createElement('div');
@@ -1402,13 +1563,14 @@ function renderSheet() {
       dot.style.background = c.layerColor;
       const peer = document.createElement('div');
       peer.className = 'conn-peer';
-      peer.textContent = c.peer;
+      peer.textContent = c.isPatchLeg ? (c.peerFrom + ' ↔ ' + c.peer) : c.peer;
       const lenEl = document.createElement('div');
-      lenEl.className = 'conn-length' + (length == null ? ' unknown' : '');
-      lenEl.textContent = length != null ? length.toFixed(2) + 'm' : (note === 'unpositioned' ? '?' : '—');
+      const firstSeg = segments[0];
+      lenEl.className = 'conn-length' + (total == null ? ' unknown' : '');
+      lenEl.textContent = total != null ? total.toFixed(1) + 'm' : (firstSeg && firstSeg.note === 'unpositioned' ? '?' : '—');
       top.appendChild(dot); top.appendChild(peer); top.appendChild(lenEl);
 
-      // Bottom row: layer name + direction + cable type
+      // Bottom row: layer + direction + cable type + patch badge
       const bottom = document.createElement('div');
       bottom.className = 'conn-bottom';
       const ln = document.createElement('div');
@@ -1421,30 +1583,82 @@ function renderSheet() {
       ct.className = 'conn-cable-type';
       ct.textContent = c.cableType;
       bottom.appendChild(ln); bottom.appendChild(dir); bottom.appendChild(ct);
+      if (isPatched) {
+        const pb = document.createElement('div');
+        pb.className = 'conn-patch-badge';
+        pb.textContent = '[PP]';
+        bottom.appendChild(pb);
+      }
 
-      // Breakdown detail (always visible on mobile — no hover)
-      if (breakdown && length != null) {
+      card.appendChild(top); card.appendChild(bottom);
+
+      // Per-segment breakdown
+      if (isPatched && segments.length > 1) {
+        // Route line
+        const route = document.createElement('div');
+        route.className = 'conn-patch-route';
+        route.textContent = segments.map(s => s.from).concat(segments[segments.length-1].to).join(' → ');
+        card.appendChild(route);
+
+        // One row per segment
+        segments.forEach((seg, i) => {
+          const segRow = document.createElement('div');
+          segRow.className = 'conn-patch-seg';
+
+          const segLabel = document.createElement('span');
+          segLabel.className = 'conn-patch-seg-label';
+          segLabel.textContent = (i + 1) + '/' + segments.length;
+
+          const segNames = document.createElement('span');
+          segNames.className = 'conn-patch-seg-names';
+          segNames.textContent = seg.from + ' → ' + seg.to;
+
+          const segLen = document.createElement('span');
+          segLen.className = 'conn-patch-seg-len' + (seg.length == null ? ' unknown' : '');
+          segLen.textContent = seg.length != null ? seg.length.toFixed(1) + 'm' : '?';
+
+          segRow.appendChild(segLabel); segRow.appendChild(segNames); segRow.appendChild(segLen);
+          card.appendChild(segRow);
+
+          // Per-segment breakdown (same style as non-patched)
+          if (seg.breakdown && seg.length != null) {
+            const bd = document.createElement('div');
+            bd.className = 'conn-breakdown conn-breakdown-indent';
+            const parts = [];
+            if (seg.breakdown.vertical    != null) parts.push(['vert',   seg.breakdown.vertical.toFixed(3) + 'm']);
+            if (seg.breakdown.horizontal  != null) parts.push(['horiz',  seg.breakdown.horizontal.toFixed(3) + 'm']);
+            if (seg.breakdown.verticalA   != null) parts.push(['rack-A', seg.breakdown.verticalA.toFixed(3) + 'm']);
+            if (seg.breakdown.verticalB   != null) parts.push(['rack-B', seg.breakdown.verticalB.toFixed(3) + 'm']);
+            if (seg.breakdown.frontToBack != null) parts.push(['f↔r',   seg.breakdown.frontToBack.toFixed(3) + 'm']);
+            if (seg.breakdown.groupDist   != null) parts.push(['ext',    seg.breakdown.groupDist.toFixed(1) + 'm']);
+            parts.push(['slack', seg.breakdown.slack.toFixed(2) + 'm']);
+            parts.forEach(([k, v]) => {
+              const s = document.createElement('span'); s.textContent = k + ' ';
+              const sv = document.createElement('b'); sv.style.color = 'var(--text2)'; sv.textContent = v + '  ';
+              bd.appendChild(s); bd.appendChild(sv);
+            });
+            card.appendChild(bd);
+          }
+        });
+      } else if (!isPatched && firstSeg && firstSeg.breakdown && total != null) {
+        // Non-patched single-segment breakdown — same as before
         const bd = document.createElement('div');
         bd.className = 'conn-breakdown';
         const parts = [];
-        if (breakdown.vertical != null)   parts.push(['vert', breakdown.vertical.toFixed(3) + 'm']);
-        if (breakdown.horizontal != null) parts.push(['horiz', breakdown.horizontal.toFixed(3) + 'm']);
-        if (breakdown.verticalA != null)  parts.push(['rack-A', breakdown.verticalA.toFixed(3) + 'm']);
-        if (breakdown.verticalB != null)  parts.push(['rack-B', breakdown.verticalB.toFixed(3) + 'm']);
-        if (breakdown.frontToBack != null) parts.push(['f↔r', breakdown.frontToBack.toFixed(3) + 'm']);
-        if (breakdown.groupDist != null)  parts.push(['ext', breakdown.groupDist.toFixed(1) + 'm']);
+        const breakdown = firstSeg.breakdown;
+        if (breakdown.vertical    != null) parts.push(['vert',   breakdown.vertical.toFixed(3) + 'm']);
+        if (breakdown.horizontal  != null) parts.push(['horiz',  breakdown.horizontal.toFixed(3) + 'm']);
+        if (breakdown.verticalA   != null) parts.push(['rack-A', breakdown.verticalA.toFixed(3) + 'm']);
+        if (breakdown.verticalB   != null) parts.push(['rack-B', breakdown.verticalB.toFixed(3) + 'm']);
+        if (breakdown.frontToBack != null) parts.push(['f↔r',   breakdown.frontToBack.toFixed(3) + 'm']);
+        if (breakdown.groupDist   != null) parts.push(['ext',    breakdown.groupDist.toFixed(1) + 'm']);
         parts.push(['slack', breakdown.slack.toFixed(2) + 'm']);
         parts.forEach(([k, v]) => {
-          const s = document.createElement('span');
-          s.textContent = k + ' ';
-          const sv = document.createElement('b');
-          sv.style.color = 'var(--text2)';
-          sv.textContent = v + '  ';
+          const s = document.createElement('span'); s.textContent = k + ' ';
+          const sv = document.createElement('b'); sv.style.color = 'var(--text2)'; sv.textContent = v + '  ';
           bd.appendChild(s); bd.appendChild(sv);
         });
-        card.appendChild(top); card.appendChild(bottom); card.appendChild(bd);
-      } else {
-        card.appendChild(top); card.appendChild(bottom);
+        card.appendChild(bd);
       }
 
       scroll.appendChild(card);
@@ -1457,9 +1671,9 @@ function renderSheet() {
 function setFooterStats(lengths, total) {
   document.getElementById('fTotal').textContent = total;
   if (lengths.length > 0) {
-    document.getElementById('fMin').textContent = Math.min(...lengths).toFixed(2) + 'm';
-    document.getElementById('fMax').textContent = Math.max(...lengths).toFixed(2) + 'm';
-    document.getElementById('fSum').textContent = lengths.reduce((a,b) => a+b, 0).toFixed(2) + 'm';
+    document.getElementById('fMin').textContent = Math.min(...lengths).toFixed(1) + 'm';
+    document.getElementById('fMax').textContent = Math.max(...lengths).toFixed(1) + 'm';
+    document.getElementById('fSum').textContent = lengths.reduce((a,b) => a+b, 0).toFixed(1) + 'm';
   } else {
     ['fMin','fMax','fSum'].forEach(id => document.getElementById(id).textContent = '—');
   }
@@ -1539,7 +1753,7 @@ function parseAndRender(yamlText) {
 
     document.getElementById('statusDot').className = 'status-dot ok';
     renderCanvas();
-    renderSidebar();
+    renderSheet();
   } catch(e) {
     document.getElementById('statusDot').className = 'status-dot err';
     alert('YAML parse error: ' + e.message);
@@ -1569,7 +1783,7 @@ async function loadFromServer() {
 // Re-render sidebar when config knobs change (lengths update live)
 ['cfgInterRack','cfgFrontBack','cfgSlack'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
-    if (appState) renderSidebar();
+    if (appState) renderSheet();
   });
 });
 
