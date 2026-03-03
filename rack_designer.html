@@ -293,6 +293,22 @@
 
   .rack-remove-btn:hover { border-color: var(--red); color: var(--red); }
 
+  .rack-order-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 6px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .rack-order-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rack-order-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
   .rack-views { display: flex; border: 1px solid var(--border); overflow: hidden; background: var(--surface2); }
   .rack-view { display: flex; flex-direction: column; }
 
@@ -1654,7 +1670,7 @@ function populateTypeSelects() {
 // ───── RACKS ─────
 function addRack() {
   const id = `rack${state.nextRackId++}`;
-  state.racks.push({ id, name: `Rack ${state.racks.length+1}`, total_u: 42, front: [], rear: [] });
+  state.racks.push({ id, name: `Rack ${state.racks.length+1}`, total_u: 42, u_order: 'bottom_top', front: [], rear: [] });
   renderAllRacks();
   updateStatus();
 }
@@ -1676,6 +1692,15 @@ function renderAllRacks() {
   const addBtn = document.getElementById('addRackBtn');
   canvas.querySelectorAll('.rack-wrapper').forEach(el => el.remove());
   state.racks.forEach(rack => canvas.insertBefore(buildRackEl(rack), addBtn));
+  // Always re-render external group widgets after racks so they are always
+  // inserted after all rack wrappers and remain on the RHS.
+  canvas.querySelectorAll('.ext-group-widget').forEach(el => el.remove());
+  state.externalGroups.forEach((group, gi) => {
+    // Re-use the full widget builder but inline the insert here so ordering
+    // is guaranteed: racks are already in DOM, widgets go before addBtn.
+    const widget = _buildExtGroupWidget(group, gi);
+    canvas.insertBefore(widget, addBtn);
+  });
   populateTypeSelects();
   requestAnimationFrame(renderWiringOverlay);
 }
@@ -1693,6 +1718,11 @@ function buildRackEl(rack) {
     <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${rack.total_u}U</span>
     <input type="number" class="mini-input" value="${rack.total_u}" min="1" max="80" style="width:60px"
       onchange="updateRackU('${rack.id}',this.value)">
+    <button class="rack-order-btn${rack.u_order === 'top_bottom' ? ' active' : ''}"
+      onclick="toggleRackOrder('${rack.id}')"
+      title="${rack.u_order === 'top_bottom' ? 'U1 at top (click to flip)' : 'U1 at bottom (click to flip)'}">
+      ${rack.u_order === 'top_bottom' ? 'U1↑top' : 'U1↓btm'}
+    </button>
     <button class="rack-remove-btn" onclick="removeRack('${rack.id}')" title="Remove">✕</button>
   `;
   wrap.appendChild(tb);
@@ -1708,7 +1738,10 @@ function buildRackEl(rack) {
   return wrap;
 }
 
-function expandDeviceToRenderItems(dev) {
+function expandDeviceToRenderItems(dev, uOrder) {
+  // uOrder: 'bottom_top' (default, U1 at bottom, patterns stack upward = decreasing start_u)
+  //         'top_bottom' (U1 at top, patterns stack downward = increasing start_u)
+  uOrder = uOrder || 'bottom_top';
   const isPattern = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
   if (!isPattern) return [{ dev, displayName: dev.name, start_u: dev.start_u }];
 
@@ -1719,7 +1752,11 @@ function expandDeviceToRenderItems(dev) {
 
   for (let i = 0; i < count; i++) {
     const n = dev.start + i;
-    const memberStartU = dev.start_u - i * step;
+    // bottom_top: each successive member is lower in the rack (smaller start_u)
+    // top_bottom: each successive member is lower on screen (larger start_u)
+    const memberStartU = uOrder === 'top_bottom'
+      ? dev.start_u + i * step
+      : dev.start_u - i * step;
     items.push({ dev, displayName: dev.name.replace('{N}', n), start_u: memberStartU, memberIndex: i, memberN: n });
   }
   return items;
@@ -1740,17 +1777,27 @@ function buildColumnEl(rack, face) {
   col.dataset.face = face;
 
   const totalU = rack.total_u || 42;
+  const uOrder = rack.u_order || 'bottom_top';  // 'bottom_top' | 'top_bottom'
 
   const renderItems = [];
   rack[face].forEach(dev => {
     if (!dev.start_u || !dev.units) return;
-    expandDeviceToRenderItems(dev).forEach(item => renderItems.push(item));
+    expandDeviceToRenderItems(dev, uOrder).forEach(item => renderItems.push(item));
   });
 
   const occupied = {};
   renderItems.forEach(item => {
-    for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
-      if (u >= 1 && u <= totalU) occupied[u] = true;
+    // In both orientations, a device of N units occupies N consecutive U numbers.
+    // bottom_top: U numbers occupied are start_u down to (start_u - units + 1)
+    // top_bottom: U numbers occupied are start_u up to (start_u + units - 1)
+    if (uOrder === 'top_bottom') {
+      for (let u = item.start_u; u < item.start_u + item.dev.units; u++) {
+        if (u >= 1 && u <= totalU) occupied[u] = true;
+      }
+    } else {
+      for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
+        if (u >= 1 && u <= totalU) occupied[u] = true;
+      }
     }
   });
 
@@ -1760,7 +1807,14 @@ function buildColumnEl(rack, face) {
   const slotsArea = document.createElement('div');
   slotsArea.className = 'u-slots-area';
 
-  for (let u = totalU; u >= 1; u--) {
+  // Render U rows from top of visual column downward.
+  // bottom_top: top row = highest U number (standard convention)
+  // top_bottom: top row = U1
+  const uSequence = uOrder === 'top_bottom'
+    ? Array.from({length: totalU}, (_, i) => i + 1)          // 1, 2, 3 … totalU
+    : Array.from({length: totalU}, (_, i) => totalU - i);    // totalU … 2, 1
+
+  uSequence.forEach(u => {
     const num = document.createElement('div');
     num.className = 'u-number';
     num.textContent = u;
@@ -1779,11 +1833,11 @@ function buildColumnEl(rack, face) {
     }
 
     slotsArea.appendChild(slot);
-  }
+  });
 
   renderItems.forEach(item => {
     if (item.start_u < 1 || item.start_u > totalU) return;
-    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
+    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u, uOrder));
   });
 
   col.appendChild(numbersStrip);
@@ -1792,16 +1846,21 @@ function buildColumnEl(rack, face) {
   return view;
 }
 
-function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
+function buildDeviceEl(dev, rackId, face, totalU, displayName, startU, uOrder) {
   displayName = displayName || dev.name;
   startU = startU !== undefined ? startU : dev.start_u;
+  uOrder = uOrder || 'bottom_top';
 
   const el = document.createElement('div');
   el.className = 'rack-device';
   const color = state.typeColors[dev.type] || '#888';
   el.style.background = color;
   const uH = 22;
-  el.style.top = ((totalU - startU) * uH) + 'px';
+  // bottom_top: U1 is at the visual bottom — device top offset counts down from highest U
+  // top_bottom: U1 is at the visual top — device top offset counts up from U1
+  el.style.top = (uOrder === 'top_bottom'
+    ? (startU - 1) * uH
+    : (totalU - startU) * uH) + 'px';
   el.style.height = (dev.units * uH - 1) + 'px';
 
   const nm = displayName.length > 24 ? displayName.slice(0, 22) + '…' : displayName;
@@ -1946,6 +2005,13 @@ function deleteSelectedDevice() {
 function updateRackU(id, val) {
   const r = state.racks.find(r => r.id === id);
   if (r) { r.total_u = parseInt(val)||42; renderAllRacks(); }
+}
+
+function toggleRackOrder(id) {
+  const r = state.racks.find(r => r.id === id);
+  if (!r) return;
+  r.u_order = (r.u_order === 'top_bottom') ? 'bottom_top' : 'top_bottom';
+  renderAllRacks();
 }
 
 // ───── WIRING ─────
@@ -2482,83 +2548,92 @@ function removeLayer(li) {
 function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); renderWiringOverlay(); }
 
 // ─── EXTERNAL GROUP WIDGETS (on canvas) ────────────────────────────────────
+// ── Build a single external-group canvas widget (no DOM insertion) ──────────
+function _buildExtGroupWidget(group, gi) {
+  const widget = document.createElement('div');
+  widget.className = 'ext-group-widget';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'ext-group-header-bar';
+  const lbl = document.createElement('span');
+  lbl.className = 'ext-group-label';
+  lbl.textContent = group.name || 'External Group';
+  const tag = document.createElement('span');
+  tag.className = 'ext-group-tag';
+  tag.textContent = 'EXT';
+  const distBadge = document.createElement('span');
+  distBadge.className = 'ext-group-dist-badge';
+  distBadge.textContent = group.distance_from_racks !== undefined ? `${group.distance_from_racks}m` : '';
+  distBadge.title = 'Distance from racks';
+  hdr.appendChild(lbl);
+  hdr.appendChild(distBadge);
+  hdr.appendChild(tag);
+  widget.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.className = 'ext-group-body';
+
+  const displayDevs = [];
+  group.devices.forEach(dev => {
+    const isCluster = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
+    if (isCluster) {
+      for (let n = dev.start; n <= dev.end; n++) {
+        displayDevs.push({ dev, displayName: dev.name.replace('{N}', n) });
+      }
+    } else {
+      displayDevs.push({ dev, displayName: dev.name });
+    }
+  });
+
+  if (displayDevs.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:8px;font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:1px;';
+    empty.textContent = 'No devices';
+    body.appendChild(empty);
+  } else {
+    displayDevs.forEach(({ dev, displayName }) => {
+      const row = document.createElement('div');
+      row.className = 'ext-device-row';
+
+      const dot = document.createElement('div');
+      dot.className = 'ext-device-dot';
+      dot.style.background = state.typeColors[dev.type] || '#888';
+
+      const name = document.createElement('span');
+      name.className = 'ext-device-name';
+      name.textContent = displayName;
+
+      const badge = document.createElement('span');
+      badge.className = 'ext-device-badge';
+      badge.textContent = dev.type;
+
+      row.appendChild(dot);
+      row.appendChild(name);
+      row.appendChild(badge);
+
+      row.addEventListener('click', e => {
+        if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
+      });
+
+      body.appendChild(row);
+    });
+  }
+
+  widget.appendChild(body);
+  return widget;
+}
+
+// Render all external group widgets onto the canvas.
+// Delegates to renderAllRacks which guarantees RHS placement — only call this
+// directly when racks have not changed (e.g. editing an ext-group property).
 function renderExtGroupWidgets() {
   const canvas = document.getElementById('rackCanvas');
   canvas.querySelectorAll('.ext-group-widget').forEach(el => el.remove());
   const addBtn = document.getElementById('addRackBtn');
-
+  // Racks are already in the DOM here, so inserting before addBtn puts
+  // widgets to the right of all rack wrappers.
   state.externalGroups.forEach((group, gi) => {
-    const widget = document.createElement('div');
-    widget.className = 'ext-group-widget';
-
-    const hdr = document.createElement('div');
-    hdr.className = 'ext-group-header-bar';
-    const lbl = document.createElement('span');
-    lbl.className = 'ext-group-label';
-    lbl.textContent = group.name || 'External Group';
-    const tag = document.createElement('span');
-    tag.className = 'ext-group-tag';
-    tag.textContent = 'EXT';
-    const distBadge = document.createElement('span');
-    distBadge.className = 'ext-group-dist-badge';
-    distBadge.textContent = group.distance_from_racks !== undefined ? `${group.distance_from_racks}m` : '';
-    distBadge.title = 'Distance from racks';
-    hdr.appendChild(lbl);
-    hdr.appendChild(distBadge);
-    hdr.appendChild(tag);
-    widget.appendChild(hdr);
-
-    const body = document.createElement('div');
-    body.className = 'ext-group-body';
-
-    const displayDevs = [];
-    group.devices.forEach(dev => {
-      const isCluster = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
-      if (isCluster) {
-        for (let n = dev.start; n <= dev.end; n++) {
-          displayDevs.push({ dev, displayName: dev.name.replace('{N}', n) });
-        }
-      } else {
-        displayDevs.push({ dev, displayName: dev.name });
-      }
-    });
-
-    if (displayDevs.length === 0) {
-      const empty = document.createElement('div');
-      empty.style.cssText = 'padding:8px;font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:1px;';
-      empty.textContent = 'No devices';
-      body.appendChild(empty);
-    } else {
-      displayDevs.forEach(({ dev, displayName }) => {
-        const row = document.createElement('div');
-        row.className = 'ext-device-row';
-
-        const dot = document.createElement('div');
-        dot.className = 'ext-device-dot';
-        dot.style.background = state.typeColors[dev.type] || '#888';
-
-        const name = document.createElement('span');
-        name.className = 'ext-device-name';
-        name.textContent = displayName;
-
-        const badge = document.createElement('span');
-        badge.className = 'ext-device-badge';
-        badge.textContent = dev.type;
-
-        row.appendChild(dot);
-        row.appendChild(name);
-        row.appendChild(badge);
-
-        row.addEventListener('click', e => {
-          if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
-        });
-
-        body.appendChild(row);
-      });
-    }
-
-    widget.appendChild(body);
-    canvas.insertBefore(widget, addBtn);
+    canvas.insertBefore(_buildExtGroupWidget(group, gi), addBtn);
   });
 }
 
@@ -2837,6 +2912,7 @@ function generateYAML() {
     y += `      id: ${rack.id}\n`;
     y += `      name: ${rack.name}\n`;
     y += `      total_u: ${rack.total_u}\n`;
+    if (rack.u_order && rack.u_order !== 'bottom_top') y += `      u_order: ${rack.u_order}\n`;
 
     ['front','rear'].forEach(face => {
       const devs = rack[face];
@@ -3265,7 +3341,8 @@ function applyParsedToState(parsed) {
         }).filter(Boolean);
       };
 
-      state.racks.push({ id, name, total_u, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
+      const u_order = (meta.u_order === 'top_bottom') ? 'top_bottom' : 'bottom_top';
+      state.racks.push({ id, name, total_u, u_order, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
     });
     state.nextRackId = rackIdMax;
   }
