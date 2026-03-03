@@ -8,30 +8,19 @@
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
   :root {
-  /* Core backgrounds */
-  --bg: #0b0d10;          /* Near-black charcoal */
-  --surface: #08090a;     /* Dark graphite */
-  --surface2: #181b20;    /* Mid dark panel */
-  --surface3: #2b3039;    /* Raised surface */
-
-  /* Borders / dividers */
-  --border: #2a2e34;      
+  --bg: #0b0d10;
+  --surface: #08090a;
+  --surface2: #181b20;
+  --surface3: #2b3039;
+  --border: #2a2e34;
   --border2: #353a42;
-
-  /* Brand accents (Dynisma red theme) */
-  --accent: #c91622;      /* Primary red */
-  --accent2: #ffecec;     /* Bright highlight red */
-
-  /* Status colors */
-  --green: #3fdc6f;       /* Subtle tech green */
-  --red: #e10613;         /* Match brand red */
-
-  /* Text */
-  --text: #f1f3f5;        /* Primary white/grey */
-  --text2: #b3b7bd;       /* Secondary grey */
-  --text3: #6c7077;       /* Muted captions */
-
-  /* Typography */
+  --accent: #c91622;
+  --accent2: #ffecec;
+  --green: #3fdc6f;
+  --red: #e10613;
+  --text: #f1f3f5;
+  --text2: #b3b7bd;
+  --text3: #6c7077;
     --mono: 'Share Tech Mono', monospace;
     --sans: 'Rajdhani', sans-serif;
     --display: 'Orbitron', monospace;
@@ -130,7 +119,7 @@
   }
 
   .header-btn:hover { border-color: var(--accent); color: var(--accent); text-shadow: 0 0 8px rgba(0,212,255,0.4); }
-  .header-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 700; }
+  .header-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
   .header-btn.primary:hover { background: transparent; color: var(--accent); }
 
   .app-body { display: flex; flex: 1; overflow: hidden; }
@@ -213,7 +202,6 @@
     position: relative;
   }
 
-  /* PICK MODE */
   .canvas-area.picking-device { cursor: crosshair; }
   .canvas-area.picking-device .rack-device {
     cursor: crosshair !important;
@@ -241,7 +229,6 @@
     position: relative;
   }
 
-  /* PICK BANNER */
   #pickBanner {
     display: none;
     position: fixed;
@@ -545,7 +532,6 @@
 
   .wiring-layer-body { padding: 7px 8px; border-top: 1px solid var(--border); }
 
-  /* Connection card */
   .connection-card {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -571,7 +557,6 @@
 
   .conn-field:focus { border-color: var(--accent); }
 
-  /* Pick button */
   .conn-pick-btn {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -617,7 +602,6 @@
 
   .conn-remove:hover { color: var(--red); }
 
-  /* Cluster toggle button */
   .conn-cluster-toggle {
     display: inline-flex;
     align-items: center;
@@ -638,7 +622,6 @@
   .conn-cluster-toggle:hover { border-color: var(--accent2); color: var(--accent2); }
   .conn-cluster-toggle.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.07); }
 
-  /* Cluster range row */
   .conn-cluster-row {
     display: flex;
     align-items: center;
@@ -763,7 +746,6 @@
     50% { opacity: 0.4; }
   }
 
-  /* PICK MODE — external device rows */
   .canvas-area.picking-device .ext-device-row {
     cursor: crosshair !important;
     outline: 1px dashed rgba(0,212,255,0.35) !important;
@@ -773,7 +755,6 @@
     filter: brightness(1.2) !important;
   }
 
-  /* External group widget (canvas) */
   .ext-group-widget {
     flex-shrink: 0;
     display: flex;
@@ -851,7 +832,6 @@
     flex-shrink: 0;
   }
 
-  /* External devices tab — right panel */
   .ext-group-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
   .ext-group-card-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
   .ext-group-card-header:hover { background: var(--surface3); }
@@ -883,7 +863,6 @@
   }
   .ext-remove-group-btn:hover { border-color: var(--red); color: var(--red); }
 
-  /* Ext device rows in right panel editor */
   .ext-dev-row {
     display: flex;
     align-items: center;
@@ -929,7 +908,6 @@
   }
   .ext-dev-remove:hover { color: var(--red); }
 
-  /* Cluster fields for ext devices */
   .ext-dev-cluster-toggle {
     display: inline-flex;
     align-items: center;
@@ -992,8 +970,6 @@
   }
   .add-ext-group-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-
-  /* Editable type row */
   .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600; color: var(--text2); }
   .type-color-row:hover { background: var(--surface2); }
   .type-name-input {
@@ -1046,8 +1022,6 @@
   }
   .add-type-btn:hover { color: var(--accent); }
 
-
-  /* Per-connection overrides (cable type + label) */
   .conn-overrides-row {
     display: flex;
     align-items: center;
@@ -1095,8 +1069,6 @@
   .conn-overrides-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .conn-overrides-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(201,22,34,0.07); }
 
-
-  /* Ext group distance field */
   .ext-group-dist-row {
     display: flex;
     align-items: center;
@@ -1132,7 +1104,6 @@
     color: var(--text3);
     flex-shrink: 0;
   }
-  /* Show distance badge on canvas widget header */
   .ext-group-dist-badge {
     font-family: var(--mono);
     font-size: 9px;
@@ -1141,8 +1112,6 @@
     flex-shrink: 0;
   }
 
-
-  /* Wiring overlay SVG — lives inside rack-canvas, scrolls with it */
   #wiringOverlay {
     position: absolute;
     top: 0; left: 0;
@@ -1151,13 +1120,11 @@
     z-index: 50;
   }
 
-  /* Active layer highlight on wiring layer header */
   .wiring-layer-card.active-layer > .wiring-layer-header {
     background: var(--surface3);
     border-left: 3px solid var(--layer-color, var(--accent));
   }
 
-  /* Device highlight when it appears in the active layer */
   .rack-device.wired {
     outline: 2px solid var(--wire-color, #fff) !important;
     z-index: 25 !important;
@@ -1167,7 +1134,6 @@
     background: rgba(255,255,255,0.06) !important;
   }
 
-  /* Wiring overlay arc tooltip */
   .wire-tip {
     position: fixed;
     background: var(--surface3);
@@ -1184,7 +1150,6 @@
     white-space: nowrap;
   }
 
-  /* Layer viz toggle button in header */
   .layer-viz-btn {
     background: none;
     border: 1px solid var(--border);
@@ -1201,6 +1166,176 @@
   .layer-viz-btn:hover { border-color: var(--accent); color: var(--accent); }
   .layer-viz-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 
+  /* ── RUN PANEL ─────────────────────────────────────────────────── */
+  .run-panel {
+    position: fixed;
+    bottom: 22px;
+    left: 0; right: 0;
+    height: 0;
+    background: var(--surface);
+    border-top: 2px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
+    z-index: 200;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.6);
+  }
+  .run-panel.visible { height: 260px; }
+
+  .run-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 36px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface2);
+  }
+  .run-panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .run-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .run-status-idle    { color: var(--text3); border-color: var(--border); }
+  .run-status-running { color: var(--accent); border-color: var(--accent); animation: pulse 1s infinite; }
+  .run-status-done    { color: var(--green); border-color: var(--green); }
+  .run-status-error   { color: var(--red); border-color: var(--red); }
+  .run-status-warn    { color: #f5c842; border-color: #f5c842; }
+
+  .run-panel-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+
+  .run-panel-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .run-panel-close:hover { border-color: var(--red); color: var(--red); }
+
+  .run-panel-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .run-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.75;
+    color: var(--text2);
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+  }
+  .run-log::-webkit-scrollbar { width: 4px; }
+  .run-log::-webkit-scrollbar-thumb { background: var(--border2); }
+  .log-line { padding: 0; }
+  .log-err  { color: var(--red); }
+  .log-info { color: var(--accent); }
+  .log-done { color: var(--green); }
+
+  .run-files-pane {
+    width: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .run-files-pane::-webkit-scrollbar { width: 4px; }
+  .run-files-pane::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  .run-files-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 7px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .output-png-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .output-png-thumb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    width: 82px;
+  }
+  .output-png-thumb img {
+    width: 82px;
+    height: 62px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    display: block;
+  }
+  .output-png-thumb:hover img { border-color: var(--accent); box-shadow: 0 0 8px rgba(201,22,34,0.3); }
+  .output-png-thumb span {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .output-file-list { display: flex; flex-direction: column; gap: 4px; }
+  .output-file-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .output-file-link:hover { border-color: var(--accent); color: var(--text); }
+  .output-file-icon { font-size: 14px; flex-shrink: 0; }
+
+  /* RUN button states */
+  #runBtn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+  #runBtn.running { animation: runPulse 0.9s ease-in-out infinite; }
+  @keyframes runPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(201,22,34,0.6), inset 0 0 0 0 rgba(255,255,255,0); }
+    50%      { box-shadow: 0 0 0 5px rgba(201,22,34,0), inset 0 0 12px rgba(255,255,255,0.05); }
+  }
 </style>
 </head>
 <body>
@@ -1222,7 +1357,10 @@
   <div class="header-spacer"></div>
   <button class="header-btn" onclick="loadSampleData()">Load Example</button>
   <button class="header-btn" onclick="clearAll()">Clear</button>
-  <button class="header-btn primary" onclick="exportYAML()">Export YAML</button>
+  <button class="header-btn" onclick="exportYAML()">Export YAML</button>
+  <div class="header-divider"></div>
+  <!-- ▶ RUN button — triggers the pipeline via Flask server -->
+  <button class="header-btn primary" id="runBtn" onclick="runPipeline()" title="Save YAML and run the generation pipeline">▶ RUN</button>
 </header>
 
 <div class="app-body">
@@ -1299,7 +1437,6 @@
       <button class="add-layer-btn" onclick="addWiringLayer()">＋ Add Wiring Layer</button>
     </div>
 
-    <!-- EXTERNAL DEVICES TAB -->
     <div class="tab-content" id="tab-external">
       <div id="extGroupList"></div>
       <button class="add-ext-group-btn" onclick="addExtGroup()">＋ Add External Group</button>
@@ -1333,11 +1470,30 @@
 <!-- Pick mode banner -->
 <div id="pickBanner">⊕ Click a device on the canvas or external group &nbsp;—&nbsp; ESC to cancel</div>
 
+<!-- ── Run Output Panel ──────────────────────────────────────────────── -->
+<div class="run-panel" id="runPanel">
+  <div class="run-panel-header">
+    <span class="run-panel-title">▶ Pipeline Output</span>
+    <span class="run-status run-status-idle" id="runStatus">Idle</span>
+    <div class="run-panel-actions">
+      <button class="run-panel-close" onclick="toggleRunPanel()">✕ Hide</button>
+    </div>
+  </div>
+  <div class="run-panel-body">
+    <div class="run-log" id="runLog"><span style="color:var(--text3);font-family:var(--mono);font-size:10px">Press ▶ RUN to generate outputs…</span></div>
+    <div class="run-files-pane" id="runFiles">
+      <div class="run-files-label">Output Files</div>
+    </div>
+  </div>
+</div>
+
+<div id="wireTip" class="wire-tip"></div>
+
 <script>
 const state = {
   racks: [],
   wiringLayers: [],
-  externalGroups: [],   // [{ name, collapsed, devices: [{name, type, start?, end?}] }]
+  externalGroups: [],
   typeColors: {
     pc: "#E8F4F8",
     pdu: "#AAAAAA",
@@ -1352,18 +1508,17 @@ const state = {
 
 let selectedDevRef = null;
 let dragData = null;
-let activeLayerIdx = null;  // index of layer currently shown in wiring overlay
+let activeLayerIdx = null;
 
 // ─── PICK MODE ───────────────────────────────────────────────────────
-// pickState: null | { layerIdx, connIdx, field: 'from'|'to' }
 let pickState = null;
 
 function enterPickMode(layerIdx, connIdx, field) {
   pickState = { layerIdx, connIdx, field };
   document.getElementById('canvasArea').classList.add('picking-device');
   document.getElementById('pickBanner').classList.add('visible');
-  renderWiringLayers(); // re-render to highlight active pick button
-  renderExtGroupWidgets(); // re-render ext widgets to show pickable state
+  renderWiringLayers();
+  renderExtGroupWidgets();
 }
 
 function exitPickMode() {
@@ -1386,10 +1541,11 @@ function init() {
   renderTypeColors();
   setupPaletteDrag();
   updateStatus();
-  // Redraw wiring overlay on window resize (layout may shift)
   window.addEventListener('resize', () => {
     requestAnimationFrame(renderWiringOverlay);
   });
+  // Try to load saved YAML from server (no-op if running offline)
+  loadYAMLFromServer();
 }
 
 function renderTypeColors() {
@@ -1399,7 +1555,6 @@ function renderTypeColors() {
     const row = document.createElement('div');
     row.className = 'type-color-row';
 
-    // Color picker
     const swatch = document.createElement('input');
     swatch.type = 'color';
     swatch.className = 'color-swatch';
@@ -1407,7 +1562,6 @@ function renderTypeColors() {
     swatch.title = 'Change colour';
     swatch.addEventListener('change', e => updateTypeColor(type, e.target.value));
 
-    // Editable name
     const nameInput = document.createElement('input');
     nameInput.className = 'type-name-input';
     nameInput.value = type;
@@ -1415,7 +1569,6 @@ function renderTypeColors() {
     nameInput.addEventListener('change', e => renameType(type, e.target.value.trim()));
     nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
 
-    // Delete button
     const delBtn = document.createElement('button');
     delBtn.className = 'type-delete-btn';
     delBtn.textContent = '✕';
@@ -1447,11 +1600,9 @@ function renameType(oldName, newName) {
     renderTypeColors();
     return;
   }
-  // Rebuild typeColors preserving order
   const entries = Object.entries(state.typeColors);
   state.typeColors = {};
   entries.forEach(([k, v]) => { state.typeColors[k === oldName ? newName : k] = v; });
-  // Update all devices using old type name
   state.racks.forEach(rack => {
     ['front','rear'].forEach(face => {
       rack[face].forEach(dev => { if (dev.type === oldName) dev.type = newName; });
@@ -1474,16 +1625,13 @@ function deleteType(type) {
 }
 
 function addNewType() {
-  // Generate unique default name
   let n = 1;
   while (state.typeColors[`type${n}`] !== undefined) n++;
   const name = `type${n}`;
-  // Pick a pleasant hue cycling through the spectrum
   const hues = [210, 150, 30, 280, 0, 60, 180, 330];
   const hue = hues[Object.keys(state.typeColors).length % hues.length];
   state.typeColors[name] = hslToHex(hue, 40, 70);
   renderTypeColors();
-  // Focus the new row's name input so the user can rename it immediately
   const inputs = document.querySelectorAll('#typeColorList .type-name-input');
   const last = inputs[inputs.length - 1];
   if (last) { last.focus(); last.select(); }
@@ -1495,7 +1643,6 @@ function hslToHex(h, s, l) {
   const f = n => { const k = (n + h / 30) % 12; const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(255 * c).toString(16).padStart(2, '0'); };
   return `#${f(0)}${f(8)}${f(4)}`;
 }
-
 
 function populateTypeSelects() {
   const el = document.getElementById('pType');
@@ -1530,7 +1677,6 @@ function renderAllRacks() {
   canvas.querySelectorAll('.rack-wrapper').forEach(el => el.remove());
   state.racks.forEach(rack => canvas.insertBefore(buildRackEl(rack), addBtn));
   populateTypeSelects();
-  // Defer overlay redraw until after layout paint
   requestAnimationFrame(renderWiringOverlay);
 }
 
@@ -1608,7 +1754,6 @@ function buildColumnEl(rack, face) {
     }
   });
 
-  // Numbers strip — always visible, devices positioned in slotsArea only
   const numbersStrip = document.createElement('div');
   numbersStrip.className = 'u-numbers-strip';
 
@@ -1667,7 +1812,6 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
   el.addEventListener('click', e => {
     if (pickState) {
       e.stopPropagation();
-      // Insert the base/pattern name for cluster devices so {N} syntax is preserved
       handleDevicePickClick(displayName);
       return;
     }
@@ -1805,16 +1949,12 @@ function updateRackU(id, val) {
 }
 
 // ───── WIRING ─────
-// ─── WIRING OVERLAY ─────────────────────────────────────────────────────────
-
 function setActiveLayer(li) {
   activeLayerIdx = (activeLayerIdx === li) ? null : li;
   renderWiringLayers();
   renderWiringOverlay();
 }
 
-// Resolve all device names referenced in a connection, expanding {N} clusters.
-// Returns array of resolved string names.
 function resolveConnNames(conn) {
   const names = [];
   const expand = (raw) => {
@@ -1834,8 +1974,6 @@ function resolveConnNames(conn) {
   return [...new Set(names)];
 }
 
-// Find the centre point of a named device in canvas coordinates (relative to rackCanvas).
-// Uses offsetLeft/offsetTop chain so coordinates are scroll-independent.
 function getElementOffsetInCanvas(el) {
   const canvas = document.getElementById('rackCanvas');
   let x = 0, y = 0;
@@ -1851,7 +1989,6 @@ function getElementOffsetInCanvas(el) {
 function getDeviceCanvasPoint(devName) {
   const canvas = document.getElementById('rackCanvas');
 
-  // Search rack devices
   for (const el of canvas.querySelectorAll('.rack-device')) {
     const label = el.querySelector('.device-label');
     if (!label) continue;
@@ -1861,7 +1998,6 @@ function getDeviceCanvasPoint(devName) {
     }
   }
 
-  // Search external device rows
   for (const el of canvas.querySelectorAll('.ext-device-row')) {
     const nameEl = el.querySelector('.ext-device-name');
     if (!nameEl) continue;
@@ -1876,7 +2012,6 @@ function renderWiringOverlay() {
   const svg = document.getElementById('wiringOverlay');
   svg.innerHTML = '';
 
-  // Clear all device highlights
   document.querySelectorAll('.rack-device.wired, .ext-device-row.wired').forEach(el => {
     el.classList.remove('wired');
     el.style.removeProperty('--wire-color');
@@ -1887,7 +2022,6 @@ function renderWiringOverlay() {
   const layer = state.wiringLayers[activeLayerIdx];
   const color = layer.edge_color || '#888';
 
-  // Expand all connections in this layer (resolve {N} clusters)
   const resolvedConns = [];
   layer.connections.forEach(conn => {
     if (!conn.from) return;
@@ -1910,9 +2044,6 @@ function renderWiringOverlay() {
     expandSide(conn.from, froms);
     expandSide(conn.to,   tos);
 
-    // If both sides expanded to the same count, zip by index (IG {N} → Projector {N}).
-    // If one side is singular and the other is a cluster, cross-product (1 → many).
-    // If counts differ and neither is 1, zip up to the shorter length.
     if (froms.length === tos.length) {
       froms.forEach((f, i) => resolvedConns.push({ from: f, to: tos[i], conn }));
     } else if (froms.length === 1) {
@@ -1920,22 +2051,18 @@ function renderWiringOverlay() {
     } else if (tos.length === 1) {
       froms.forEach(f => resolvedConns.push({ from: f, to: tos[0], conn }));
     } else {
-      // Mismatched multi → zip up to shorter length
       const len = Math.min(froms.length, tos.length);
       for (let i = 0; i < len; i++) resolvedConns.push({ from: froms[i], to: tos[i], conn });
     }
   });
 
-  // Collect unique device names for highlighting
   const wiredNames = new Set();
   resolvedConns.forEach(({ from, to }) => { wiredNames.add(from); wiredNames.add(to); });
 
-  // Highlight devices
   document.querySelectorAll('.rack-device').forEach(el => {
     const label = el.querySelector('.device-label');
     if (!label) return;
     const text = label.textContent.trim();
-    // Match exact or truncated
     const matched = [...wiredNames].some(n => n === text || (text.endsWith('…') && n.startsWith(text.slice(0, -1)) && n !== text.slice(0, -1)));
     if (matched) {
       el.classList.add('wired');
@@ -1951,7 +2078,6 @@ function renderWiringOverlay() {
     }
   });
 
-  // Draw arcs for each resolved connection
   const canvas = document.getElementById('rackCanvas');
   const canvasW = canvas.scrollWidth;
   const canvasH = canvas.scrollHeight;
@@ -1959,7 +2085,6 @@ function renderWiringOverlay() {
   svg.style.width  = canvasW + 'px';
   svg.style.height = canvasH + 'px';
 
-  // Build a defs block for arrowhead marker
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const markerId = `arrow-${activeLayerIdx}`;
   defs.innerHTML = `
@@ -1968,7 +2093,6 @@ function renderWiringOverlay() {
     </marker>`;
   svg.appendChild(defs);
 
-  // Group resolved conns by from→to pair, deduplicate
   const drawn = new Set();
   resolvedConns.forEach(({ from, to, conn }) => {
     const key = from + '|||' + to;
@@ -1983,12 +2107,9 @@ function renderWiringOverlay() {
     const x1 = ptA.x, y1 = ptA.y;
     const x2 = ptB.x, y2 = ptB.y;
 
-    // Curved arc — control point offset perpendicular to the line
     const dx = x2 - x1, dy = y2 - y1;
     const dist = Math.sqrt(dx*dx + dy*dy);
-    // Curve amount scales with distance but is capped
     const curve = Math.min(dist * 0.35, 120);
-    // Perpendicular direction
     const px = -dy / dist * curve;
     const py =  dx / dist * curve;
     const cx = (x1 + x2) / 2 + px;
@@ -2003,10 +2124,8 @@ function renderWiringOverlay() {
     path.setAttribute('stroke-opacity', '0.75');
     path.setAttribute('marker-end', `url(#${markerId})`);
 
-    // Label — override or layer cable type
     const label = conn.label || conn.cable_type || '';
 
-    // Invisible wider hit-path for hover
     const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     hitPath.setAttribute('d', d);
     hitPath.setAttribute('fill', 'none');
@@ -2017,8 +2136,7 @@ function renderWiringOverlay() {
 
     const tip = document.getElementById('wireTip');
     hitPath.addEventListener('mousemove', e => {
-      const tipText = `${from} → ${to}` + (label ? `
-${label}` : '');
+      const tipText = `${from} → ${to}` + (label ? `\n${label}` : '');
       tip.textContent = tipText;
       tip.style.display = 'block';
       tip.style.left = (e.clientX + 14) + 'px';
@@ -2035,9 +2153,8 @@ ${label}` : '');
     svg.appendChild(path);
     svg.appendChild(hitPath);
 
-    // Label text at midpoint of curve
     if (label) {
-      const tx = (x1 + 2*cx + x2) / 4; // quadratic bezier midpoint
+      const tx = (x1 + 2*cx + x2) / 4;
       const ty = (y1 + 2*cy + y2) / 4;
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', tx);
@@ -2052,8 +2169,6 @@ ${label}` : '');
     }
   });
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 function addWiringLayer() {
   const hues = ['#b551a9','#5192b5','#3ecf8e','#f5c842','#ff7b5b','#7c9ef9'];
@@ -2134,11 +2249,9 @@ function buildConnectionCard(li, ci, conn) {
   const card = document.createElement('div');
   card.className = 'connection-card';
 
-  // ── Main from → to row ──────────────────────
   const mainRow = document.createElement('div');
   mainRow.className = 'conn-main-row';
 
-  // FROM endpoint
   const fromWrap = document.createElement('div');
   fromWrap.className = 'conn-endpoint';
 
@@ -2165,7 +2278,6 @@ function buildConnectionCard(li, ci, conn) {
   arrow.className = 'conn-arrow';
   arrow.textContent = '→';
 
-  // TO endpoint
   const toWrap = document.createElement('div');
   toWrap.className = 'conn-endpoint';
 
@@ -2193,7 +2305,6 @@ function buildConnectionCard(li, ci, conn) {
   toWrap.appendChild(toInput);
   toWrap.appendChild(toPick);
 
-  // Remove button
   const removeBtn = document.createElement('button');
   removeBtn.className = 'conn-remove';
   removeBtn.textContent = '✕';
@@ -2206,7 +2317,6 @@ function buildConnectionCard(li, ci, conn) {
   mainRow.appendChild(removeBtn);
   card.appendChild(mainRow);
 
-  // ── Per-connection cable type + label overrides ───────────
   const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn._showOverrides;
 
   const overridesFooter = document.createElement('div');
@@ -2235,7 +2345,6 @@ function buildConnectionCard(li, ci, conn) {
     const overridesBox = document.createElement('div');
     overridesBox.style.cssText = 'margin-top:5px;padding-top:5px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
 
-    // Cable type override row
     const cableRow = document.createElement('div');
     cableRow.className = 'conn-overrides-row';
     const cableLbl = document.createElement('span');
@@ -2261,7 +2370,6 @@ function buildConnectionCard(li, ci, conn) {
     cableRow.appendChild(cableSelect);
     overridesBox.appendChild(cableRow);
 
-    // Label override row
     const labelRow = document.createElement('div');
     labelRow.className = 'conn-overrides-row';
     const labelLbl = document.createElement('span');
@@ -2283,7 +2391,6 @@ function buildConnectionCard(li, ci, conn) {
     card.appendChild(overridesBox);
   }
 
-  // ── Cluster range toggle + fields ───────────
   const hasCluster = conn.start !== undefined || conn.end !== undefined || conn._showCluster;
 
   const clusterFooter = document.createElement('div');
@@ -2384,7 +2491,6 @@ function renderExtGroupWidgets() {
     const widget = document.createElement('div');
     widget.className = 'ext-group-widget';
 
-    // Header bar
     const hdr = document.createElement('div');
     hdr.className = 'ext-group-header-bar';
     const lbl = document.createElement('span');
@@ -2402,7 +2508,6 @@ function renderExtGroupWidgets() {
     hdr.appendChild(tag);
     widget.appendChild(hdr);
 
-    // Body: list devices (clusters expanded for display)
     const body = document.createElement('div');
     body.className = 'ext-group-body';
 
@@ -2444,7 +2549,6 @@ function renderExtGroupWidgets() {
         row.appendChild(name);
         row.appendChild(badge);
 
-        // In pick mode, clicking inserts the display name
         row.addEventListener('click', e => {
           if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
         });
@@ -2458,7 +2562,7 @@ function renderExtGroupWidgets() {
   });
 }
 
-// ─── EXTERNAL GROUPS TAB (right panel editor) ───────────────────────────────
+// ─── EXTERNAL GROUPS TAB ───────────────────────────────────────────────────
 function addExtGroup() {
   state.externalGroups.push({ name: `Group ${state.externalGroups.length + 1}`, distance_from_racks: 5, devices: [], collapsed: false });
   renderExtGroupPanel();
@@ -2474,7 +2578,6 @@ function renderExtGroupPanel() {
     const card = document.createElement('div');
     card.className = 'ext-group-card';
 
-    // Card header
     const hdr = document.createElement('div');
     hdr.className = 'ext-group-card-header';
 
@@ -2516,7 +2619,6 @@ function renderExtGroupPanel() {
       const body = document.createElement('div');
       body.className = 'ext-group-body-panel';
 
-      // Distance from racks field
       const distRow = document.createElement('div');
       distRow.className = 'ext-group-dist-row';
       const distLabel = document.createElement('span');
@@ -2529,7 +2631,7 @@ function renderExtGroupPanel() {
       distInput.step = '0.5';
       distInput.placeholder = '0';
       distInput.value = group.distance_from_racks !== undefined ? group.distance_from_racks : '';
-      distInput.title = 'Distance from the rack(s) to this external group in metres — used for cable length calculations';
+      distInput.title = 'Distance from the rack(s) to this external group in metres';
       distInput.addEventListener('click', e => e.stopPropagation());
       distInput.addEventListener('change', e => {
         const v = parseFloat(e.target.value);
@@ -2600,7 +2702,6 @@ function buildExtDevRow(gi, di, dev) {
   row.appendChild(removeBtn);
   wrapper.appendChild(row);
 
-  // Cluster toggle
   const hasCluster = dev.start !== undefined || dev.end !== undefined || dev._showCluster;
 
   const clusterFooter = document.createElement('div');
@@ -2755,7 +2856,6 @@ function generateYAML() {
     y += '\n';
   });
 
-  // External devices
   if (state.externalGroups.length > 0) {
     y += 'external_devices:\n';
     state.externalGroups.forEach(group => {
@@ -2829,6 +2929,8 @@ function copyYAML() {
 function exportYAML() {
   refreshYAML();
   const text = document.getElementById('yamlOutput').value || generateYAML();
+  // Save to server if available
+  saveYAMLToServer(text);
   const blob = new Blob([text], {type:'text/yaml'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2949,7 +3051,6 @@ function parseYAMLToState(text) {
     return conns;
   }
 
-  // Parse external_devices groups
   function parseExtGroups() {
     const groups = [];
     let curGroup = null;
@@ -3114,6 +3215,8 @@ function applyYAMLToCanvas() {
 
   try {
     applyParsedToState(parsed);
+    // Auto-save to server when applying
+    saveYAMLToServer(text);
     document.getElementById('yamlOutput').classList.remove('dirty','has-error');
     yamlDirty = false;
     setYAMLStatus('✓ Canvas updated successfully', 'ok');
@@ -3167,7 +3270,6 @@ function applyParsedToState(parsed) {
     state.nextRackId = rackIdMax;
   }
 
-  // External devices
   if (Array.isArray(parsed.external_devices)) {
     state.externalGroups = [];
     parsed.external_devices.forEach(g => {
@@ -3287,7 +3389,6 @@ document.addEventListener('keydown', e => {
   if ((e.key==='Delete'||e.key==='Backspace') && selectedDevRef) deleteSelectedDevice();
 });
 
-// Click on canvas background in pick mode → cancel
 document.getElementById('canvasArea').addEventListener('click', e => {
   if (!pickState) return;
   if (!e.target.closest('.rack-device') && !e.target.closest('.ext-device-row')) exitPickMode();
@@ -3415,8 +3516,207 @@ function loadSampleData() {
   updateStatus();
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// SERVER INTEGRATION
+// ═══════════════════════════════════════════════════════════════════
+
+let runPolling = null;
+
+// On page load: fetch any saved YAML from the server and restore the canvas
+async function loadYAMLFromServer() {
+  try {
+    const res = await fetch('/yaml');
+    if (!res.ok) return;
+    const text = await res.text();
+    if (!text.trim()) return;
+    const ta = document.getElementById('yamlOutput');
+    ta.value = text;
+    yamlDirty = false;
+    applyParsedToState(parseYAMLToState(text));
+    setYAMLStatus('✓ Loaded saved design from server', 'ok');
+    setTimeout(() => setYAMLStatus('', ''), 2500);
+  } catch (e) {
+    // Server unavailable — silent fail, works standalone
+  }
+}
+
+// POST the current YAML text to the server (fire-and-forget)
+async function saveYAMLToServer(yamlText) {
+  try {
+    await fetch('/yaml', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: yamlText
+    });
+  } catch (e) { /* offline — ignore */ }
+}
+
+// Click ▶ RUN: save YAML, POST /run, then poll /status for log + files
+async function runPipeline() {
+  const runBtn = document.getElementById('runBtn');
+  const runPanel = document.getElementById('runPanel');
+  const runLog = document.getElementById('runLog');
+  const runFiles = document.getElementById('runFiles');
+
+  // Generate + save current YAML first
+  const yaml = generateYAML();
+  document.getElementById('yamlOutput').value = yaml;
+  yamlDirty = false;
+  await saveYAMLToServer(yaml);
+
+  // Show panel, reset
+  runPanel.classList.add('visible');
+  runLog.innerHTML = '';
+  runFiles.innerHTML = '<div class="run-files-label">Output Files</div>';
+  setRunStatus('running', 'Running…');
+  runBtn.classList.add('running');
+  runBtn.disabled = true;
+
+  try {
+    const res = await fetch('/run', { method: 'POST' });
+    if (res.status === 409) {
+      setRunStatus('warn', 'Already running');
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      return;
+    }
+    if (!res.ok) {
+      setRunStatus('error', 'Failed to start');
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      return;
+    }
+  } catch (e) {
+    appendLog('✕ Server unreachable. Is run.py running?', 'err');
+    setRunStatus('error', 'Server unreachable');
+    runBtn.classList.remove('running');
+    runBtn.disabled = false;
+    return;
+  }
+
+  // Poll /status every 500ms
+  let lastLogLen = 0;
+  runPolling = setInterval(async () => {
+    try {
+      const r = await fetch('/status');
+      const data = await r.json();
+
+      // Stream new log lines
+      if (data.log && data.log.length > lastLogLen) {
+        data.log.slice(lastLogLen).forEach(line => appendLog(line));
+        lastLogLen = data.log.length;
+      }
+
+      if (!data.running) {
+        clearInterval(runPolling);
+        runPolling = null;
+        runBtn.classList.remove('running');
+        runBtn.disabled = false;
+
+        const hasError = data.log && data.log.some(l =>
+          l.toLowerCase().includes('failed') || l.toLowerCase().includes('error'));
+        setRunStatus(hasError ? 'error' : 'done', hasError ? 'Completed with errors' : '✓ Done');
+
+        if (data.files) renderOutputFiles(data.files);
+      }
+    } catch (e) {
+      clearInterval(runPolling);
+      runPolling = null;
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      setRunStatus('error', 'Lost connection');
+    }
+  }, 500);
+}
+
+function appendLog(line, forceClass) {
+  const runLog = document.getElementById('runLog');
+  const el = document.createElement('div');
+  el.className = 'log-line';
+  if (forceClass) {
+    el.classList.add(forceClass);
+  } else if (line.startsWith('[stderr]') || line.toLowerCase().includes('failed') || line.toLowerCase().includes('error')) {
+    el.classList.add('log-err');
+  } else if (line.includes('→') || line.includes('Running') || line.includes('completed')) {
+    el.classList.add('log-info');
+  } else if (line.includes('All files processed') || line.startsWith('✓')) {
+    el.classList.add('log-done');
+  }
+  el.textContent = line;
+  runLog.appendChild(el);
+  runLog.scrollTop = runLog.scrollHeight;
+}
+
+function setRunStatus(state, text) {
+  const el = document.getElementById('runStatus');
+  el.className = 'run-status run-status-' + state;
+  el.textContent = text;
+}
+
+function renderOutputFiles(files) {
+  const container = document.getElementById('runFiles');
+  container.innerHTML = '<div class="run-files-label">Output Files</div>';
+
+  const pngs = (files.pngs || []).map(f => ({ name: f, url: `/pngs/${f}` }));
+  const others = (files.output || [])
+    .filter(f => !f.endsWith('.dot'))
+    .map(f => ({ name: f, url: `/output/${f}`, ext: f.split('.').pop() }));
+
+  if (pngs.length === 0 && others.length === 0) {
+    const empty = document.createElement('span');
+    empty.style.cssText = 'color:var(--text3);font-family:var(--mono);font-size:10px;';
+    empty.textContent = 'No output files generated';
+    container.appendChild(empty);
+    return;
+  }
+
+  if (pngs.length > 0) {
+    const grid = document.createElement('div');
+    grid.className = 'output-png-grid';
+    pngs.forEach(f => {
+      const a = document.createElement('a');
+      a.href = f.url;
+      a.target = '_blank';
+      a.className = 'output-png-thumb';
+      a.title = f.name;
+      const img = document.createElement('img');
+      // Cache-bust so re-runs show fresh images
+      img.src = f.url + '?t=' + Date.now();
+      img.alt = f.name;
+      img.onerror = () => { img.style.display='none'; };
+      const lbl = document.createElement('span');
+      lbl.textContent = f.name.replace(/\.[^.]+$/, '');
+      a.appendChild(img);
+      a.appendChild(lbl);
+      grid.appendChild(a);
+    });
+    container.appendChild(grid);
+  }
+
+  if (others.length > 0) {
+    const list = document.createElement('div');
+    list.className = 'output-file-list';
+    others.forEach(f => {
+      const a = document.createElement('a');
+      a.href = f.url;
+      a.target = '_blank';
+      a.className = 'output-file-link';
+      const icons = { csv: '📊', html: '🌐', pdf: '📄', xlsx: '📊', txt: '📝' };
+      const icon = icons[f.ext] || '📁';
+      a.innerHTML = `<span class="output-file-icon">${icon}</span><span>${f.name}</span>`;
+      list.appendChild(a);
+    });
+    container.appendChild(list);
+  }
+}
+
+function toggleRunPanel() {
+  document.getElementById('runPanel').classList.toggle('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+
 init();
 </script>
-  <div id="wireTip" class="wire-tip"></div>
 </body>
 </html>

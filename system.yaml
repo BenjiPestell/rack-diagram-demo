@@ -11,6 +11,8 @@ type_colors:
   switch: "#B8D6D6"
   customer: "#ffd9d6"
   projector: "#d194b3"
+  beltpack: "#969696"
+  fibre converter: "#d19494"
 
 racks:
   # Rack 1
@@ -123,10 +125,6 @@ racks:
       total_u: 42
     
     front:
-      - name: "Customer 2"
-        start_u: 42
-        units: 15
-        type: customer
       - name: "RVD {N}"
         start_u: 20
         start: 1
@@ -141,6 +139,10 @@ racks:
         units: 4
         spacing: 0
         type: pc
+      - name: "Customer 2"
+        start_u: 42
+        units: 15
+        type: customer
     
     rear:
       - name: "R2 16A PDU A"
@@ -278,6 +280,23 @@ external_devices:
         start: 1
         end: 13
         type: projector
+  - name: "Operator room"
+    distance_from_racks: 20  # m
+    devices:
+      - name: "Operator beltpack {N}"
+        start: 1
+        end: 5
+        type: beltpack
+  - name: Chassis
+    distance_from_racks: 30  # m
+    devices:
+      - name: "Driver beltpack"
+        type: beltpack
+  - name: "chassis media converters"
+    distance_from_racks: 20  # m
+    devices:
+      - name: "Audio fibre converter"
+        type: fibre converter
 
 wiring_layers:
 
@@ -437,3 +456,20 @@ wiring_layers:
         to: Projector {N}
         start: 1
         end: 13
+
+  # Intercom
+  - name: Intercom
+    edge_color: "#ffff00"
+    cable_type: "Ethernet"
+    connections:
+      - from: Audio Switch
+        to: Spectator IG
+      - from: Audio Switch
+        to: Operator beltpack {N}
+        start: 1
+        end: 5
+      - from: Audio Switch
+        to: Audio fibre converter
+        cable_type: "Fibre"
+      - from: Audio fibre converter
+        to: Driver beltpack
