@@ -6,51 +6,42 @@ type_colors:
   pc:
     color: "#E8F4F8"
     units: 4
-    label: "pc"
   pdu:
     color: "#AAAAAA"
     units: 1
-    label: "pdu"
   Shelf:
     color: "#ced3db"
     units: 1
-    label: "Shelf"
   realtime:
     color: "#FFE8D8"
     units: 4
-    label: "realtime"
   cable management:
     color: "#C4C4C4"
     units: 1
-    label: "cable management"
   switch:
     color: "#B8D6D6"
     units: 1
-    label: "switch"
   customer:
     color: "#ffd9d6"
     units: 1
-    label: "customer"
   projector:
     color: "#d194b3"
     units: 1
-    label: "projector"
   beltpack:
     color: "#969696"
     units: 1
-    label: "beltpack"
   fibre converter:
     color: "#d19494"
     units: 1
-    label: "fibre converter"
   mirror display:
     color: "#86a4ca"
     units: 1
-    label: "mirror display"
   vertical pdu:
     color: "#8a8a8a"
     units: 1
-    label: "vertical pdu"
+  Patch panel:
+    color: "#c2c2c2"
+    units: 1
 
 racks:
   # Rack 1
@@ -155,6 +146,10 @@ racks:
         start_u: 12
         units: 1
         type: pdu
+      - name: "R1 Patch panel"
+        start_u: 1
+        units: 1
+        type: Patch panel
 
   # Rack 2
   - rack:
@@ -211,6 +206,10 @@ racks:
         start_u: 12
         units: 1
         type: pdu
+      - name: "R2 Patch panel"
+        start_u: 1
+        units: 1
+        type: Patch panel
 
   # Rack 3
   - rack:
@@ -260,6 +259,10 @@ racks:
         start_u: 12
         units: 1
         type: pdu
+      - name: "R3 Patch panel"
+        start_u: 1
+        units: 1
+        type: Patch panel
 
   # Rack 4
   - rack:
@@ -309,6 +312,10 @@ racks:
         start_u: 12
         units: 1
         type: pdu
+      - name: "R4 Patch panel"
+        start_u: 1
+        units: 1
+        type: Patch panel
 
 external_devices:
   - name: Projectors
@@ -339,6 +346,11 @@ external_devices:
     devices:
       - name: "Audio fibre converter"
         type: fibre converter
+  - name: "MCP Cabinet"
+    distance_from_racks: 25  # m
+    devices:
+      - name: "Ethercat drives"
+        type: pc
 
 wiring_layers:
 
@@ -351,6 +363,8 @@ wiring_layers:
         to: Graphics Switch {N+1}
         start: 1
         end: 3
+        via_patch_from: "R{N} Patch panel"
+        via_patch_to: "R{N+1} Patch panel"
       - from: Graphics Switch 1
         to:
           - Operator PC
@@ -488,6 +502,7 @@ wiring_layers:
         to: Telemetry
       - from: Company Net in
         to: Company Network Switch
+        via_patch_to: "R1 Patch panel"
 
   # Video
   - name: Video
@@ -522,3 +537,12 @@ wiring_layers:
         to: Driver beltpack
       - from: Audio Switch
         to: Media Converters
+
+  # EtherCAT
+  - name: EtherCAT
+    edge_color: "#6678ff"
+    cable_type: "Ethernet"
+    connections:
+      - from: dSPACE
+        to: Ethercat drives
+        via_patch_from: "R1 Patch panel"

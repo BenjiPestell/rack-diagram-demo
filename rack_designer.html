@@ -694,6 +694,58 @@
 
   .conn-remove:hover { color: var(--red); }
 
+  .conn-patch-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    padding: 2px 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .conn-patch-toggle:hover { border-color: var(--blue); color: var(--blue); }
+  .conn-patch-toggle.active { border-color: var(--blue); color: var(--blue); background: rgba(81,146,181,0.08); }
+  .conn-patch-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    width: 60px;
+    flex-shrink: 0;
+  }
+  .conn-patch-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 6px;
+    outline: none;
+    min-width: 0;
+  }
+  .conn-patch-input:focus { border-color: var(--blue); }
+  .conn-patch-input.picking { border-color: var(--accent); background: rgba(201,22,34,0.08); }
+  .conn-patch-pick {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    width: 22px; height: 22px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .conn-patch-pick:hover { border-color: var(--blue); color: var(--blue); }
+  .conn-patch-pick.picking { border-color: var(--accent); color: var(--accent); }
+
   .conn-cluster-toggle {
     display: inline-flex;
     align-items: center;
@@ -2636,6 +2688,7 @@ function buildConnectionCard(li, ci, conn) {
   card.appendChild(mainRow);
 
   const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn.edge_color !== undefined || conn._showOverrides;
+  const hasPatch = conn.via_patch_from !== undefined || conn.via_patch_to !== undefined || conn._showPatch;
 
   const overridesFooter = document.createElement('div');
   overridesFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;';
@@ -2769,6 +2822,25 @@ function buildConnectionCard(li, ci, conn) {
     renderWiringLayers();
   });
   clusterFooter.appendChild(toggleBtn);
+
+  // ── Patch panel toggle ──
+  const patchToggle = document.createElement('button');
+  patchToggle.className = 'conn-patch-toggle' + (hasPatch ? ' active' : '');
+  patchToggle.title = 'Route via patch panels — adds via_patch_from / via_patch_to hops in YAML';
+  patchToggle.innerHTML = hasPatch
+    ? '⊞\u00a0via patch ▾'
+    : '<span style="opacity:.5">⊞</span>\u00a0via patch';
+  patchToggle.addEventListener('click', () => {
+    if (hasPatch) {
+      delete state.wiringLayers[li].connections[ci].via_patch_from;
+      delete state.wiringLayers[li].connections[ci].via_patch_to;
+      state.wiringLayers[li].connections[ci]._showPatch = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showPatch = true;
+    }
+    renderWiringLayers();
+  });
+  clusterFooter.appendChild(patchToggle);
   card.appendChild(clusterFooter);
 
   if (hasCluster) {
@@ -2818,6 +2890,58 @@ function buildConnectionCard(li, ci, conn) {
     clusterRow.appendChild(endIn);
     clusterRow.appendChild(hint);
     card.appendChild(clusterRow);
+  }
+
+  // Patch panel expanded fields
+  if (hasPatch) {
+    const patchBox = document.createElement('div');
+    patchBox.style.cssText = 'margin-top:5px;padding:5px 0 0;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
+
+    const patchNote = document.createElement('div');
+    patchNote.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);padding-bottom:2px;';
+    patchNote.textContent = 'from → PP(from) ⟶ PP(to) → to';
+    patchBox.appendChild(patchNote);
+
+    ['from', 'to'].forEach(side => {
+      const field = side === 'from' ? 'via_patch_from' : 'via_patch_to';
+      const isPickingPatch = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field===field;
+
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:5px;';
+
+      const lbl = document.createElement('span');
+      lbl.className = 'conn-patch-label';
+      lbl.textContent = side === 'from' ? 'PP (from)' : 'PP (to)';
+
+      const input = document.createElement('input');
+      input.className = 'conn-patch-input' + (isPickingPatch ? ' picking' : '');
+      input.placeholder = side === 'from' ? 'Patch panel at source rack' : 'Patch panel at dest rack';
+      input.value = conn[field] || '';
+      input.addEventListener('mousedown', e => e.stopPropagation());
+      input.addEventListener('change', e => {
+        const v = e.target.value.trim();
+        if (v) state.wiringLayers[li].connections[ci][field] = v;
+        else delete state.wiringLayers[li].connections[ci][field];
+        renderWiringOverlay();
+      });
+
+      const pick = document.createElement('button');
+      pick.className = 'conn-patch-pick' + (isPickingPatch ? ' picking' : '');
+      pick.title = 'Pick from canvas';
+      pick.innerHTML = '⊕';
+      pick.addEventListener('click', e => {
+        e.stopPropagation();
+        if (isPickingPatch) { exitPickMode(); return; }
+        enterPickMode(li, ci, field);
+      });
+
+      row.appendChild(lbl);
+      row.appendChild(input);
+      row.appendChild(pick);
+      patchBox.appendChild(row);
+    });
+
+    card.appendChild(patchBox);
   }
 
   return card;
@@ -3270,6 +3394,8 @@ function generateYAML() {
           if (c.edge_color !== undefined) y += `        edge_color: "${c.edge_color}"\n`;
           if (c.start !== undefined) y += `        start: ${c.start}\n`;
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
+          if (c.via_patch_from !== undefined) y += `        via_patch_from: "${c.via_patch_from}"\n`;
+          if (c.via_patch_to !== undefined) y += `        via_patch_to: "${c.via_patch_to}"\n`;
         });
       }
     });
@@ -3718,6 +3844,10 @@ function applyParsedToState(parsed) {
           if (c.edge_color != null) conn.edge_color = String(c.edge_color);
           if (c.start !== undefined) conn.start = parseInt(c.start);
           if (c.end !== undefined) conn.end = parseInt(c.end);
+          if (c.via_patch_from != null) conn.via_patch_from = String(c.via_patch_from);
+          if (c.via_patch_to   != null) conn.via_patch_to   = String(c.via_patch_to);
+          // Restore the patch UI panel open state if patch data is present
+          if (conn.via_patch_from !== undefined || conn.via_patch_to !== undefined) conn._showPatch = true;
           layer.connections.push(conn);
         });
       }
