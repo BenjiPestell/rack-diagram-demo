@@ -3,17 +3,50 @@ cable_slack_length: 0.2  # m
 front_to_back_length: 0.5  # m
 
 type_colors:
-  pc: "#E8F4F8"
-  pdu: "#AAAAAA"
-  Shelf: "#ced3db"
-  realtime: "#FFE8D8"
-  cable management: "#C4C4C4"
-  switch: "#B8D6D6"
-  customer: "#ffd9d6"
-  projector: "#d194b3"
-  beltpack: "#969696"
-  fibre converter: "#d19494"
-  mirror display: "#86a4ca"
+  pc:
+    color: "#E8F4F8"
+    units: 1
+    label: "pc"
+  pdu:
+    color: "#AAAAAA"
+    units: 1
+    label: "pdu"
+  Shelf:
+    color: "#ced3db"
+    units: 1
+    label: "Shelf"
+  realtime:
+    color: "#FFE8D8"
+    units: 1
+    label: "realtime"
+  cable management:
+    color: "#C4C4C4"
+    units: 1
+    label: "cable management"
+  switch:
+    color: "#B8D6D6"
+    units: 1
+    label: "switch"
+  customer:
+    color: "#ffd9d6"
+    units: 1
+    label: "customer"
+  projector:
+    color: "#d194b3"
+    units: 1
+    label: "projector"
+  beltpack:
+    color: "#969696"
+    units: 1
+    label: "beltpack"
+  fibre converter:
+    color: "#d19494"
+    units: 1
+    label: "fibre converter"
+  mirror display:
+    color: "#86a4ca"
+    units: 1
+    label: "mirror display"
 
 racks:
   # Rack 1

@@ -161,31 +161,53 @@
     padding: 4px 4px 6px;
   }
 
-  .palette-item {
+  .type-color-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    cursor: grab;
-    font-family: var(--sans);
+    gap: 6px;
+    padding: 5px 6px 5px 8px;
     font-size: 15px;
     font-weight: 600;
     color: var(--text2);
-    background: var(--surface2);
-    margin-bottom: 2px;
-    transition: all 0.15s;
+    border: 1px solid transparent;
+    cursor: grab;
     user-select: none;
-    letter-spacing: 0.3px;
+    transition: all 0.15s;
+    margin-bottom: 2px;
   }
-
-  .palette-item:hover { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
-  .palette-item:active { cursor: grabbing; }
-
-  .palette-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
-
-  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 15px; font-weight: 600; color: var(--text2); }
-  .type-color-row:hover { background: var(--surface2); }
+  .type-color-row:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .type-color-row:active { cursor: grabbing; }
+  .drag-grip {
+    color: var(--text3);
+    font-size: 11px;
+    cursor: grab;
+    flex-shrink: 0;
+    letter-spacing: -1px;
+  }
+  .type-units-input {
+    width: 34px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: center;
+    padding: 2px 2px;
+    flex-shrink: 0;
+    outline: none;
+  }
+  .type-units-input:focus { border-color: var(--accent); color: var(--text); }
+  .type-units-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    margin-left: -4px;
+  }
 
   .color-swatch { width: 16px; height: 16px; border-radius: 1px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; padding: 0; }
 
@@ -986,8 +1008,7 @@
   }
   .add-ext-group-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600; color: var(--text2); }
-  .type-color-row:hover { background: var(--surface2); }
+
   .type-name-input {
     flex: 1;
     background: none;
@@ -1384,18 +1405,8 @@
   <div class="left-panel">
     <div class="panel-header">Device Palette</div>
     <div class="panel-scroll">
-      <div class="palette-section">
-        <div class="palette-label">Drag onto rack →</div>
-        <div class="palette-item" draggable="true" data-type="pc" data-units="4" data-name="New PC"><div class="palette-dot" style="background:#E8F4F8"></div>PC / Workstation</div>
-        <div class="palette-item" draggable="true" data-type="pdu" data-units="1" data-name="New PDU"><div class="palette-dot" style="background:#AAAAAA"></div>PDU</div>
-        <div class="palette-item" draggable="true" data-type="switch" data-units="1" data-name="New Switch"><div class="palette-dot" style="background:#B8D6D6"></div>Switch</div>
-        <div class="palette-item" draggable="true" data-type="realtime" data-units="2" data-name="New RT System"><div class="palette-dot" style="background:#FFE8D8"></div>Realtime System</div>
-        <div class="palette-item" draggable="true" data-type="Shelf" data-units="1" data-name="New Shelf"><div class="palette-dot" style="background:#ced3db"></div>Shelf</div>
-        <div class="palette-item" draggable="true" data-type="cable management" data-units="1" data-name="Cable Manager"><div class="palette-dot" style="background:#C4C4C4"></div>Cable Mgmt</div>
-        <div class="palette-item" draggable="true" data-type="customer" data-units="4" data-name="Customer Equipment"><div class="palette-dot" style="background:#ffd9d6"></div>Customer</div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding:6px 6px 8px">
-        <div class="palette-label">Type Colors</div>
+      <div style="padding:4px 6px 2px">
+        <div class="palette-label">Device Types — drag onto rack</div>
         <div id="typeColorList"></div>
         <button class="add-type-btn" onclick="addNewType()">＋ new type</button>
       </div>
@@ -1510,14 +1521,25 @@ const state = {
   racks: [],
   wiringLayers: [],
   externalGroups: [],
-  typeColors: {
-    pc: "#E8F4F8",
-    pdu: "#AAAAAA",
-    Shelf: "#ced3db",
-    realtime: "#FFE8D8",
-    "cable management": "#C4C4C4",
-    switch: "#B8D6D6",
-    customer: "#ffd9d6"
+  typeEntries: [
+    { type: 'pc',               color: '#E8F4F8', units: 4,  label: 'PC / Workstation' },
+    { type: 'server',           color: '#dde8f4', units: 2,  label: 'Server (2U)' },
+    { type: 'pdu',              color: '#AAAAAA', units: 1,  label: 'PDU' },
+    { type: 'ups',              color: '#c8c8d8', units: 2,  label: 'UPS' },
+    { type: 'switch',           color: '#B8D6D6', units: 1,  label: 'Switch (1U)' },
+    { type: 'switch_2u',        color: '#9ecece', units: 2,  label: 'Switch (2U)' },
+    { type: 'patch panel',      color: '#d4c9e8', units: 1,  label: 'Patch Panel' },
+    { type: 'realtime',         color: '#FFE8D8', units: 2,  label: 'Realtime System' },
+    { type: 'Shelf',            color: '#ced3db', units: 1,  label: 'Shelf (1U)' },
+    { type: 'shelf_2u',         color: '#bec3cb', units: 2,  label: 'Shelf (2U)' },
+    { type: 'cable management', color: '#C4C4C4', units: 1,  label: 'Cable Mgmt' },
+    { type: 'customer',         color: '#ffd9d6', units: 4,  label: 'Customer' },
+  ],
+  // Convenience accessor — kept so external code can still read typeColors[type]
+  get typeColors() {
+    const m = {};
+    this.typeEntries.forEach(e => { m[e.type] = e.color; });
+    return m;
   },
   nextRackId: 1
 };
@@ -1565,90 +1587,138 @@ function init() {
   loadYAMLFromServer();
 }
 
-function renderTypeColors() {
+function renderTypeColors() { renderPalette(); }  // alias for call-sites
+
+function renderPalette() {
   const c = document.getElementById('typeColorList');
   c.innerHTML = '';
-  for (const [type, color] of Object.entries(state.typeColors)) {
+  state.typeEntries.forEach((entry, idx) => {
+    const { type, color, units, label } = entry;
+
     const row = document.createElement('div');
     row.className = 'type-color-row';
+    row.draggable = true;
+    row.dataset.type  = type;
+    row.dataset.units = units;
+    row.dataset.name  = `New ${label || type}`;
 
+    // Drag-to-rack listeners
+    row.addEventListener('dragstart', e => {
+      const entry = state.typeEntries[idx];
+      dragData = { source: 'palette', type: entry.type, units: parseInt(entry.units) || 1, name: `New ${entry.label || entry.type}` };
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+    row.addEventListener('dragend', () => dragData = null);
+
+    // Grip icon
+    const grip = document.createElement('span');
+    grip.className = 'drag-grip';
+    grip.textContent = '⠿';
+    grip.title = 'Drag onto rack';
+
+    // Colour swatch
     const swatch = document.createElement('input');
     swatch.type = 'color';
     swatch.className = 'color-swatch';
     swatch.value = color;
     swatch.title = 'Change colour';
-    swatch.addEventListener('change', e => updateTypeColor(type, e.target.value));
+    swatch.addEventListener('mousedown', e => e.stopPropagation());
+    swatch.addEventListener('change', e => {
+      state.typeEntries[idx].color = e.target.value;
+      renderAllRacks();
+      renderExtGroupWidgets();
+    });
 
+    // Label / type-name input
     const nameInput = document.createElement('input');
     nameInput.className = 'type-name-input';
-    nameInput.value = type;
-    nameInput.title = 'Click to rename type';
-    nameInput.addEventListener('change', e => renameType(type, e.target.value.trim()));
-    nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+    nameInput.value = label || type;
+    nameInput.title = 'Display label (rename type with Shift+Enter)';
+    nameInput.addEventListener('mousedown', e => e.stopPropagation());
+    nameInput.addEventListener('change', e => {
+      state.typeEntries[idx].label = e.target.value.trim() || type;
+      renderPalette();
+    });
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.shiftKey) {
+        // Shift+Enter renames the type key itself
+        const newType = e.target.value.trim();
+        if (!newType || newType === type) { e.target.blur(); return; }
+        if (state.typeEntries.some((en, i) => i !== idx && en.type === newType)) {
+          alert(`Type "${newType}" already exists.`); e.target.blur(); return;
+        }
+        state.racks.forEach(rack => {
+          ['front','rear'].forEach(face => {
+            rack[face].forEach(dev => { if (dev.type === type) dev.type = newType; });
+          });
+        });
+        state.externalGroups.forEach(group => {
+          group.devices.forEach(dev => { if (dev.type === type) dev.type = newType; });
+        });
+        state.typeEntries[idx].type = newType;
+        renderPalette();
+        renderAllRacks();
+        renderExtGroupWidgets();
+      } else if (e.key === 'Enter') {
+        e.target.blur();
+      }
+    });
 
+    // Units input
+    const unitsIn = document.createElement('input');
+    unitsIn.type = 'number';
+    unitsIn.className = 'type-units-input';
+    unitsIn.value = units;
+    unitsIn.min = 1; unitsIn.max = 42;
+    unitsIn.title = 'Default U height when dragged';
+    unitsIn.addEventListener('mousedown', e => e.stopPropagation());
+    unitsIn.addEventListener('change', e => {
+      state.typeEntries[idx].units = parseInt(e.target.value) || 1;
+      row.dataset.units = state.typeEntries[idx].units;
+    });
+    const unitsLbl = document.createElement('span');
+    unitsLbl.className = 'type-units-label';
+    unitsLbl.textContent = 'U';
+
+    // Delete button
     const delBtn = document.createElement('button');
     delBtn.className = 'type-delete-btn';
     delBtn.textContent = '✕';
     delBtn.title = 'Delete type';
-    delBtn.addEventListener('click', () => deleteType(type));
+    delBtn.addEventListener('mousedown', e => e.stopPropagation());
+    delBtn.addEventListener('click', () => {
+      if (!confirm(`Delete type "${type}"? Devices using it will show as unstyled.`)) return;
+      state.typeEntries.splice(idx, 1);
+      renderPalette();
+      renderAllRacks();
+      renderExtGroupWidgets();
+    });
 
+    row.appendChild(grip);
     row.appendChild(swatch);
     row.appendChild(nameInput);
+    row.appendChild(unitsIn);
+    row.appendChild(unitsLbl);
     row.appendChild(delBtn);
     c.appendChild(row);
-  }
-  document.querySelectorAll('.palette-item').forEach(el => {
-    const dot = el.querySelector('.palette-dot');
-    if (dot && state.typeColors[el.dataset.type]) dot.style.background = state.typeColors[el.dataset.type];
   });
   populateTypeSelects();
 }
 
-function updateTypeColor(type, color) {
-  state.typeColors[type] = color;
-  renderAllRacks();
-  renderExtGroupWidgets();
-}
 
-function renameType(oldName, newName) {
-  if (!newName || newName === oldName) { renderTypeColors(); return; }
-  if (state.typeColors[newName] !== undefined) {
-    alert(`Type "${newName}" already exists.`);
-    renderTypeColors();
-    return;
-  }
-  const entries = Object.entries(state.typeColors);
-  state.typeColors = {};
-  entries.forEach(([k, v]) => { state.typeColors[k === oldName ? newName : k] = v; });
-  state.racks.forEach(rack => {
-    ['front','rear'].forEach(face => {
-      rack[face].forEach(dev => { if (dev.type === oldName) dev.type = newName; });
-    });
-  });
-  state.externalGroups.forEach(group => {
-    group.devices.forEach(dev => { if (dev.type === oldName) dev.type = newName; });
-  });
-  renderTypeColors();
-  renderAllRacks();
-  renderExtGroupWidgets();
-}
 
-function deleteType(type) {
-  if (!confirm(`Delete type "${type}"? Devices using it will show as unstyled.`)) return;
-  delete state.typeColors[type];
-  renderTypeColors();
-  renderAllRacks();
-  renderExtGroupWidgets();
-}
+
+
+
 
 function addNewType() {
   let n = 1;
-  while (state.typeColors[`type${n}`] !== undefined) n++;
+  while (state.typeEntries.some(e => e.type === `type${n}`)) n++;
   const name = `type${n}`;
   const hues = [210, 150, 30, 280, 0, 60, 180, 330];
-  const hue = hues[Object.keys(state.typeColors).length % hues.length];
-  state.typeColors[name] = hslToHex(hue, 40, 70);
-  renderTypeColors();
+  const hue = hues[state.typeEntries.length % hues.length];
+  state.typeEntries.push({ type: name, color: hslToHex(hue, 40, 70), units: 1, label: name });
+  renderPalette();
   const inputs = document.querySelectorAll('#typeColorList .type-name-input');
   const last = inputs[inputs.length - 1];
   if (last) { last.focus(); last.select(); }
@@ -1665,7 +1735,7 @@ function populateTypeSelects() {
   const el = document.getElementById('pType');
   if (!el) return;
   const cur = el.value;
-  el.innerHTML = Object.keys(state.typeColors).map(t => `<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');
+  el.innerHTML = state.typeEntries.map(e => `<option value="${e.type}"${e.type===cur?' selected':''}>${e.type}</option>`).join('');
 }
 
 // ───── RACKS ─────
@@ -1854,7 +1924,7 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU, uOrder) {
 
   const el = document.createElement('div');
   el.className = 'rack-device';
-  const color = state.typeColors[dev.type] || '#888';
+  const color = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
   el.style.background = color;
   const uH = 22;
   // bottom_top: U1 is at the visual bottom — device top offset counts down from highest U
@@ -1895,15 +1965,7 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU, uOrder) {
 }
 
 // ───── DRAG & DROP ─────
-function setupPaletteDrag() {
-  document.querySelectorAll('.palette-item').forEach(el => {
-    el.addEventListener('dragstart', e => {
-      dragData = { source: 'palette', type: el.dataset.type, units: parseInt(el.dataset.units)||1, name: el.dataset.name };
-      e.dataTransfer.effectAllowed = 'copy';
-    });
-    el.addEventListener('dragend', () => dragData = null);
-  });
-}
+function setupPaletteDrag() { /* handled in renderPalette */ }
 
 function slotDragOver(e) {
   if (!dragData) return;
@@ -2641,7 +2703,7 @@ function _buildExtGroupWidget(group, gi) {
 
       const dot = document.createElement('div');
       dot.className = 'ext-device-dot';
-      dot.style.background = state.typeColors[dev.type] || '#888';
+      dot.style.background = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
 
       const name = document.createElement('span');
       name.className = 'ext-device-name';
@@ -2946,7 +3008,7 @@ function generateYAML() {
   y += `front_to_back_length: ${fb}  # m\n\n`;
 
   y += 'type_colors:\n';
-  for (const [t, c] of Object.entries(state.typeColors)) y += `  ${t}: "${c}"\n`;
+  state.typeEntries.forEach(e => y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n    label: "${e.label || e.type}"\n`);
   y += '\n';
 
   y += 'racks:\n';
@@ -3236,9 +3298,33 @@ function parseYAMLToState(text) {
         const l2 = lines[i]; const t2 = l2.trim();
         if (!t2 || t2.startsWith('#')) { i++; continue; }
         if (indent(l2) === 0) break;
-        const ci2 = t2.indexOf(':');
-        if (ci2 !== -1) obj[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
-        i++;
+        if (indent(l2) === 2) {
+          // Type name key (e.g. "  pc:" or "  cable management:")
+          const ci2 = t2.indexOf(':');
+          if (ci2 === -1) { i++; continue; }
+          const typeName = t2.slice(0, ci2).trim();
+          const inlineVal = t2.slice(ci2 + 1).trim();
+          if (inlineVal) {
+            // Legacy flat format: "  pc: "#E8F4F8""
+            obj[typeName] = scalar(inlineVal);
+            i++;
+          } else {
+            // New nested format: read color/units/label at indent 4
+            i++;
+            const entry = {};
+            while (i < lines.length) {
+              const l3 = lines[i]; const t3 = l3.trim();
+              if (!t3 || t3.startsWith('#')) { i++; continue; }
+              if (indent(l3) <= 2) break;
+              const ci3 = t3.indexOf(':');
+              if (ci3 !== -1) entry[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1));
+              i++;
+            }
+            obj[typeName] = entry;
+          }
+        } else {
+          i++;
+        }
       }
       result.type_colors = obj;
 
@@ -3355,8 +3441,16 @@ function applyParsedToState(parsed) {
   if (parsed.front_to_back_length !== undefined) document.getElementById('gFrontBack').value = parsed.front_to_back_length;
 
   if (parsed.type_colors && typeof parsed.type_colors === 'object') {
-    state.typeColors = {};
-    for (const [k, v] of Object.entries(parsed.type_colors)) state.typeColors[k] = String(v);
+    state.typeEntries = [];
+    for (const [k, v] of Object.entries(parsed.type_colors)) {
+      if (v && typeof v === 'object') {
+        // New format: { color, units, label }
+        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1, label: String(v.label || k) });
+      } else {
+        // Legacy flat format: just a color string
+        state.typeEntries.push({ type: k, color: String(v), units: 1, label: k });
+      }
+    }
   }
 
   if (Array.isArray(parsed.racks)) {

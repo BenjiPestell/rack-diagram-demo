@@ -17,16 +17,24 @@ def get_device_color(device, type_colors):
     1. Explicit 'color' attribute in device
     2. Color based on device 'type' from type_colors mapping
     3. Default white if neither specified
+
+    type_colors values may be either a plain hex string (legacy format)
+    or a dict with a 'color' key (new format emitted by the web designer).
     """
     if "color" in device:
         return device["color"]
-    
+
     if "type" in device:
         device_type = device["type"]
         if device_type in type_colors:
-            return type_colors[device_type]
-    
-    result = "#FFFFFF"
+            entry = type_colors[device_type]
+            # New format: { color: "#hex", units: N, label: "..." }
+            if isinstance(entry, dict):
+                return entry.get("color", "#FFFFFF")
+            # Legacy format: plain hex string
+            return entry
+
+    return "#FFFFFF"
 
 # -------------------------------------------------
 # Color utilities
@@ -41,7 +49,7 @@ def hex_to_color_name(hex_color):
     if not hex_color:
         return "Unknown", "#FFFFFF"
 
-    result = None    
+    result = None
 
     hex_color = hex_color.lstrip("#")
 
@@ -102,5 +110,6 @@ def hex_to_color_name(hex_color):
             result = "Red"
 
     return result, f"#{hex_color.upper()}"
+
 
 print(hex_to_color_name("#323232"))
