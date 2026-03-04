@@ -4176,7 +4176,7 @@ function appendLog(line, forceClass) {
     el.classList.add('log-err');
   } else if (line.includes('→') || line.includes('Running') || line.includes('completed')) {
     el.classList.add('log-info');
-  } else if (line.includes('All files processed') || line.startsWith('✓')) {
+  } else if (line.includes('All files processed') || line.includes('[ok]') || line.toLowerCase().includes('done') || line.toLowerCase().includes('complete')) {
     el.classList.add('log-done');
   }
   el.textContent = line;

@@ -110,6 +110,3 @@ def hex_to_color_name(hex_color):
             result = "Red"
 
     return result, f"#{hex_color.upper()}"
-
-
-print(hex_to_color_name("#323232"))
