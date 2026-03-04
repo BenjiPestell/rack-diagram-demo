@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Rack Inspector</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:       #0e0f11;
+    --surface:  #16181c;
+    --surface2: #1e2127;
+    --surface3: #252830;
+    --border:   #2a2d35;
+    --border2:  #383c47;
+    --text:     #e8eaf0;
+    --text2:    #9ca3b0;
+    --text3:    #5a606e;
+    --accent:   #c91622;
+    --green:    #3ecf8e;
+    --amber:    #f5c842;
+    --blue:     #5192b5;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top:    env(safe-area-inset-top, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: pan-x pan-y;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: calc(var(--safe-top) + 10px) 14px 10px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 30;
+  }
+  .topbar-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    flex: 1;
+  }
+  .topbar-title span { color: var(--accent); }
+  .icon-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .icon-btn:active { background: var(--surface2); color: var(--text); }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text3);
+    flex-shrink: 0;
+  }
+  .status-dot.ok  { background: var(--green); }
+  .status-dot.err { background: var(--accent); }
+
+  /* ── CONFIG DRAWER ── */
+  .config-drawer {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+    flex-shrink: 0;
+  }
+  .config-drawer.open { max-height: 200px; }
+  .config-inner {
+    padding: 12px 14px 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .cfg-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cfg-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .cfg-input-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 0 8px;
+  }
+  .cfg-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 0;
+    outline: none;
+    min-width: 0;
+    -moz-appearance: textfield;
+  }
+  .cfg-input::-webkit-outer-spin-button,
+  .cfg-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .cfg-unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  /* ── CANVAS ── */
+  .canvas-wrap {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .canvas-wrap::-webkit-scrollbar { display: none; }
+
+  .racks-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-bottom: 80px; /* room for bottom sheet handle */
+  }
+
+  /* ── RACK ── */
+  .rack-block { display: flex; flex-direction: column; gap: 0; }
+  .rack-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding-bottom: 5px;
+    text-align: center;
+  }
+  .rack-faces { display: flex; gap: 2px; }
+  .rack-face { display: flex; flex-direction: column; }
+  .face-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-align: center;
+    padding-bottom: 3px;
+  }
+  .rack-col { display: flex; gap: 2px; align-items: flex-start; }
+  .u-nums { display: flex; flex-direction: column; }
+  .u-num {
+    height: 26px;
+    width: 18px;
+    font-family: var(--mono);
+    font-size: 7px;
+    color: var(--text3);
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 2px;
+    flex-shrink: 0;
+  }
+  .slots-area {
+    position: relative;
+    width: 140px;
+    background: #0a0b0d;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .u-slot-bg {
+    height: 26px;
+    border-bottom: 1px solid #1a1c21;
+  }
+  .u-slot-bg:last-child { border-bottom: none; }
+
+  .rack-device {
+    position: absolute;
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.75);
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.15);
+    overflow: hidden;
+    white-space: nowrap;
+    transition: filter 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+    /* Bigger touch target using pseudo-element */
+  }
+  .rack-device::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+  }
+  .rack-device.selected {
+    outline: 3px solid #fff;
+    outline-offset: -1px;
+    z-index: 5;
+    filter: brightness(1.15);
+  }
+  .rack-device.connected {
+    outline: 3px solid var(--amber);
+    outline-offset: -1px;
+    z-index: 4;
+  }
+  .rack-device.faded { opacity: 0.2; }
+
+  /* ── UNPOSITIONED STRIP ── */
+  .unpositioned-strip {
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    min-width: 140px;
+  }
+  .unpositioned-hdr {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .unpositioned-dev {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 6px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    min-height: 36px;
+  }
+  .unpositioned-dev:last-child { border-bottom: none; }
+  .unpositioned-dev.selected { outline: 3px solid #fff; outline-offset: -1px; }
+  .unpositioned-dev.connected { outline: 3px solid var(--amber); outline-offset: -1px; }
+  .u-dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
+
+  /* ── EXTERNAL GROUPS ── */
+  .ext-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+  .ext-groups-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+  .ext-group { border: 1px solid var(--border); background: var(--surface); min-width: 140px; }
+  .ext-group-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .ext-device {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    min-height: 44px;
+    transition: background 0.1s;
+  }
+  .ext-device:last-child { border-bottom: none; }
+  .ext-device:active { background: var(--surface2); }
+  .ext-device.selected { outline: 3px solid #fff; outline-offset: -1px; color: var(--text); }
+  .ext-device.connected { outline: 3px solid var(--amber); outline-offset: -1px; }
+  .ext-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
+
+  /* ── EMPTY STATE ── */
+  .empty-canvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 12px;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: center;
+    padding: 30px;
+  }
+  .empty-icon { font-size: 40px; opacity: 0.2; margin-bottom: 4px; }
+  .paste-area {
+    width: 100%;
+    max-width: 340px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px;
+    height: 130px;
+    resize: none;
+    outline: none;
+    margin-top: 8px;
+  }
+  .parse-btn {
+    width: 100%;
+    max-width: 340px;
+    padding: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .parse-btn:active { background: var(--surface3); }
+
+  /* ── BOTTOM SHEET ── */
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .sheet-backdrop.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .bottom-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border2);
+    border-radius: 16px 16px 0 0;
+    z-index: 50;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex;
+    flex-direction: column;
+    max-height: 80dvh;
+    padding-bottom: var(--safe-bottom);
+    will-change: transform;
+  }
+  .bottom-sheet.open { transform: translateY(0); }
+
+  .sheet-handle-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    touch-action: none;
+  }
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .sheet-header {
+    padding: 0 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .sheet-dev-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .sheet-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .sheet-scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sheet-scroll::-webkit-scrollbar { display: none; }
+
+  /* ── CONNECTION CARDS ── */
+  .conn-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 10px 16px 4px;
+    border-top: 1px solid var(--border);
+  }
+  .conn-section-label:first-child { border-top: none; }
+
+  .conn-card {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    min-height: 68px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: background 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .conn-card:active { background: var(--surface2); }
+
+  .conn-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .conn-layer-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .conn-peer {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .conn-length {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--amber);
+    flex-shrink: 0;
+    min-width: 60px;
+    text-align: right;
+  }
+  .conn-length.unknown { color: var(--text3); font-size: 13px; }
+  .conn-bottom {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .conn-layer-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    flex: 1;
+  }
+  .conn-cable-type {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface3);
+    padding: 2px 7px;
+  }
+  .conn-direction { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+  /* Breakdown detail row */
+  .conn-breakdown {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+  .conn-breakdown-indent {
+    margin-left: 12px;
+    border-left: 2px solid var(--border);
+    padding-left: 6px;
+    margin-top: 2px;
+  }
+  .conn-card-patched {
+    border-left: 3px solid #4a7fcb;
+  }
+  .conn-patch-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #4a7fcb;
+    background: rgba(74,127,203,0.12);
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    font-family: var(--mono);
+  }
+  .conn-patch-route {
+    font-size: 9px;
+    color: var(--text3);
+    font-style: italic;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .conn-patch-seg {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+  .conn-patch-seg-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #4a7fcb;
+    font-weight: 700;
+    min-width: 22px;
+    flex-shrink: 0;
+  }
+  .conn-patch-seg-names {
+    color: var(--text2);
+    flex: 1;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .conn-patch-seg-len {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .conn-patch-seg-len.unknown { color: var(--text3); }
+  .conn-breakdown span { color: var(--text2); margin-right: 10px; }
+
+  .no-conns {
+    padding: 32px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    text-align: center;
+  }
+
+  /* ── SHEET FOOTER STATS ── */
+  .sheet-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    flex-shrink: 0;
+    background: var(--surface2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+  }
+  .footer-stat {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .footer-stat .k { color: var(--text3); }
+  .footer-stat .v { color: var(--text2); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-title">Rack <span>Inspector</span></div>
+  <div id="statusDot" class="status-dot"></div>
+  <button class="icon-btn" id="cfgToggle" onclick="toggleConfig()" title="Settings">⚙</button>
+  <button class="icon-btn" onclick="loadFromServer()" title="Reload from server">↺</button>
+</div>
+
+<!-- CONFIG DRAWER -->
+<div class="config-drawer" id="configDrawer">
+  <div class="config-inner">
+    <div class="cfg-group">
+      <div class="cfg-label">Inter-rack</div>
+      <div class="cfg-input-row">
+        <input class="cfg-input" id="cfgInterRack" type="number" step="0.5" value="5.0" inputmode="decimal">
+        <span class="cfg-unit">m</span>
+      </div>
+    </div>
+    <div class="cfg-group">
+      <div class="cfg-label">Front→back</div>
+      <div class="cfg-input-row">
+        <input class="cfg-input" id="cfgFrontBack" type="number" step="0.1" value="0.5" inputmode="decimal">
+        <span class="cfg-unit">m</span>
+      </div>
+    </div>
+    <div class="cfg-group">
+      <div class="cfg-label">Slack</div>
+      <div class="cfg-input-row">
+        <input class="cfg-input" id="cfgSlack" type="number" step="0.1" value="0.2" inputmode="decimal">
+        <span class="cfg-unit">m</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CANVAS -->
+<div class="canvas-wrap" id="canvasWrap">
+  <div class="empty-canvas" id="emptyState">
+    <div class="empty-icon">⬡</div>
+    <div style="font-size:14px;color:var(--text2);font-weight:600;">No data loaded</div>
+    <div>Tap ↺ to load from server, or paste YAML below</div>
+    <textarea class="paste-area" id="yamlPaste" placeholder="Paste YAML here…"></textarea>
+    <button class="parse-btn" onclick="parseAndRender(document.getElementById('yamlPaste').value)">Parse YAML</button>
+  </div>
+</div>
+
+<!-- BOTTOM SHEET BACKDROP -->
+<div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+
+<!-- BOTTOM SHEET -->
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="sheet-handle-row" id="sheetHandleRow">
+    <div class="sheet-handle"></div>
+  </div>
+  <div class="sheet-header">
+    <div class="sheet-dev-name" id="sheetDevName">—</div>
+    <div class="sheet-meta" id="sheetDevMeta"></div>
+  </div>
+  <div class="sheet-scroll" id="sheetScroll"></div>
+  <div class="sheet-footer" id="sheetFooter">
+    <div class="footer-stat"><span class="k">Connections</span><span class="v" id="fTotal">—</span></div>
+    <div class="footer-stat"><span class="k">Total cable</span><span class="v" id="fSum">—</span></div>
+    <div class="footer-stat"><span class="k">Shortest</span><span class="v" id="fMin">—</span></div>
+    <div class="footer-stat"><span class="k">Longest</span><span class="v" id="fMax">—</span></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let appState = null;  // parsed & expanded config
+let selectedDevName = null;
+
+// ═══════════════════════════════════════════════════════════════════
+// YAML PARSER (same mini-parser used in rack_designer)
+// ═══════════════════════════════════════════════════════════════════
+function parseYAML(text) {
+  const lines = text.split('\n');
+  const indent = l => l.match(/^(\s*)/)[1].length;
+  const scalar = v => {
+    v = (v || '').trim();
+    if (!v) return undefined;
+    const wasQuoted = /^["']/.test(v);
+    v = v.replace(/^["']|["']$/g, '').trim();
+    // Strip inline YAML comments (# ...) only when value wasn't quoted and isn't a hex colour
+    if (!wasQuoted && !/^#[0-9a-fA-F]{3,8}$/.test(v)) v = v.replace(/\s*#.*$/, '').trim();
+    const n = Number(v);
+    return isNaN(n) ? v : n;
+  };
+
+  function parseDeviceList(baseIndent) {
+    const devs = [];
+    while (i < lines.length) {
+      const l = lines[i], t = l.trim();
+      if (!t || t.startsWith('#')) { i++; continue; }
+      if (indent(l) < baseIndent) break;
+      if (t.startsWith('- ')) {
+        const dev = {};
+        const rest = t.slice(2).trim();
+        if (rest.includes(':')) {
+          const ci = rest.indexOf(':');
+          dev[rest.slice(0, ci).trim()] = scalar(rest.slice(ci + 1));
+        }
+        i++;
+        while (i < lines.length) {
+          const l2 = lines[i], t2 = l2.trim();
+          if (!t2 || t2.startsWith('#')) { i++; continue; }
+          if (indent(l2) <= baseIndent) break;
+          const ci2 = t2.indexOf(':');
+          if (ci2 !== -1) dev[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
+          i++;
+        }
+        devs.push(dev);
+      } else { i++; }
+    }
+    return devs;
+  }
+
+  function parseConnections(baseIndent) {
+    const conns = [];
+    while (i < lines.length) {
+      const l = lines[i], t = l.trim();
+      if (!t || t.startsWith('#')) { i++; continue; }
+      if (indent(l) < baseIndent) break;
+      if (t.startsWith('- ')) {
+        const conn = {};
+        const rest = t.slice(2).trim();
+        if (rest.includes(':')) {
+          const ci = rest.indexOf(':');
+          conn[rest.slice(0, ci).trim()] = scalar(rest.slice(ci + 1));
+        }
+        i++;
+        while (i < lines.length) {
+          const l2 = lines[i], t2 = l2.trim();
+          if (!t2 || t2.startsWith('#')) { i++; continue; }
+          if (indent(l2) <= baseIndent) break;
+          // handle `to:` as list
+          const ci2 = t2.indexOf(':');
+          if (ci2 !== -1) {
+            const k = t2.slice(0, ci2).trim();
+            const v = t2.slice(ci2 + 1).trim();
+            if (!v && k === 'to') {
+              i++;
+              const toList = [];
+              while (i < lines.length) {
+                const l3 = lines[i], t3 = l3.trim();
+                if (!t3 || t3.startsWith('#')) { i++; continue; }
+                if (indent(l3) <= indent(l2)) break;
+                if (t3.startsWith('- ')) toList.push(scalar(t3.slice(2)));
+                i++;
+              }
+              conn.to = toList;
+            } else {
+              conn[k] = scalar(v);
+              i++;
+            }
+          } else { i++; }
+        }
+        conns.push(conn);
+      } else { i++; }
+    }
+    return conns;
+  }
+
+  const result = {};
+  let i = 0;
+
+  while (i < lines.length) {
+    const ln = lines[i], tr = ln.trim();
+    if (!tr || tr.startsWith('#')) { i++; continue; }
+    if (indent(ln) !== 0) { i++; continue; }
+    const ci = tr.indexOf(':');
+    if (ci === -1) { i++; continue; }
+    const key = tr.slice(0, ci).trim();
+    const val = tr.slice(ci + 1).trim();
+    i++;
+
+    if (val && !val.startsWith('#')) {
+      result[key] = scalar(val);
+      continue;
+    }
+
+    if (key === 'type_colors') {
+      const obj = {};
+      while (i < lines.length) {
+        const l2 = lines[i], t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (indent(l2) === 2) {
+          const ci2 = t2.indexOf(':');
+          if (ci2 === -1) { i++; continue; }
+          const typeName = t2.slice(0, ci2).trim();
+          const inlineVal = t2.slice(ci2 + 1).trim();
+          if (inlineVal) { obj[typeName] = inlineVal; i++; }
+          else {
+            i++;
+            const entry = {};
+            while (i < lines.length) {
+              const l3 = lines[i], t3 = l3.trim();
+              if (!t3 || t3.startsWith('#')) { i++; continue; }
+              if (indent(l3) <= 2) break;
+              const ci3 = t3.indexOf(':');
+              if (ci3 !== -1) entry[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1));
+              i++;
+            }
+            obj[typeName] = entry;
+          }
+        } else { i++; }
+      }
+      result.type_colors = obj;
+
+    } else if (key === 'racks') {
+      const racks = [];
+      while (i < lines.length) {
+        const l2 = lines[i], t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (indent(l2) === 2 && t2 === '- rack:') {
+          const rackEntry = { rack: {}, front: [], rear: [] };
+          racks.push(rackEntry);
+          i++;
+          while (i < lines.length) {
+            const l3 = lines[i], t3 = l3.trim();
+            if (!t3 || t3.startsWith('#')) { i++; continue; }
+            if (indent(l3) <= 2) break;
+            if (indent(l3) === 4) {
+              // indent-4 keys are rack-level: front/rear device lists
+              const ci3 = t3.indexOf(':');
+              if (ci3 === -1) { i++; continue; }
+              const k3 = t3.slice(0, ci3).trim();
+              const v3 = t3.slice(ci3 + 1).trim();
+              if (k3 === 'front' || k3 === 'rear') {
+                i++;
+                rackEntry[k3] = parseDeviceList(6);
+              } else {
+                rackEntry.rack[k3] = scalar(v3);
+                i++;
+              }
+            } else if (indent(l3) === 6) {
+              // indent-6 keys are rack metadata: id, name, total_u, u_order
+              const ci3 = t3.indexOf(':');
+              if (ci3 === -1) { i++; continue; }
+              rackEntry.rack[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1).trim());
+              i++;
+            } else { i++; }
+          }
+        } else { i++; }
+      }
+      result.racks = racks;
+
+    } else if (key === 'wiring_layers') {
+      const layers = [];
+      while (i < lines.length) {
+        const l2 = lines[i], t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (indent(l2) === 2 && t2.startsWith('- ')) {
+          const layer = { connections: [] };
+          const rest = t2.slice(2).trim();
+          if (rest.includes(':')) { const ci2 = rest.indexOf(':'); layer[rest.slice(0,ci2).trim()] = scalar(rest.slice(ci2+1)); }
+          i++;
+          while (i < lines.length) {
+            const l3 = lines[i], t3 = l3.trim();
+            if (!t3 || t3.startsWith('#')) { i++; continue; }
+            if (indent(l3) <= 2) break;
+            if (indent(l3) === 4) {
+              const ci3 = t3.indexOf(':');
+              if (ci3 === -1) { i++; continue; }
+              const k3 = t3.slice(0, ci3).trim();
+              const v3 = t3.slice(ci3 + 1).trim();
+              if (k3 === 'connections') { i++; layer.connections = parseConnections(6); }
+              else { layer[k3] = scalar(v3); i++; }
+            } else { i++; }
+          }
+          layers.push(layer);
+        } else { i++; }
+      }
+      result.wiring_layers = layers;
+
+    } else if (key === 'external_devices') {
+      const groups = [];
+      while (i < lines.length) {
+        const l2 = lines[i], t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (indent(l2) === 2 && t2.startsWith('- ')) {
+          const group = { devices: [] };
+          const rest = t2.slice(2).trim();
+          if (rest.includes(':')) { const ci2 = rest.indexOf(':'); group[rest.slice(0,ci2).trim()] = scalar(rest.slice(ci2+1)); }
+          i++;
+          while (i < lines.length) {
+            const l3 = lines[i], t3 = l3.trim();
+            if (!t3 || t3.startsWith('#')) { i++; continue; }
+            if (indent(l3) <= 2) break;
+            if (indent(l3) === 4) {
+              const ci3 = t3.indexOf(':');
+              if (ci3 === -1) { i++; continue; }
+              const k3 = t3.slice(0, ci3).trim();
+              if (k3 === 'devices') { i++; group.devices = parseDeviceList(6); }
+              else { group[rest && rest.includes(':') ? rest.slice(0,rest.indexOf(':')).trim() : k3] = scalar(t3.slice(t3.indexOf(':')+1)); i++; }
+            } else { i++; }
+          }
+          groups.push(group);
+        } else { i++; }
+      }
+      result.external_devices = groups;
+    } else {
+      i++;
+    }
+  }
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLUSTER EXPANSION
+// ═══════════════════════════════════════════════════════════════════
+function expandClusters(devices, uOrder) {
+  const topBottom = uOrder === 'top_bottom';
+  const out = [];
+  for (const dev of devices) {
+    if (dev.start !== undefined && dev.end !== undefined && dev.name && dev.name.includes('{N}')) {
+      for (let n = dev.start; n <= dev.end; n++) {
+        const step = dev.units ? dev.units + (dev.spacing || 0) : 1;
+        const offset = (n - dev.start) * step;
+        const su = dev.start_u !== undefined
+          ? topBottom ? dev.start_u + offset : dev.start_u - offset
+          : undefined;
+        out.push({ ...dev, name: dev.name.replace(/\{N\}/g, n), start_u: su, start: undefined, end: undefined });
+      }
+    } else {
+      out.push(dev);
+    }
+  }
+  return out;
+}
+
+function expandWiringConn(conn) {
+  // Expand {N}, {N+X}, {N-X} in a connection (produces multiple concrete connections)
+  const hasPattern = s => s && /\{N([+-]\d+)?\}/.test(String(s));
+  const fromStr = String(conn.from || '');
+  const toStr = typeof conn.to === 'string' ? conn.to : '';
+
+  if ((hasPattern(fromStr) || hasPattern(toStr)) && conn.start !== undefined && conn.end !== undefined) {
+    const out = [];
+    for (let n = conn.start; n <= conn.end; n++) {
+      const expand = s => String(s)
+        .replace(/\{N\+(\d+)\}/g, (_, d) => n + parseInt(d))
+        .replace(/\{N-(\d+)\}/g, (_, d) => n - parseInt(d))
+        .replace(/\{N\}/g, n);
+      out.push({
+        ...conn,
+        from: expand(fromStr),
+        to: typeof conn.to === 'string' ? expand(toStr) : conn.to,
+        via_patch_from: conn.via_patch_from ? expand(String(conn.via_patch_from)) : conn.via_patch_from,
+        via_patch_to:   conn.via_patch_to   ? expand(String(conn.via_patch_to))   : conn.via_patch_to,
+        start: undefined, end: undefined
+      });
+    }
+    return out;
+  }
+  return [conn];
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DEVICE MAP BUILD
+// ═══════════════════════════════════════════════════════════════════
+function buildDeviceMap(parsed) {
+  const map = {};   // name -> { name, rackId, rackIdx, face, start_u, units, type, located }
+  const rackOrder = [];
+
+  (parsed.racks || []).forEach((re, ri) => {
+    const rackId = re.rack.id || `rack${ri+1}`;
+    const rackName = re.rack.name || rackId;
+    const totalU = re.rack.total_u || 42;
+    const uOrder = re.rack.u_order || 'bottom_top';
+    rackOrder.push({ rackId, rackName, totalU, uOrder, rackIdx: ri });
+
+    for (const face of ['front', 'rear']) {
+      const devs = expandClusters(re[face] || [], uOrder);
+      devs.forEach(dev => {
+        if (!dev.name) return;
+        map[dev.name] = {
+          name: dev.name,
+          rackId, rackName, rackIdx: ri,
+          face, start_u: dev.start_u, units: dev.units,
+          type: dev.type,
+          totalU, uOrder,
+          located: dev.start_u != null && dev.units != null
+        };
+      });
+    }
+  });
+
+  // External devices
+  (parsed.external_devices || []).forEach(group => {
+    const groupName = group.name || 'External';
+    expandClusters(group.devices || []).forEach(dev => {
+      if (!dev.name) return;
+      map[dev.name] = {
+        name: dev.name,
+        rackId: 'external', rackName: groupName,
+        rackIdx: 9999,
+        face: 'external',
+        type: dev.type,
+        located: false
+      };
+    });
+  });
+
+  return { map, rackOrder };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CABLE LENGTH CALCULATION
+// ═══════════════════════════════════════════════════════════════════
+const U_HEIGHT = 0.045;  // 1U = 45mm (matches Python pipeline standard_u_height)
+
+function getConfig() {
+  return {
+    interRack:   parseFloat(document.getElementById('cfgInterRack').value) || 5.0,
+    frontToBack: parseFloat(document.getElementById('cfgFrontBack').value) || 0.5,
+    slack:       parseFloat(document.getElementById('cfgSlack').value)     || 0.2,
+  };
+}
+
+function deviceMidpointU(dev) {
+  // Returns the U-number at the midpoint of the device
+  if (!dev.located) return null;
+  const { start_u, units, uOrder, totalU } = dev;
+  if (uOrder === 'top_bottom') {
+    // start_u is top of device, extends downward
+    return start_u + (units - 1) / 2;
+  } else {
+    // start_u is top of device, extends downward (start_u is highest U)
+    return start_u - (units - 1) / 2;
+  }
+}
+
+function calcCableLength(devA, devB) {
+  const cfg = getConfig();
+
+  // External devices: use a flat distance estimate
+  const aExt = devA.face === 'external';
+  const bExt = devB.face === 'external';
+
+  if (aExt && bExt) {
+    return { length: null, note: 'ext↔ext' };
+  }
+
+  if (aExt || bExt) {
+    // One external, one rack — use group distance_from_racks if available
+    const rackDev = aExt ? devB : devA;
+    const extDev  = aExt ? devA : devB;
+    const groupDist = extDev.distanceFromRacks ?? 10;
+    if (!rackDev.located) {
+      return { length: null, note: 'unpositioned' };
+    }
+    const rackVertical = deviceMidpointU(rackDev) * U_HEIGHT;
+    let length = groupDist + rackVertical + cfg.slack;
+    length = Math.ceil(length * 2) / 2;
+    return { length, note: 'ext', breakdown: { groupDist, rackVertical, slack: cfg.slack } };
+  }
+
+  // Both rack devices
+  if (!devA.located || !devB.located) {
+    return { length: null, note: 'unpositioned' };
+  }
+
+  const midA = deviceMidpointU(devA);
+  const midB = deviceMidpointU(devB);
+
+  // Vertical distance within rack (in metres)
+  // For cross-rack: each device's vertical position from bottom of its rack
+  const vA = devA.uOrder === 'top_bottom'
+    ? (devA.totalU - midA) * U_HEIGHT
+    : (midA - 1) * U_HEIGHT;
+  const vB = devB.uOrder === 'top_bottom'
+    ? (devB.totalU - midB) * U_HEIGHT
+    : (midB - 1) * U_HEIGHT;
+
+  let length = cfg.slack;
+  let breakdown = { slack: cfg.slack };
+
+  if (devA.rackId === devB.rackId) {
+    // Same rack
+    const vertical = Math.abs(midA - midB) * U_HEIGHT;
+    breakdown.vertical = vertical;
+    length += vertical;
+
+    if (devA.face !== devB.face) {
+      // Different faces — add front-to-back traverse
+      breakdown.frontToBack = cfg.frontToBack;
+      length += cfg.frontToBack;
+    }
+  } else {
+    // Different racks
+    const rackDelta = Math.abs(devA.rackIdx - devB.rackIdx);
+    const horizontal = rackDelta * cfg.interRack;
+    breakdown.horizontal = horizontal;
+    breakdown.verticalA = vA;
+    breakdown.verticalB = vB;
+    length += horizontal + vA + vB;
+
+    if (devA.face !== devB.face) {
+      breakdown.frontToBack = cfg.frontToBack;
+      length += cfg.frontToBack;
+    }
+  }
+
+  length = Math.ceil(length * 2) / 2;
+  return { length, breakdown };
+}
+
+// Patch-aware cable length: returns { segments, total, isPatched }
+// segments = [{from, to, length, breakdown, note}]
+function calcPatchedCableLength(conn, thisName, deviceMap) {
+  const patchFrom = conn.patchFrom;
+  const patchTo   = conn.patchTo;
+
+  if (!patchFrom && !patchTo) {
+    const devA = deviceMap[thisName] || {};
+    const devB = deviceMap[conn.peer] || {};
+    const { length, breakdown, note } = calcCableLength(devA, devB);
+    return { segments: [{ from: thisName, to: conn.peer, length, breakdown, note }],
+             total: length, isPatched: false };
+  }
+
+  // Build ordered segment list based on original from→to direction
+  let orderedNames;
+  if (conn.direction === '→') {
+    // thisName is the "from" end
+    orderedNames = patchFrom && patchTo
+      ? [thisName, patchFrom, patchTo, conn.peer]
+      : patchFrom
+        ? [thisName, patchFrom, conn.peer]
+        : [thisName, patchTo,   conn.peer];
+  } else {
+    // thisName is the "to" end — reverse
+    orderedNames = patchFrom && patchTo
+      ? [conn.peer, patchFrom, patchTo, thisName]
+      : patchFrom
+        ? [conn.peer, patchFrom, thisName]
+        : [conn.peer, patchTo,   thisName];
+  }
+
+  const segments = [];
+  let total = 0;
+  let anyNull = false;
+
+  for (let i = 0; i < orderedNames.length - 1; i++) {
+    const aName = orderedNames[i];
+    const bName = orderedNames[i + 1];
+    const devA  = deviceMap[aName] || {};
+    const devB  = deviceMap[bName] || {};
+    const result = calcCableLength(devA, devB);
+    segments.push({ from: aName, to: bName, ...result });
+    if (result.length == null) anyNull = true;
+    else total += result.length;
+  }
+
+  // Round total to 2dp like individual lengths
+  return { segments, total: anyNull ? null : Math.round(total * 100) / 100, isPatched: true };
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// CONNECTION EXPANSION
+// ═══════════════════════════════════════════════════════════════════
+function buildConnectionIndex(parsed) {
+  // Returns: { [deviceName]: [{peer, layer, cableType, direction, layerColor}] }
+  const index = {};
+  const ensure = n => { if (!index[n]) index[n] = []; };
+
+  (parsed.wiring_layers || []).forEach(layer => {
+    const layerColor = layer.edge_color || '#888';
+    const cableType = layer.cable_type || '';
+    const layerName = layer.name || '';
+    const conns = [];
+    (layer.connections || []).forEach(c => {
+      expandWiringConn(c).forEach(ec => conns.push(ec));
+    });
+
+    conns.forEach(c => {
+      if (!c.from) return;
+      const fromName = String(c.from);
+      const toList = Array.isArray(c.to) ? c.to : [c.to];
+      toList.forEach(t => {
+        if (!t) return;
+        const toName = String(t);
+        ensure(fromName);
+        ensure(toName);
+        const patchFrom = c.via_patch_from || null;
+        const patchTo   = c.via_patch_to   || null;
+        index[fromName].push({ peer: toName, layer: layerName, cableType, layerColor, direction: '→', patchFrom, patchTo });
+        index[toName].push({ peer: fromName, layer: layerName, cableType, layerColor, direction: '←', patchFrom, patchTo });
+
+        // Register patch panel entries so selecting a PP shows its hosted connections.
+        // Build the full ordered chain and add each PP's two immediate neighbours.
+        if (patchFrom || patchTo) {
+          const chain = patchFrom && patchTo
+            ? [fromName, patchFrom, patchTo, toName]
+            : patchFrom
+              ? [fromName, patchFrom, toName]
+              : [fromName, patchTo,   toName];
+
+          // For each intermediate node (the patch panels), add both neighbours
+          for (let ci = 1; ci < chain.length - 1; ci++) {
+            const ppName = chain[ci];
+            const prevName = chain[ci - 1];
+            const nextName = chain[ci + 1];
+            ensure(ppName);
+            // Show as a patch leg: peer is the end-to-end destination device,
+            // with explicit prevName/nextName so the card can describe the segment
+            index[ppName].push({
+              peer: toName,           // end device of the full connection
+              peerFrom: fromName,     // start device of the full connection
+              segFrom: prevName,      // this patch panel's upstream neighbour
+              segTo:   nextName,      // this patch panel's downstream neighbour
+              layer: layerName, cableType, layerColor,
+              direction: '↔', patchFrom, patchTo,
+              isPatchLeg: true,
+            });
+          }
+        }
+      });
+    });
+  });
+
+  return index;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TYPE COLORS
+// ═══════════════════════════════════════════════════════════════════
+function buildTypeColorMap(parsed) {
+  const map = {};
+  const defaults = {
+    pc: '#E8F4F8', server: '#dde8f4', pdu: '#AAAAAA', ups: '#c8c8d8',
+    switch: '#B8D6D6', switch_2u: '#9ecece', 'patch panel': '#d4c9e8',
+    realtime: '#FFE8D8', Shelf: '#ced3db', shelf_2u: '#bec3cb',
+    'cable management': '#C4C4C4', customer: '#ffd9d6',
+  };
+  Object.assign(map, defaults);
+  const tc = parsed.type_colors || {};
+  for (const [k, v] of Object.entries(tc)) {
+    map[k] = (v && typeof v === 'object') ? (v.color || '#888') : String(v);
+  }
+  return map;
+}
+
+function typeColor(type, colorMap) {
+  return colorMap[type] || '#555';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER — MOBILE
+// ═══════════════════════════════════════════════════════════════════
+function renderCanvas() {
+  if (!appState) return;
+  const { parsed, deviceMap, rackOrder, connIndex, colorMap } = appState;
+
+  const wrap = document.getElementById('canvasWrap');
+  wrap.innerHTML = '';
+
+  // Racks row
+  const racksRow = document.createElement('div');
+  racksRow.className = 'racks-row';
+
+  rackOrder.forEach(({ rackId, rackName, totalU, uOrder, rackIdx }) => {
+    const rackEntry = parsed.racks[rackIdx];
+    const block = document.createElement('div');
+    block.className = 'rack-block';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'rack-name';
+    nameEl.textContent = rackName;
+    block.appendChild(nameEl);
+
+    const faces = document.createElement('div');
+    faces.className = 'rack-faces';
+
+    ['front', 'rear'].forEach(face => {
+      const faceWrap = document.createElement('div');
+      faceWrap.className = 'rack-face';
+
+      const faceLbl = document.createElement('div');
+      faceLbl.className = 'face-label';
+      faceLbl.textContent = face === 'front' ? '▶ FRONT' : 'REAR ◀';
+      faceWrap.appendChild(faceLbl);
+
+      const col = document.createElement('div');
+      col.className = 'rack-col';
+
+      const uNums = document.createElement('div');
+      uNums.className = 'u-nums';
+      const uSeq = uOrder === 'top_bottom'
+        ? Array.from({length: totalU}, (_, i) => i + 1)
+        : Array.from({length: totalU}, (_, i) => totalU - i);
+      uSeq.forEach(u => {
+        const d = document.createElement('div');
+        d.className = 'u-num';
+        d.textContent = u;
+        uNums.appendChild(d);
+      });
+
+      const slotsArea = document.createElement('div');
+      slotsArea.className = 'slots-area';
+      slotsArea.style.height = (totalU * 26) + 'px';
+
+      for (let u = 0; u < totalU; u++) {
+        const bg = document.createElement('div');
+        bg.className = 'u-slot-bg';
+        slotsArea.appendChild(bg);
+      }
+
+      const devs = expandClusters(rackEntry[face] || [], uOrder);
+      devs.forEach(dev => {
+        if (!dev.start_u || !dev.units) return;
+        const color = typeColor(dev.type, colorMap);
+        const el = document.createElement('div');
+        el.className = 'rack-device';
+        el.dataset.devName = dev.name;
+        el.style.background = color;
+        const uH = 26;
+        const top = uOrder === 'top_bottom'
+          ? (dev.start_u - 1) * uH
+          : (totalU - dev.start_u) * uH;
+        el.style.top = top + 'px';
+        el.style.height = (dev.units * uH) + 'px';
+        el.textContent = dev.name;
+        el.addEventListener('click', () => selectDevice(dev.name));
+        slotsArea.appendChild(el);
+      });
+
+      col.appendChild(face === 'front' ? uNums : document.createElement('div'));
+      col.appendChild(slotsArea);
+      col.appendChild(face === 'rear' ? uNums : document.createElement('div'));
+      faceWrap.appendChild(col);
+
+      // Unpositioned strip
+      const unpos = expandClusters(rackEntry[face] || [], uOrder).filter(d => !d.start_u || !d.units);
+      const strip = buildUnpositionedStrip(rackId, face, unpos, colorMap);
+      faceWrap.appendChild(strip);
+
+      faces.appendChild(faceWrap);
+    });
+
+    block.appendChild(faces);
+    racksRow.appendChild(block);
+  });
+
+  wrap.appendChild(racksRow);
+
+  // External devices
+  const extGroups = parsed.external_devices || [];
+  if (extGroups.length > 0) {
+    const extSection = document.createElement('div');
+    const extLabel = document.createElement('div');
+    extLabel.className = 'ext-section-label';
+    extLabel.textContent = 'External Devices';
+    extSection.appendChild(extLabel);
+
+    const extRow = document.createElement('div');
+    extRow.className = 'ext-groups-row';
+
+    extGroups.forEach(group => {
+      const gBlock = document.createElement('div');
+      gBlock.className = 'ext-group';
+      const gHdr = document.createElement('div');
+      gHdr.className = 'ext-group-name';
+      gHdr.textContent = group.name || 'External';
+      gBlock.appendChild(gHdr);
+
+      expandClusters(group.devices || []).forEach(dev => {
+        const row = document.createElement('div');
+        row.className = 'ext-device';
+        row.dataset.devName = dev.name;
+        const dot = document.createElement('div');
+        dot.className = 'ext-dot';
+        dot.style.background = typeColor(dev.type, colorMap);
+        const nameEl = document.createElement('span');
+        nameEl.textContent = dev.name;
+        row.appendChild(dot); row.appendChild(nameEl);
+        row.addEventListener('click', () => selectDevice(dev.name));
+        gBlock.appendChild(row);
+      });
+
+      extRow.appendChild(gBlock);
+    });
+
+    extSection.appendChild(extRow);
+    wrap.appendChild(extSection);
+  }
+
+  applyHighlights();
+}
+
+function buildUnpositionedStrip(rackId, face, devs, colorMap) {
+  const strip = document.createElement('div');
+  strip.className = 'unpositioned-strip';
+  const hdr = document.createElement('div');
+  hdr.className = 'unpositioned-hdr';
+  hdr.textContent = devs.length ? `0U / Unpositioned (${devs.length})` : '0U / Unpositioned';
+  strip.appendChild(hdr);
+  devs.forEach(dev => {
+    const row = document.createElement('div');
+    row.className = 'unpositioned-dev';
+    row.dataset.devName = dev.name;
+    const dot = document.createElement('div');
+    dot.className = 'u-dot';
+    dot.style.background = typeColor(dev.type, colorMap);
+    const nameEl = document.createElement('span');
+    nameEl.textContent = dev.name;
+    row.appendChild(dot); row.appendChild(nameEl);
+    row.addEventListener('click', () => selectDevice(dev.name));
+    strip.appendChild(row);
+  });
+  return strip;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SELECTION & BOTTOM SHEET
+// ═══════════════════════════════════════════════════════════════════
+function selectDevice(devName) {
+  if (selectedDevName === devName) {
+    selectedDevName = null;
+    closeSheet();
+  } else {
+    selectedDevName = devName;
+    openSheet();
+  }
+  applyHighlights();
+  renderSheet();
+}
+
+function applyHighlights() {
+  if (!appState) return;
+  const connectedNames = new Set();
+  if (selectedDevName && appState.connIndex[selectedDevName]) {
+    appState.connIndex[selectedDevName].forEach(c => connectedNames.add(c.peer));
+  }
+  document.querySelectorAll('[data-dev-name]').forEach(el => {
+    el.classList.remove('selected', 'connected', 'faded');
+  });
+  if (!selectedDevName) return;
+  document.querySelectorAll('[data-dev-name]').forEach(el => {
+    const name = el.dataset.devName;
+    if (name === selectedDevName) el.classList.add('selected');
+    else if (connectedNames.has(name)) el.classList.add('connected');
+    else el.classList.add('faded');
+  });
+}
+
+function openSheet() {
+  document.getElementById('bottomSheet').classList.add('open');
+  document.getElementById('sheetBackdrop').classList.add('visible');
+}
+
+function closeSheet() {
+  document.getElementById('bottomSheet').classList.remove('open');
+  document.getElementById('sheetBackdrop').classList.remove('visible');
+  selectedDevName = null;
+  applyHighlights();
+}
+
+function renderSheet() {
+  if (!selectedDevName || !appState) return;
+  const { deviceMap, connIndex, colorMap } = appState;
+  const dev = deviceMap[selectedDevName];
+  const conns = connIndex[selectedDevName] || [];
+
+  // Header
+  document.getElementById('sheetDevName').textContent = selectedDevName;
+  const metaEl = document.getElementById('sheetDevMeta');
+  metaEl.innerHTML = '';
+  if (dev) {
+    if (dev.type) {
+      const tp = document.createElement('div');
+      tp.className = 'meta-pill';
+      tp.style.borderLeft = '3px solid ' + typeColor(dev.type, colorMap);
+      tp.textContent = dev.type;
+      metaEl.appendChild(tp);
+    }
+    const loc = document.createElement('div');
+    loc.className = 'meta-pill';
+    if (dev.face === 'external') {
+      loc.textContent = 'External · ' + dev.rackName;
+    } else if (dev.located) {
+      loc.textContent = dev.rackName + ' · ' + dev.face + ' · U' + dev.start_u;
+    } else {
+      loc.textContent = dev.rackName + ' · Unpositioned';
+    }
+    metaEl.appendChild(loc);
+  }
+
+  // Connections
+  const scroll = document.getElementById('sheetScroll');
+  scroll.innerHTML = '';
+
+  if (conns.length === 0) {
+    const none = document.createElement('div');
+    none.className = 'no-conns';
+    none.textContent = 'No connections defined for this device';
+    scroll.appendChild(none);
+    setFooterStats([], 0);
+    return;
+  }
+
+  // Group by layer
+  const byLayer = {};
+  conns.forEach(c => {
+    if (!byLayer[c.layer]) byLayer[c.layer] = [];
+    byLayer[c.layer].push(c);
+  });
+
+  const lengths = [];
+
+  Object.entries(byLayer).forEach(([layerName, layerConns]) => {
+    const sec = document.createElement('div');
+    sec.className = 'conn-section-label';
+    sec.textContent = layerName || 'Unnamed Layer';
+    scroll.appendChild(sec);
+
+    layerConns.forEach(c => {
+      const peerDev = deviceMap[c.peer];
+
+      // For patch-leg entries (PP selected), run the full chain calc then filter
+      // to only the segments that touch this patch panel.
+      let { segments, total, isPatched } = calcPatchedCableLength(c, selectedDevName, deviceMap);
+      if (c.isPatchLeg) {
+        // Only show segments adjacent to this PP
+        const adjSegs = segments.filter(s => s.from === selectedDevName || s.to === selectedDevName);
+        const adjTotal = adjSegs.every(s => s.length != null)
+          ? Math.ceil(adjSegs.reduce((a, s) => a + s.length, 0) * 2) / 2
+          : null;
+        segments = adjSegs;
+        total = adjTotal;
+        isPatched = true;
+      }
+      if (total != null) lengths.push(total);
+
+      const card = document.createElement('div');
+      card.className = 'conn-card' + (isPatched ? ' conn-card-patched' : '');
+      card.addEventListener('click', () => selectDevice(c.peer));
+
+      // Top row: dot + peer name + total length
+      const top = document.createElement('div');
+      top.className = 'conn-top';
+      const dot = document.createElement('div');
+      dot.className = 'conn-layer-dot';
+      dot.style.background = c.layerColor;
+      const peer = document.createElement('div');
+      peer.className = 'conn-peer';
+      peer.textContent = c.isPatchLeg ? (c.peerFrom + ' ↔ ' + c.peer) : c.peer;
+      const lenEl = document.createElement('div');
+      const firstSeg = segments[0];
+      lenEl.className = 'conn-length' + (total == null ? ' unknown' : '');
+      lenEl.textContent = total != null ? total.toFixed(1) + 'm' : (firstSeg && firstSeg.note === 'unpositioned' ? '?' : '—');
+      top.appendChild(dot); top.appendChild(peer); top.appendChild(lenEl);
+
+      // Bottom row: layer + direction + cable type + patch badge
+      const bottom = document.createElement('div');
+      bottom.className = 'conn-bottom';
+      const ln = document.createElement('div');
+      ln.className = 'conn-layer-name';
+      ln.textContent = layerName;
+      const dir = document.createElement('div');
+      dir.className = 'conn-direction';
+      dir.textContent = c.direction;
+      const ct = document.createElement('div');
+      ct.className = 'conn-cable-type';
+      ct.textContent = c.cableType;
+      bottom.appendChild(ln); bottom.appendChild(dir); bottom.appendChild(ct);
+      if (isPatched) {
+        const pb = document.createElement('div');
+        pb.className = 'conn-patch-badge';
+        pb.textContent = '[PP]';
+        bottom.appendChild(pb);
+      }
+
+      card.appendChild(top); card.appendChild(bottom);
+
+      // Per-segment breakdown
+      if (isPatched && segments.length > 1) {
+        // Route line
+        const route = document.createElement('div');
+        route.className = 'conn-patch-route';
+        route.textContent = segments.map(s => s.from).concat(segments[segments.length-1].to).join(' → ');
+        card.appendChild(route);
+
+        // One row per segment
+        segments.forEach((seg, i) => {
+          const segRow = document.createElement('div');
+          segRow.className = 'conn-patch-seg';
+
+          const segLabel = document.createElement('span');
+          segLabel.className = 'conn-patch-seg-label';
+          segLabel.textContent = (i + 1) + '/' + segments.length;
+
+          const segNames = document.createElement('span');
+          segNames.className = 'conn-patch-seg-names';
+          segNames.textContent = seg.from + ' → ' + seg.to;
+
+          const segLen = document.createElement('span');
+          segLen.className = 'conn-patch-seg-len' + (seg.length == null ? ' unknown' : '');
+          segLen.textContent = seg.length != null ? seg.length.toFixed(1) + 'm' : '?';
+
+          segRow.appendChild(segLabel); segRow.appendChild(segNames); segRow.appendChild(segLen);
+          card.appendChild(segRow);
+
+          // Per-segment breakdown (same style as non-patched)
+          if (seg.breakdown && seg.length != null) {
+            const bd = document.createElement('div');
+            bd.className = 'conn-breakdown conn-breakdown-indent';
+            const parts = [];
+            if (seg.breakdown.vertical    != null) parts.push(['vert',   seg.breakdown.vertical.toFixed(3) + 'm']);
+            if (seg.breakdown.horizontal  != null) parts.push(['horiz',  seg.breakdown.horizontal.toFixed(3) + 'm']);
+            if (seg.breakdown.verticalA   != null) parts.push(['rack-A', seg.breakdown.verticalA.toFixed(3) + 'm']);
+            if (seg.breakdown.verticalB   != null) parts.push(['rack-B', seg.breakdown.verticalB.toFixed(3) + 'm']);
+            if (seg.breakdown.frontToBack != null) parts.push(['f↔r',   seg.breakdown.frontToBack.toFixed(3) + 'm']);
+            if (seg.breakdown.groupDist   != null) parts.push(['ext',    seg.breakdown.groupDist.toFixed(1) + 'm']);
+            parts.push(['slack', seg.breakdown.slack.toFixed(2) + 'm']);
+            parts.forEach(([k, v]) => {
+              const s = document.createElement('span'); s.textContent = k + ' ';
+              const sv = document.createElement('b'); sv.style.color = 'var(--text2)'; sv.textContent = v + '  ';
+              bd.appendChild(s); bd.appendChild(sv);
+            });
+            card.appendChild(bd);
+          }
+        });
+      } else if (!isPatched && firstSeg && firstSeg.breakdown && total != null) {
+        // Non-patched single-segment breakdown — same as before
+        const bd = document.createElement('div');
+        bd.className = 'conn-breakdown';
+        const parts = [];
+        const breakdown = firstSeg.breakdown;
+        if (breakdown.vertical    != null) parts.push(['vert',   breakdown.vertical.toFixed(3) + 'm']);
+        if (breakdown.horizontal  != null) parts.push(['horiz',  breakdown.horizontal.toFixed(3) + 'm']);
+        if (breakdown.verticalA   != null) parts.push(['rack-A', breakdown.verticalA.toFixed(3) + 'm']);
+        if (breakdown.verticalB   != null) parts.push(['rack-B', breakdown.verticalB.toFixed(3) + 'm']);
+        if (breakdown.frontToBack != null) parts.push(['f↔r',   breakdown.frontToBack.toFixed(3) + 'm']);
+        if (breakdown.groupDist   != null) parts.push(['ext',    breakdown.groupDist.toFixed(1) + 'm']);
+        parts.push(['slack', breakdown.slack.toFixed(2) + 'm']);
+        parts.forEach(([k, v]) => {
+          const s = document.createElement('span'); s.textContent = k + ' ';
+          const sv = document.createElement('b'); sv.style.color = 'var(--text2)'; sv.textContent = v + '  ';
+          bd.appendChild(s); bd.appendChild(sv);
+        });
+        card.appendChild(bd);
+      }
+
+      scroll.appendChild(card);
+    });
+  });
+
+  setFooterStats(lengths, conns.length);
+}
+
+function setFooterStats(lengths, total) {
+  document.getElementById('fTotal').textContent = total;
+  if (lengths.length > 0) {
+    document.getElementById('fMin').textContent = Math.min(...lengths).toFixed(1) + 'm';
+    document.getElementById('fMax').textContent = Math.max(...lengths).toFixed(1) + 'm';
+    document.getElementById('fSum').textContent = lengths.reduce((a,b) => a+b, 0).toFixed(1) + 'm';
+  } else {
+    ['fMin','fMax','fSum'].forEach(id => document.getElementById(id).textContent = '—');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIG DRAWER TOGGLE
+// ═══════════════════════════════════════════════════════════════════
+function toggleConfig() {
+  const drawer = document.getElementById('configDrawer');
+  drawer.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SWIPE DOWN TO CLOSE SHEET
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const sheet = document.getElementById('bottomSheet');
+  const handle = document.getElementById('sheetHandleRow');
+  let startY = 0, currentY = 0, dragging = false;
+
+  handle.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+    const dy = Math.max(0, currentY - startY);
+    sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+
+  handle.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    const dy = currentY - startY;
+    if (dy > 80) {
+      closeSheet();
+    } else {
+      sheet.style.transform = '';
+    }
+    sheet.style.transform = '';
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// KEEP LOGIC FUNCTIONS (parseAndRender, loadFromServer, etc.)
+// ═══════════════════════════════════════════════════════════════════
+
+function parseAndRender(yamlText) {
+  if (!yamlText || !yamlText.trim()) return;
+  try {
+    const parsed = parseYAML(yamlText);
+    const { map: deviceMap, rackOrder } = buildDeviceMap(parsed);
+
+    // Attach distanceFromRacks to external devices
+    (parsed.external_devices || []).forEach(group => {
+      const dist = group.distance_from_racks ?? 10;
+      expandClusters(group.devices || []).forEach(dev => {
+        if (deviceMap[dev.name]) deviceMap[dev.name].distanceFromRacks = dist;
+      });
+    });
+
+    const connIndex = buildConnectionIndex(parsed);
+    const colorMap = buildTypeColorMap(parsed);
+
+    // Pull config from YAML if present
+    if (parsed.inter_rack_distance != null) document.getElementById('cfgInterRack').value = parsed.inter_rack_distance;
+    if (parsed.front_to_back_length != null) document.getElementById('cfgFrontBack').value = parsed.front_to_back_length;
+    if (parsed.cable_slack_length != null) document.getElementById('cfgSlack').value = parsed.cable_slack_length;
+
+    appState = { parsed, deviceMap, rackOrder, connIndex, colorMap };
+    selectedDevName = null;
+
+    document.getElementById('statusDot').className = 'status-dot ok';
+    renderCanvas();
+    renderSheet();
+  } catch(e) {
+    document.getElementById('statusDot').className = 'status-dot err';
+    alert('YAML parse error: ' + e.message);
+    console.error(e);
+  }
+}
+
+async function loadFromServer() {
+  document.getElementById('statusDot').className = 'status-dot';
+  try {
+    const r = await fetch('/yaml');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    if (!text.trim()) {
+      alert('Server returned empty config. Design something in the Rack Designer first.');
+      return;
+    }
+    parseAndRender(text);
+  } catch(e) {
+    document.getElementById('statusDot').className = 'status-dot err';
+    // Not on the Flask server — show paste UI
+    document.getElementById('emptyState').style.display = 'flex';
+    console.warn('Could not load from server:', e.message);
+  }
+}
+
+// Re-render sidebar when config knobs change (lengths update live)
+['cfgInterRack','cfgFrontBack','cfgSlack'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    if (appState) renderSheet();
+  });
+});
+
+// Auto-load on start
+loadFromServer();
+
+// Re-render sheet when config changes
+['cfgInterRack','cfgFrontBack','cfgSlack'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    if (appState && selectedDevName) renderSheet();
+  });
+});
+
+// Auto-load
+loadFromServer();
+</script>
+</body>
+</html>

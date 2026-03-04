@@ -1,7 +1,3 @@
-- Make rack U order switchable
-- Add support for power adapters for LV devices
 - Graph inter-rack connections serperately
-- Support for patch panel (some ethernet connections)
-- Auto cable-length calculation & purchasing output
 - Port / power capacity / usage
 - Implement Pydantic

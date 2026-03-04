@@ -7,38 +7,25 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
-:root {
-  /* Core backgrounds */
-  --bg: #0b0d10;          /* Near-black charcoal */
-  --surface: #08090a;     /* Dark graphite */
-  --surface2: #181b20;    /* Mid dark panel */
-  --surface3: #2b3039;    /* Raised surface */
-
-  /* Borders / dividers */
-  --border: #2a2e34;      
+  :root {
+  --bg: #0b0d10;
+  --surface: #08090a;
+  --surface2: #181b20;
+  --surface3: #2b3039;
+  --border: #2a2e34;
   --border2: #353a42;
-
-  /* Brand accents (Dynisma red theme) */
-  --accent: #c91622;      /* Primary red */
-  --accent2: #ffecec;     /* Bright highlight red */
-
-  /* Status colors */
-  --green: #3fdc6f;       /* Subtle tech green */
-  --red: #e10613;         /* Match brand red */
-
-  /* Text */
-  --text: #f1f3f5;        /* Primary white/grey */
-  --text2: #b3b7bd;       /* Secondary grey */
-  --text3: #6c7077;       /* Muted captions */
-
-  /* Typography */
-  --mono: 'Share Tech Mono', monospace;
-  --sans: 'Rajdhani', sans-serif;
-  --display: 'Orbitron', monospace;
-
-  /* Layout */
-  --u-height: 22px;
-}
+  --accent: #c91622;
+  --accent2: #ffecec;
+  --green: #3fdc6f;
+  --red: #e10613;
+  --text: #f1f3f5;
+  --text2: #b3b7bd;
+  --text3: #6c7077;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Rajdhani', sans-serif;
+    --display: 'Orbitron', monospace;
+    --u-height: 22px;
+  }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -132,7 +119,7 @@
   }
 
   .header-btn:hover { border-color: var(--accent); color: var(--accent); text-shadow: 0 0 8px rgba(0,212,255,0.4); }
-  .header-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 700; }
+  .header-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
   .header-btn.primary:hover { background: transparent; color: var(--accent); }
 
   .app-body { display: flex; flex: 1; overflow: hidden; }
@@ -174,31 +161,53 @@
     padding: 4px 4px 6px;
   }
 
-  .palette-item {
+  .type-color-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    cursor: grab;
-    font-family: var(--sans);
+    gap: 6px;
+    padding: 5px 6px 5px 8px;
     font-size: 15px;
     font-weight: 600;
     color: var(--text2);
-    background: var(--surface2);
-    margin-bottom: 2px;
-    transition: all 0.15s;
+    border: 1px solid transparent;
+    cursor: grab;
     user-select: none;
-    letter-spacing: 0.3px;
+    transition: all 0.15s;
+    margin-bottom: 2px;
   }
-
-  .palette-item:hover { border-color: var(--accent); color: var(--text); transform: translateX(2px); }
-  .palette-item:active { cursor: grabbing; }
-
-  .palette-dot { width: 10px; height: 10px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
-
-  .type-color-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px; font-size: 15px; font-weight: 600; color: var(--text2); }
-  .type-color-row:hover { background: var(--surface2); }
+  .type-color-row:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .type-color-row:active { cursor: grabbing; }
+  .drag-grip {
+    color: var(--text3);
+    font-size: 11px;
+    cursor: grab;
+    flex-shrink: 0;
+    letter-spacing: -1px;
+  }
+  .type-units-input {
+    width: 34px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: center;
+    padding: 2px 2px;
+    flex-shrink: 0;
+    outline: none;
+  }
+  .type-units-input:focus { border-color: var(--accent); color: var(--text); }
+  .type-units-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    margin-left: -4px;
+  }
 
   .color-swatch { width: 16px; height: 16px; border-radius: 1px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; padding: 0; }
 
@@ -215,7 +224,6 @@
     position: relative;
   }
 
-  /* PICK MODE */
   .canvas-area.picking-device { cursor: crosshair; }
   .canvas-area.picking-device .rack-device {
     cursor: crosshair !important;
@@ -240,9 +248,9 @@
     min-width: max-content;
     min-height: 100%;
     align-items: flex-start;
+    position: relative;
   }
 
-  /* PICK BANNER */
   #pickBanner {
     display: none;
     position: fixed;
@@ -306,6 +314,76 @@
   }
 
   .rack-remove-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .zero-u-strip {
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    min-height: 36px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .zero-u-strip.drop-target {
+    background: rgba(0,212,255,0.06);
+    border-color: var(--accent);
+    outline: 1px dashed var(--accent);
+  }
+  .zero-u-header {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .zero-u-device {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    cursor: grab;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    user-select: none;
+  }
+  .zero-u-device:last-child { border-bottom: none; }
+  .zero-u-device:hover { background: var(--surface2); color: var(--text); }
+  .zero-u-device.selected { background: rgba(201,22,34,0.1); color: var(--text); }
+  .zero-u-device:active { cursor: grabbing; }
+  .zero-u-dot {
+    width: 8px; height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+  .zero-u-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    margin-left: auto;
+    letter-spacing: 0.5px;
+  }
+
+  .rack-order-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 6px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .rack-order-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rack-order-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   .rack-views { display: flex; border: 1px solid var(--border); overflow: hidden; background: var(--surface2); }
   .rack-view { display: flex; flex-direction: column; }
@@ -546,7 +624,6 @@
 
   .wiring-layer-body { padding: 7px 8px; border-top: 1px solid var(--border); }
 
-  /* Connection card */
   .connection-card {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -572,7 +649,6 @@
 
   .conn-field:focus { border-color: var(--accent); }
 
-  /* Pick button */
   .conn-pick-btn {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -618,7 +694,58 @@
 
   .conn-remove:hover { color: var(--red); }
 
-  /* Cluster toggle button */
+  .conn-patch-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    padding: 2px 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .conn-patch-toggle:hover { border-color: var(--blue); color: var(--blue); }
+  .conn-patch-toggle.active { border-color: var(--blue); color: var(--blue); background: rgba(81,146,181,0.08); }
+  .conn-patch-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    width: 60px;
+    flex-shrink: 0;
+  }
+  .conn-patch-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 6px;
+    outline: none;
+    min-width: 0;
+  }
+  .conn-patch-input:focus { border-color: var(--blue); }
+  .conn-patch-input.picking { border-color: var(--accent); background: rgba(201,22,34,0.08); }
+  .conn-patch-pick {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    width: 22px; height: 22px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .conn-patch-pick:hover { border-color: var(--blue); color: var(--blue); }
+  .conn-patch-pick.picking { border-color: var(--accent); color: var(--accent); }
+
   .conn-cluster-toggle {
     display: inline-flex;
     align-items: center;
@@ -639,7 +766,6 @@
   .conn-cluster-toggle:hover { border-color: var(--accent2); color: var(--accent2); }
   .conn-cluster-toggle.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.07); }
 
-  /* Cluster range row */
   .conn-cluster-row {
     display: flex;
     align-items: center;
@@ -763,6 +889,601 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+
+  .canvas-area.picking-device .ext-device-row {
+    cursor: crosshair !important;
+    outline: 1px dashed rgba(0,212,255,0.35) !important;
+  }
+  .canvas-area.picking-device .ext-device-row:hover {
+    outline: 2px solid var(--accent) !important;
+    filter: brightness(1.2) !important;
+  }
+
+  .ext-group-widget {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+  }
+  .ext-group-header-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ext-group-label {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ext-group-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 1px 4px;
+    flex-shrink: 0;
+  }
+  .ext-group-body {
+    border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .ext-device-row {
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+    transition: background 0.1s;
+    user-select: none;
+  }
+  .ext-device-row:last-child { border-bottom: none; }
+  .ext-device-row:hover { background: var(--surface3); }
+  .ext-device-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+  .ext-device-name {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ext-device-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+
+  .ext-group-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
+  .ext-group-card-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
+  .ext-group-card-header:hover { background: var(--surface3); }
+  .ext-group-name-input {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    flex: 1;
+    outline: none;
+    min-width: 0;
+  }
+  .ext-group-name-input::placeholder { color: var(--text3); }
+  .ext-group-body-panel { border-top: 1px solid var(--border); padding: 6px 8px; }
+  .ext-remove-group-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 5px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .ext-remove-group-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .ext-dev-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .ext-dev-name-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    min-width: 0;
+  }
+  .ext-dev-name-input:focus { border-color: var(--accent); }
+  .ext-dev-type-input {
+    width: 110px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .ext-dev-type-input:focus { border-color: var(--accent); }
+  .ext-dev-remove {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 4px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+  .ext-dev-remove:hover { color: var(--red); }
+
+  .ext-dev-cluster-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+  }
+  .ext-dev-cluster-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .ext-dev-cluster-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(212,137,10,0.07); }
+  .ext-dev-range-input {
+    width: 46px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+    text-align: center;
+  }
+  .ext-dev-range-input:focus { border-color: var(--accent); }
+
+  .add-ext-dev-btn {
+    width: 100%;
+    padding: 5px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    transition: all 0.2s;
+  }
+  .add-ext-dev-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .add-ext-group-btn {
+    margin: 7px;
+    width: calc(100% - 14px);
+    padding: 7px;
+    background: none;
+    border: 1px dashed var(--border2);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .add-ext-group-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+
+  .type-name-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    min-width: 0;
+    padding: 0;
+  }
+  .type-name-input:focus {
+    color: var(--text);
+    border-bottom: 1px solid var(--border2);
+  }
+  .type-delete-btn {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 2px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .type-color-row:hover .type-delete-btn { opacity: 1; }
+  .type-delete-btn:hover { color: var(--red); }
+  .add-type-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 5px 8px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.15s;
+    text-align: left;
+  }
+  .add-type-btn:hover { color: var(--accent); }
+
+  .conn-overrides-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .conn-override-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    width: 34px;
+  }
+  .conn-override-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    outline: none;
+    min-width: 0;
+  }
+  .conn-override-input:focus { border-color: var(--accent); color: var(--text); }
+  .conn-override-input::placeholder { color: var(--text3); }
+
+  .conn-overrides-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 3px 7px;
+    border: 1px solid var(--border);
+    background: none;
+    transition: all 0.15s;
+  }
+  .conn-overrides-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .conn-overrides-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(201,22,34,0.07); }
+
+  .ext-group-dist-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 0 7px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .ext-group-dist-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .ext-group-dist-input {
+    width: 64px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 3px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .ext-group-dist-input:focus { border-color: var(--accent); }
+  .ext-group-dist-unit {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+  .ext-group-dist-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: #d4890a;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  #wiringOverlay {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 50;
+  }
+
+  .wiring-layer-card.active-layer > .wiring-layer-header {
+    background: var(--surface3);
+    border-left: 3px solid var(--layer-color, var(--accent));
+  }
+
+  .rack-device.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    z-index: 25 !important;
+  }
+  .ext-device-row.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
+  .zero-u-device.wired {
+    outline: 2px solid var(--wire-color, #fff) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
+
+  .wire-tip {
+    position: fixed;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    letter-spacing: 0.5px;
+    max-width: 220px;
+    white-space: nowrap;
+  }
+
+  .layer-viz-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .layer-viz-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .layer-viz-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  /* ── RUN PANEL ─────────────────────────────────────────────────── */
+  .run-panel {
+    position: fixed;
+    bottom: 22px;
+    left: 0; right: 0;
+    height: 0;
+    background: var(--surface);
+    border-top: 2px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
+    z-index: 200;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.6);
+  }
+  .run-panel.visible { height: 260px; }
+
+  .run-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 36px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface2);
+  }
+  .run-panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .run-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .run-status-idle    { color: var(--text3); border-color: var(--border); }
+  .run-status-running { color: var(--accent); border-color: var(--accent); animation: pulse 1s infinite; }
+  .run-status-done    { color: var(--green); border-color: var(--green); }
+  .run-status-error   { color: var(--red); border-color: var(--red); }
+  .run-status-warn    { color: #f5c842; border-color: #f5c842; }
+
+  .run-panel-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+
+  .run-panel-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .run-panel-close:hover { border-color: var(--red); color: var(--red); }
+
+  .run-panel-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .run-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.75;
+    color: var(--text2);
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+  }
+  .run-log::-webkit-scrollbar { width: 4px; }
+  .run-log::-webkit-scrollbar-thumb { background: var(--border2); }
+  .log-line { padding: 0; }
+  .log-err  { color: var(--red); }
+  .log-info { color: var(--accent); }
+  .log-done { color: var(--green); }
+
+  .run-files-pane {
+    width: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .run-files-pane::-webkit-scrollbar { width: 4px; }
+  .run-files-pane::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  .run-files-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 7px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .output-png-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .output-png-thumb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    width: 82px;
+  }
+  .output-png-thumb img {
+    width: 82px;
+    height: 62px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    display: block;
+  }
+  .output-png-thumb:hover img { border-color: var(--accent); box-shadow: 0 0 8px rgba(201,22,34,0.3); }
+  .output-png-thumb span {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .output-file-list { display: flex; flex-direction: column; gap: 4px; }
+  .output-file-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .output-file-link:hover { border-color: var(--accent); color: var(--text); }
+  .output-file-icon { font-size: 14px; flex-shrink: 0; }
+
+  /* RUN button states */
+  #runBtn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+  #runBtn.running { animation: runPulse 0.9s ease-in-out infinite; }
+  @keyframes runPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(201,22,34,0.6), inset 0 0 0 0 rgba(255,255,255,0); }
+    50%      { box-shadow: 0 0 0 5px rgba(201,22,34,0), inset 0 0 12px rgba(255,255,255,0.05); }
+  }
 </style>
 </head>
 <body>
@@ -784,7 +1505,10 @@
   <div class="header-spacer"></div>
   <button class="header-btn" onclick="loadSampleData()">Load Example</button>
   <button class="header-btn" onclick="clearAll()">Clear</button>
-  <button class="header-btn primary" onclick="exportYAML()">Export YAML</button>
+  <button class="header-btn" onclick="exportYAML()">Export YAML</button>
+  <div class="header-divider"></div>
+  <!-- ▶ RUN button — triggers the pipeline via Flask server -->
+  <button class="header-btn primary" id="runBtn" onclick="runPipeline()" title="Save YAML and run the generation pipeline">▶ RUN</button>
 </header>
 
 <div class="app-body">
@@ -792,25 +1516,17 @@
   <div class="left-panel">
     <div class="panel-header">Device Palette</div>
     <div class="panel-scroll">
-      <div class="palette-section">
-        <div class="palette-label">Drag onto rack →</div>
-        <div class="palette-item" draggable="true" data-type="pc" data-units="4" data-name="New PC"><div class="palette-dot" style="background:#E8F4F8"></div>PC / Workstation</div>
-        <div class="palette-item" draggable="true" data-type="pdu" data-units="1" data-name="New PDU"><div class="palette-dot" style="background:#AAAAAA"></div>PDU</div>
-        <div class="palette-item" draggable="true" data-type="switch" data-units="1" data-name="New Switch"><div class="palette-dot" style="background:#B8D6D6"></div>Switch</div>
-        <div class="palette-item" draggable="true" data-type="realtime" data-units="2" data-name="New RT System"><div class="palette-dot" style="background:#FFE8D8"></div>Realtime System</div>
-        <div class="palette-item" draggable="true" data-type="Shelf" data-units="1" data-name="New Shelf"><div class="palette-dot" style="background:#ced3db"></div>Shelf</div>
-        <div class="palette-item" draggable="true" data-type="cable management" data-units="1" data-name="Cable Manager"><div class="palette-dot" style="background:#C4C4C4"></div>Cable Mgmt</div>
-        <div class="palette-item" draggable="true" data-type="customer" data-units="4" data-name="Customer Equipment"><div class="palette-dot" style="background:#ffd9d6"></div>Customer</div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding:6px 6px 8px">
-        <div class="palette-label">Type Colors</div>
+      <div style="padding:4px 6px 2px">
+        <div class="palette-label">Device Types — drag onto rack</div>
         <div id="typeColorList"></div>
+        <button class="add-type-btn" onclick="addNewType()">＋ new type</button>
       </div>
     </div>
   </div>
 
   <div class="canvas-area" id="canvasArea">
     <div class="rack-canvas" id="rackCanvas">
+      <svg id="wiringOverlay" xmlns="http://www.w3.org/2000/svg"></svg>
       <button class="add-rack-btn" onclick="addRack()" id="addRackBtn">
         <span style="font-size:24px;line-height:1">+</span>
         <span>ADD RACK</span>
@@ -822,6 +1538,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('props',this)">Properties</button>
       <button class="tab-btn" onclick="switchTab('wiring',this)">Wiring</button>
+      <button class="tab-btn" onclick="switchTab('external',this)">External</button>
       <button class="tab-btn" onclick="switchTab('yaml',this)">YAML</button>
     </div>
 
@@ -834,8 +1551,17 @@
           <div class="prop-section-title">Device</div>
           <div class="prop-row"><span class="prop-label">Name</span><input class="prop-input" id="pName" type="text" placeholder="Device name"></div>
           <div class="prop-row"><span class="prop-label">Type</span><select class="prop-select" id="pType"></select></div>
-          <div class="prop-row"><span class="prop-label">Units (U)</span><input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1"></div>
-          <div class="prop-row"><span class="prop-label">Start U</span><input class="prop-input" id="pStartU" type="number" min="1" max="42"></div>
+          <div class="prop-row">
+            <span class="prop-label">Units (U)</span>
+            <input class="prop-input" id="pUnits" type="number" min="1" max="42" value="1">
+          </div>
+          <div class="prop-row" id="startURow">
+            <span class="prop-label">Start U</span>
+            <input class="prop-input" id="pStartU" type="number" min="1" max="42">
+          </div>
+          <div id="zeroUNote" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text3);padding:2px 0 6px;letter-spacing:0.5px;">
+            ⚠ Unpositioned — no rack slot assigned
+          </div>
         </div>
         <div class="prop-section">
           <div class="prop-section-title">Pattern</div>
@@ -856,6 +1582,11 @@
     <div class="tab-content" id="tab-wiring">
       <div id="wiringLayerList"></div>
       <button class="add-layer-btn" onclick="addWiringLayer()">＋ Add Wiring Layer</button>
+    </div>
+
+    <div class="tab-content" id="tab-external">
+      <div id="extGroupList"></div>
+      <button class="add-ext-group-btn" onclick="addExtGroup()">＋ Add External Group</button>
     </div>
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
@@ -879,40 +1610,73 @@
   <div class="status-item" id="statusRacks">0 racks</div>
   <div class="status-item" id="statusDevices">0 devices</div>
   <div class="status-item" id="statusLayers">0 wiring layers</div>
+  <div class="status-item" id="statusExtGroups">0 ext groups</div>
   <div class="status-item" style="margin-left:auto">[ DEL ] Delete &nbsp;·&nbsp; [ ESC ] Deselect / Cancel Pick</div>
 </div>
 
 <!-- Pick mode banner -->
-<div id="pickBanner">⊕ Click a device on the canvas &nbsp;—&nbsp; ESC to cancel</div>
+<div id="pickBanner">⊕ Click a device on the canvas or external group &nbsp;—&nbsp; ESC to cancel</div>
+
+<!-- ── Run Output Panel ──────────────────────────────────────────────── -->
+<div class="run-panel" id="runPanel">
+  <div class="run-panel-header">
+    <span class="run-panel-title">▶ Pipeline Output</span>
+    <span class="run-status run-status-idle" id="runStatus">Idle</span>
+    <div class="run-panel-actions">
+      <button class="run-panel-close" onclick="toggleRunPanel()">✕ Hide</button>
+    </div>
+  </div>
+  <div class="run-panel-body">
+    <div class="run-log" id="runLog"><span style="color:var(--text3);font-family:var(--mono);font-size:10px">Press ▶ RUN to generate outputs…</span></div>
+    <div class="run-files-pane" id="runFiles">
+      <div class="run-files-label">Output Files</div>
+    </div>
+  </div>
+</div>
+
+<div id="wireTip" class="wire-tip"></div>
 
 <script>
 const state = {
   racks: [],
   wiringLayers: [],
-  typeColors: {
-    pc: "#E8F4F8",
-    pdu: "#AAAAAA",
-    Shelf: "#ced3db",
-    realtime: "#FFE8D8",
-    "cable management": "#C4C4C4",
-    switch: "#B8D6D6",
-    customer: "#ffd9d6"
+  externalGroups: [],
+  typeEntries: [
+    { type: 'PC / Workstation',  color: '#E8F4F8', units: 4  },
+    { type: 'Server',            color: '#dde8f4', units: 2  },
+    { type: 'PDU',               color: '#AAAAAA', units: 1  },
+    { type: 'UPS',               color: '#c8c8d8', units: 2  },
+    { type: 'Switch (1U)',       color: '#B8D6D6', units: 1  },
+    { type: 'Switch (2U)',       color: '#9ecece', units: 2  },
+    { type: 'Patch Panel',       color: '#d4c9e8', units: 1  },
+    { type: 'Realtime System',   color: '#FFE8D8', units: 2  },
+    { type: 'Shelf (1U)',        color: '#ced3db', units: 1  },
+    { type: 'Shelf (2U)',        color: '#bec3cb', units: 2  },
+    { type: 'Cable Management',  color: '#C4C4C4', units: 1  },
+    { type: 'Customer',          color: '#ffd9d6', units: 4  },
+  ],
+  // Convenience accessor — kept so external code can still read typeColors[type]
+  get typeColors() {
+    const m = {};
+    this.typeEntries.forEach(e => { m[e.type] = e.color; });
+    return m;
   },
   nextRackId: 1
 };
 
 let selectedDevRef = null;
 let dragData = null;
+let activeLayerIdx = null;
 
 // ─── PICK MODE ───────────────────────────────────────────────────────
-// pickState: null | { layerIdx, connIdx, field: 'from'|'to' }
 let pickState = null;
 
 function enterPickMode(layerIdx, connIdx, field) {
   pickState = { layerIdx, connIdx, field };
   document.getElementById('canvasArea').classList.add('picking-device');
   document.getElementById('pickBanner').classList.add('visible');
-  renderWiringLayers(); // re-render to highlight active pick button
+  renderWiringLayers();
+  renderExtGroupWidgets();
 }
 
 function exitPickMode() {
@@ -920,6 +1684,8 @@ function exitPickMode() {
   document.getElementById('canvasArea').classList.remove('picking-device');
   document.getElementById('pickBanner').classList.remove('visible');
   renderWiringLayers();
+  renderExtGroupWidgets();
+  renderWiringOverlay();
 }
 
 function handleDevicePickClick(devName) {
@@ -934,40 +1700,168 @@ function init() {
   renderTypeColors();
   setupPaletteDrag();
   updateStatus();
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(renderWiringOverlay);
+  });
+  // Try to load saved YAML from server (no-op if running offline)
+  loadYAMLFromServer();
 }
 
-function renderTypeColors() {
+function renderTypeColors() { renderPalette(); }  // alias for call-sites
+
+function renderPalette() {
   const c = document.getElementById('typeColorList');
   c.innerHTML = '';
-  for (const [type, color] of Object.entries(state.typeColors)) {
+  state.typeEntries.forEach((entry, idx) => {
+    const { type, color, units, label } = entry;
+
     const row = document.createElement('div');
     row.className = 'type-color-row';
-    row.innerHTML = `<input type="color" class="color-swatch" value="${color}" onchange="updateTypeColor('${type.replace(/'/g,"\\'")}',this.value)" title="${type}"><span>${type}</span>`;
+    row.draggable = true;
+    row.dataset.type  = type;
+    row.dataset.units = units;
+    row.dataset.name  = `New ${label || type}`;
+
+    // Drag-to-rack listeners
+    row.addEventListener('dragstart', e => {
+      const entry = state.typeEntries[idx];
+      if (!entry.type) return;  // don't drag unnamed types
+      dragData = { source: 'palette', type: entry.type, units: parseInt(entry.units) || 1, name: `New ${entry.type}` };
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+    row.addEventListener('dragend', () => dragData = null);
+
+    // Grip icon
+    const grip = document.createElement('span');
+    grip.className = 'drag-grip';
+    grip.textContent = '⠿';
+    grip.title = 'Drag onto rack';
+
+    // Colour swatch
+    const swatch = document.createElement('input');
+    swatch.type = 'color';
+    swatch.className = 'color-swatch';
+    swatch.value = color;
+    swatch.title = 'Change colour';
+    swatch.addEventListener('mousedown', e => e.stopPropagation());
+    swatch.addEventListener('change', e => {
+      state.typeEntries[idx].color = e.target.value;
+      renderAllRacks();
+      renderExtGroupWidgets();
+    });
+
+    // Label / type-name input
+    const nameInput = document.createElement('input');
+    nameInput.className = 'type-name-input';
+    nameInput.value = type;
+    nameInput.placeholder = 'Type name…';
+    nameInput.title = 'Type name — used in YAML and on devices';
+    nameInput.addEventListener('mousedown', e => e.stopPropagation());
+    nameInput.addEventListener('change', e => {
+      const newType = e.target.value.trim();
+      if (!newType) {
+        // User left it blank — remove this entry if it was never named
+        if (!type) { state.typeEntries.splice(idx, 1); renderPalette(); }
+        else { e.target.value = type; }
+        return;
+      }
+      if (newType === type) return;
+      if (state.typeEntries.some((en, i) => i !== idx && en.type === newType)) {
+        alert(`Type "${newType}" already exists.`); e.target.value = type; return;
+      }
+      // Rename type key and update all devices using it
+      state.racks.forEach(rack => {
+        ['front','rear'].forEach(face => {
+          rack[face].forEach(dev => { if (dev.type === type) dev.type = newType; });
+        });
+      });
+      state.externalGroups.forEach(group => {
+        group.devices.forEach(dev => { if (dev.type === type) dev.type = newType; });
+      });
+      state.typeEntries[idx].type = newType;
+      renderPalette();
+      renderAllRacks();
+      renderExtGroupWidgets();
+    });
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') e.target.blur();
+    });
+
+    // Units input
+    const unitsIn = document.createElement('input');
+    unitsIn.type = 'number';
+    unitsIn.className = 'type-units-input';
+    unitsIn.value = units;
+    unitsIn.min = 1; unitsIn.max = 42;
+    unitsIn.title = 'Default U height when dragged';
+    unitsIn.addEventListener('mousedown', e => e.stopPropagation());
+    unitsIn.addEventListener('change', e => {
+      state.typeEntries[idx].units = parseInt(e.target.value) || 1;
+      row.dataset.units = state.typeEntries[idx].units;
+    });
+    const unitsLbl = document.createElement('span');
+    unitsLbl.className = 'type-units-label';
+    unitsLbl.textContent = 'U';
+
+    // Delete button
+    const delBtn = document.createElement('button');
+    delBtn.className = 'type-delete-btn';
+    delBtn.textContent = '✕';
+    delBtn.title = 'Delete type';
+    delBtn.addEventListener('mousedown', e => e.stopPropagation());
+    delBtn.addEventListener('click', () => {
+      if (!confirm(`Delete type "${type}"? Devices using it will show as unstyled.`)) return;
+      state.typeEntries.splice(idx, 1);
+      renderPalette();
+      renderAllRacks();
+      renderExtGroupWidgets();
+    });
+
+    row.appendChild(grip);
+    row.appendChild(swatch);
+    row.appendChild(nameInput);
+    row.appendChild(unitsIn);
+    row.appendChild(unitsLbl);
+    row.appendChild(delBtn);
     c.appendChild(row);
-  }
-  document.querySelectorAll('.palette-item').forEach(el => {
-    const dot = el.querySelector('.palette-dot');
-    if (dot && state.typeColors[el.dataset.type]) dot.style.background = state.typeColors[el.dataset.type];
   });
   populateTypeSelects();
 }
 
-function updateTypeColor(type, color) {
-  state.typeColors[type] = color;
-  renderAllRacks();
+
+
+
+
+
+
+function addNewType() {
+  const hues = [210, 150, 30, 280, 0, 60, 180, 330];
+  const hue = hues[state.typeEntries.length % hues.length];
+  state.typeEntries.push({ type: '', color: hslToHex(hue, 40, 70), units: 1 });
+  renderPalette();
+  const inputs = document.querySelectorAll('#typeColorList .type-name-input');
+  const last = inputs[inputs.length - 1];
+  if (last) { last.focus(); last.select(); }
+}
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => { const k = (n + h / 30) % 12; const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(255 * c).toString(16).padStart(2, '0'); };
+  return `#${f(0)}${f(8)}${f(4)}`;
 }
 
 function populateTypeSelects() {
   const el = document.getElementById('pType');
   if (!el) return;
   const cur = el.value;
-  el.innerHTML = Object.keys(state.typeColors).map(t => `<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');
+  el.innerHTML = state.typeEntries.map(e => `<option value="${e.type}"${e.type===cur?' selected':''}>${e.type}</option>`).join('');
 }
 
 // ───── RACKS ─────
 function addRack() {
   const id = `rack${state.nextRackId++}`;
-  state.racks.push({ id, name: `Rack ${state.racks.length+1}`, total_u: 42, front: [], rear: [] });
+  state.racks.push({ id, name: `Rack ${state.racks.length+1}`, total_u: 42, u_order: 'bottom_top', front: [], rear: [] });
   renderAllRacks();
   updateStatus();
 }
@@ -989,7 +1883,17 @@ function renderAllRacks() {
   const addBtn = document.getElementById('addRackBtn');
   canvas.querySelectorAll('.rack-wrapper').forEach(el => el.remove());
   state.racks.forEach(rack => canvas.insertBefore(buildRackEl(rack), addBtn));
+  // Always re-render external group widgets after racks so they are always
+  // inserted after all rack wrappers and remain on the RHS.
+  canvas.querySelectorAll('.ext-group-widget').forEach(el => el.remove());
+  state.externalGroups.forEach((group, gi) => {
+    // Re-use the full widget builder but inline the insert here so ordering
+    // is guaranteed: racks are already in DOM, widgets go before addBtn.
+    const widget = _buildExtGroupWidget(group, gi);
+    canvas.insertBefore(widget, addBtn);
+  });
   populateTypeSelects();
+  requestAnimationFrame(renderWiringOverlay);
 }
 
 function buildRackEl(rack) {
@@ -1005,6 +1909,11 @@ function buildRackEl(rack) {
     <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${rack.total_u}U</span>
     <input type="number" class="mini-input" value="${rack.total_u}" min="1" max="80" style="width:60px"
       onchange="updateRackU('${rack.id}',this.value)">
+    <button class="rack-order-btn${rack.u_order === 'top_bottom' ? ' active' : ''}"
+      onclick="toggleRackOrder('${rack.id}')"
+      title="${rack.u_order === 'top_bottom' ? 'U1 at top (click to flip)' : 'U1 at bottom (click to flip)'}">
+      ${rack.u_order === 'top_bottom' ? 'U1↑top' : 'U1↓btm'}
+    </button>
     <button class="rack-remove-btn" onclick="removeRack('${rack.id}')" title="Remove">✕</button>
   `;
   wrap.appendChild(tb);
@@ -1020,7 +1929,10 @@ function buildRackEl(rack) {
   return wrap;
 }
 
-function expandDeviceToRenderItems(dev) {
+function expandDeviceToRenderItems(dev, uOrder) {
+  // uOrder: 'bottom_top' (default, U1 at bottom, patterns stack upward = decreasing start_u)
+  //         'top_bottom' (U1 at top, patterns stack downward = increasing start_u)
+  uOrder = uOrder || 'bottom_top';
   const isPattern = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
   if (!isPattern) return [{ dev, displayName: dev.name, start_u: dev.start_u }];
 
@@ -1031,7 +1943,11 @@ function expandDeviceToRenderItems(dev) {
 
   for (let i = 0; i < count; i++) {
     const n = dev.start + i;
-    const memberStartU = dev.start_u - i * step;
+    // bottom_top: each successive member is lower in the rack (smaller start_u)
+    // top_bottom: each successive member is lower on screen (larger start_u)
+    const memberStartU = uOrder === 'top_bottom'
+      ? dev.start_u + i * step
+      : dev.start_u - i * step;
     items.push({ dev, displayName: dev.name.replace('{N}', n), start_u: memberStartU, memberIndex: i, memberN: n });
   }
   return items;
@@ -1052,28 +1968,45 @@ function buildColumnEl(rack, face) {
   col.dataset.face = face;
 
   const totalU = rack.total_u || 42;
+  const uOrder = rack.u_order || 'bottom_top';  // 'bottom_top' | 'top_bottom'
 
   const renderItems = [];
+  const zeroUDevs = [];
   rack[face].forEach(dev => {
-    if (!dev.start_u || !dev.units) return;
-    expandDeviceToRenderItems(dev).forEach(item => renderItems.push(item));
+    if (!dev.units || !dev.start_u) { zeroUDevs.push(dev); return; }
+    expandDeviceToRenderItems(dev, uOrder).forEach(item => renderItems.push(item));
   });
 
   const occupied = {};
   renderItems.forEach(item => {
-    for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
-      if (u >= 1 && u <= totalU) occupied[u] = true;
+    // In both orientations, a device of N units occupies N consecutive U numbers.
+    // bottom_top: U numbers occupied are start_u down to (start_u - units + 1)
+    // top_bottom: U numbers occupied are start_u up to (start_u + units - 1)
+    if (uOrder === 'top_bottom') {
+      for (let u = item.start_u; u < item.start_u + item.dev.units; u++) {
+        if (u >= 1 && u <= totalU) occupied[u] = true;
+      }
+    } else {
+      for (let u = item.start_u; u >= item.start_u - item.dev.units + 1; u--) {
+        if (u >= 1 && u <= totalU) occupied[u] = true;
+      }
     }
   });
 
-  // Numbers strip — always visible, devices positioned in slotsArea only
   const numbersStrip = document.createElement('div');
   numbersStrip.className = 'u-numbers-strip';
 
   const slotsArea = document.createElement('div');
   slotsArea.className = 'u-slots-area';
 
-  for (let u = totalU; u >= 1; u--) {
+  // Render U rows from top of visual column downward.
+  // bottom_top: top row = highest U number (standard convention)
+  // top_bottom: top row = U1
+  const uSequence = uOrder === 'top_bottom'
+    ? Array.from({length: totalU}, (_, i) => i + 1)          // 1, 2, 3 … totalU
+    : Array.from({length: totalU}, (_, i) => totalU - i);    // totalU … 2, 1
+
+  uSequence.forEach(u => {
     const num = document.createElement('div');
     num.className = 'u-number';
     num.textContent = u;
@@ -1092,29 +2025,118 @@ function buildColumnEl(rack, face) {
     }
 
     slotsArea.appendChild(slot);
-  }
+  });
 
   renderItems.forEach(item => {
     if (item.start_u < 1 || item.start_u > totalU) return;
-    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u));
+    slotsArea.appendChild(buildDeviceEl(item.dev, rack.id, face, totalU, item.displayName, item.start_u, uOrder));
   });
 
   col.appendChild(numbersStrip);
   col.appendChild(slotsArea);
   view.appendChild(col);
+
+  // 0U device strip
+  // Always show the unpositioned strip — it's also a drop target
+  const strip = document.createElement('div');
+  strip.className = 'zero-u-strip';
+  strip.dataset.rackId = rack.id;
+  strip.dataset.face = face;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'zero-u-header';
+  hdr.textContent = zeroUDevs.length
+    ? `Unpositioned (${zeroUDevs.length})`
+    : 'Unpositioned — drop here';
+  strip.appendChild(hdr);
+
+  zeroUDevs.forEach(dev => {
+    const row = document.createElement('div');
+    row.className = 'zero-u-device' + (selectedDevRef && selectedDevRef.dev === dev ? ' selected' : '');
+    row.draggable = true;
+
+    const dot = document.createElement('div');
+    dot.className = 'zero-u-dot';
+    dot.style.background = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
+    const name = document.createElement('span');
+    name.className = 'zero-u-name';
+    name.textContent = dev.name;
+    const badge = document.createElement('span');
+    badge.className = 'zero-u-badge';
+    badge.textContent = dev.type || '';
+
+    row.appendChild(dot);
+    row.appendChild(name);
+    row.appendChild(badge);
+
+    row.addEventListener('click', () => selectDevice(dev, rack.id, face));
+
+    // Drag out of strip — treated like a rack device drag so it can be dropped onto a slot
+    row.addEventListener('dragstart', e => {
+      dragData = { source: 'rack', dev, rackId: rack.id, face };
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => { dragData = null; });
+
+    strip.appendChild(row);
+  });
+
+  // Drop onto strip — from palette or from a positioned rack device
+  strip.addEventListener('dragover', e => {
+    if (!dragData) return;
+    e.preventDefault();
+    strip.classList.add('drop-target');
+  });
+  strip.addEventListener('dragleave', () => strip.classList.remove('drop-target'));
+  strip.addEventListener('drop', e => {
+    e.preventDefault();
+    strip.classList.remove('drop-target');
+    if (!dragData) return;
+
+    const targetRack = state.racks.find(r => r.id === rack.id);
+    if (!targetRack) return;
+
+    if (dragData.source === 'palette') {
+      // New device from palette — add unpositioned
+      targetRack[face].push({ name: dragData.name, type: dragData.type });
+    } else {
+      // Existing device — move to this rack/face and strip start_u/units
+      const srcRack = state.racks.find(r => r.id === dragData.rackId);
+      if (srcRack) srcRack[dragData.face] = srcRack[dragData.face].filter(d => d !== dragData.dev);
+      delete dragData.dev.start_u;
+      delete dragData.dev.units;
+      targetRack[face].push(dragData.dev);
+      if (selectedDevRef && selectedDevRef.dev === dragData.dev) {
+        selectedDevRef.rackId = rack.id;
+        selectedDevRef.face = face;
+      }
+    }
+
+    dragData = null;
+    renderAllRacks();
+    updateStatus();
+  });
+
+  view.appendChild(strip);
+
   return view;
 }
 
-function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
+function buildDeviceEl(dev, rackId, face, totalU, displayName, startU, uOrder) {
   displayName = displayName || dev.name;
   startU = startU !== undefined ? startU : dev.start_u;
+  uOrder = uOrder || 'bottom_top';
 
   const el = document.createElement('div');
   el.className = 'rack-device';
-  const color = state.typeColors[dev.type] || '#888';
+  const color = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
   el.style.background = color;
   const uH = 22;
-  el.style.top = ((totalU - startU) * uH) + 'px';
+  // bottom_top: U1 is at the visual bottom — device top offset counts down from highest U
+  // top_bottom: U1 is at the visual top — device top offset counts up from U1
+  el.style.top = (uOrder === 'top_bottom'
+    ? (startU - 1) * uH
+    : (totalU - startU) * uH) + 'px';
   el.style.height = (dev.units * uH - 1) + 'px';
 
   const nm = displayName.length > 24 ? displayName.slice(0, 22) + '…' : displayName;
@@ -1125,7 +2147,6 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
   el.addEventListener('click', e => {
     if (pickState) {
       e.stopPropagation();
-      // Insert the base/pattern name for cluster devices so {N} syntax is preserved
       handleDevicePickClick(displayName);
       return;
     }
@@ -1149,15 +2170,7 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU) {
 }
 
 // ───── DRAG & DROP ─────
-function setupPaletteDrag() {
-  document.querySelectorAll('.palette-item').forEach(el => {
-    el.addEventListener('dragstart', e => {
-      dragData = { source: 'palette', type: el.dataset.type, units: parseInt(el.dataset.units)||1, name: el.dataset.name };
-      e.dataTransfer.effectAllowed = 'copy';
-    });
-    el.addEventListener('dragend', () => dragData = null);
-  });
-}
+function setupPaletteDrag() { /* handled in renderPalette */ }
 
 function slotDragOver(e) {
   if (!dragData) return;
@@ -1177,7 +2190,12 @@ function slotDrop(e) {
   if (!rack) return;
 
   if (dragData.source === 'palette') {
-    rack[f].push({ name: dragData.name, type: dragData.type, units: dragData.units, start_u: u });
+    if (!dragData.units) {
+      // Unpositioned device — add without a slot; user sets position via the props panel
+      rack[f].push({ name: dragData.name, type: dragData.type });
+    } else {
+      rack[f].push({ name: dragData.name, type: dragData.type, units: dragData.units, start_u: u });
+    }
   } else {
     const oldRack = state.racks.find(r => r.id === dragData.rackId);
     if (oldRack) oldRack[dragData.face] = oldRack[dragData.face].filter(d => d !== dragData.dev);
@@ -1203,8 +2221,11 @@ function selectDevice(dev, rackId, face) {
   document.getElementById('propsForm').style.display = 'flex';
 
   document.getElementById('pName').value = dev.name || '';
-  document.getElementById('pUnits').value = dev.units || 1;
+  const isZeroU = !dev.units || !dev.start_u;
+  document.getElementById('pUnits').value = isZeroU ? '' : (dev.units || 1);
   document.getElementById('pStartU').value = dev.start_u || '';
+  document.getElementById('startURow').style.display = isZeroU ? 'none' : '';
+  document.getElementById('zeroUNote').style.display = isZeroU ? 'flex' : 'none';
 
   populateTypeSelects();
   document.getElementById('pType').value = dev.type || 'pc';
@@ -1224,14 +2245,17 @@ function togglePatternFields() {
     document.getElementById('pIsPattern').checked ? 'block' : 'none';
 }
 
+// onUnitsChange removed — unpositioned state is set via applyProps, not live
+
 function applyProps() {
   if (!selectedDevRef) return;
   const dev = selectedDevRef.dev;
   dev.name = document.getElementById('pName').value;
   dev.type = document.getElementById('pType').value;
-  dev.units = parseInt(document.getElementById('pUnits').value) || 1;
+  const parsedUnits = parseInt(document.getElementById('pUnits').value);
+  dev.units = isNaN(parsedUnits) || parsedUnits < 1 ? undefined : parsedUnits;
   const su = parseInt(document.getElementById('pStartU').value);
-  dev.start_u = isNaN(su) ? undefined : su;
+  dev.start_u = isNaN(su) || !dev.units ? undefined : su;
 
   if (document.getElementById('pIsPattern').checked) {
     dev.start = parseInt(document.getElementById('pStart').value);
@@ -1262,7 +2286,260 @@ function updateRackU(id, val) {
   if (r) { r.total_u = parseInt(val)||42; renderAllRacks(); }
 }
 
+function toggleRackOrder(id) {
+  const r = state.racks.find(r => r.id === id);
+  if (!r) return;
+  r.u_order = (r.u_order === 'top_bottom') ? 'bottom_top' : 'top_bottom';
+  renderAllRacks();
+}
+
 // ───── WIRING ─────
+function setActiveLayer(li) {
+  activeLayerIdx = (activeLayerIdx === li) ? null : li;
+  renderWiringLayers();
+  renderWiringOverlay();
+}
+
+function resolveConnNames(conn) {
+  const names = [];
+  const expand = (raw) => {
+    if (!raw) return;
+    const str = Array.isArray(raw) ? raw : [raw];
+    str.forEach(s => {
+      const sStr = String(s);
+      if (sStr.includes('{N}') && conn.start !== undefined && conn.end !== undefined) {
+        for (let n = conn.start; n <= conn.end; n++) names.push(sStr.replace('{N}', n));
+      } else {
+        names.push(sStr);
+      }
+    });
+  };
+  expand(conn.from);
+  expand(conn.to);
+  return [...new Set(names)];
+}
+
+function getElementOffsetInCanvas(el) {
+  const canvas = document.getElementById('rackCanvas');
+  let x = 0, y = 0;
+  let cur = el;
+  while (cur && cur !== canvas) {
+    x += cur.offsetLeft;
+    y += cur.offsetTop;
+    cur = cur.offsetParent;
+  }
+  return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+}
+
+function getDeviceCanvasPoint(devName) {
+  const canvas = document.getElementById('rackCanvas');
+
+  for (const el of canvas.querySelectorAll('.rack-device')) {
+    const label = el.querySelector('.device-label');
+    if (!label) continue;
+    const text = label.textContent.trim();
+    if (text === devName || (text.endsWith('…') && devName.startsWith(text.slice(0, -1)) && devName !== text.slice(0, -1))) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
+
+  for (const el of canvas.querySelectorAll('.ext-device-row')) {
+    const nameEl = el.querySelector('.ext-device-name');
+    if (!nameEl) continue;
+    if (nameEl.textContent.trim() === devName) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
+
+  for (const el of canvas.querySelectorAll('.zero-u-device')) {
+    const nameEl = el.querySelector('.zero-u-name');
+    if (!nameEl) continue;
+    if (nameEl.textContent.trim() === devName) {
+      return { ...getElementOffsetInCanvas(el), el };
+    }
+  }
+  return null;
+}
+
+function renderWiringOverlay() {
+  const svg = document.getElementById('wiringOverlay');
+  svg.innerHTML = '';
+
+  document.querySelectorAll('.rack-device.wired, .ext-device-row.wired, .zero-u-device.wired').forEach(el => {
+    el.classList.remove('wired');
+    el.style.removeProperty('--wire-color');
+  });
+
+  if (activeLayerIdx === null || !state.wiringLayers[activeLayerIdx]) return;
+
+  const layer = state.wiringLayers[activeLayerIdx];
+  const color = layer.edge_color || '#888';
+
+  const resolvedConns = [];
+  layer.connections.forEach(conn => {
+    if (!conn.from) return;
+    const froms = [];
+    const tos   = [];
+
+    const expandSide = (raw, arr) => {
+      if (!raw) return;
+      const items = Array.isArray(raw) ? raw : [raw];
+      items.forEach(s => {
+        const sStr = String(s);
+        const hasCluster = conn.start !== undefined && conn.end !== undefined;
+        const hasPlaceholder = /\{N([+-]\d+)?\}/.test(sStr);
+        if (hasPlaceholder && hasCluster) {
+          for (let n = conn.start; n <= conn.end; n++) {
+            const resolved = sStr
+              .replace(/\{N\+(\d+)\}/g, (_, d) => n + parseInt(d))
+              .replace(/\{N-(\d+)\}/g, (_, d) => n - parseInt(d))
+              .replace(/\{N\}/g, n);
+            arr.push(resolved);
+          }
+        } else {
+          arr.push(sStr);
+        }
+      });
+    };
+
+    expandSide(conn.from, froms);
+    expandSide(conn.to,   tos);
+
+    if (froms.length === tos.length) {
+      froms.forEach((f, i) => resolvedConns.push({ from: f, to: tos[i], conn }));
+    } else if (froms.length === 1) {
+      tos.forEach(t => resolvedConns.push({ from: froms[0], to: t, conn }));
+    } else if (tos.length === 1) {
+      froms.forEach(f => resolvedConns.push({ from: f, to: tos[0], conn }));
+    } else {
+      const len = Math.min(froms.length, tos.length);
+      for (let i = 0; i < len; i++) resolvedConns.push({ from: froms[i], to: tos[i], conn });
+    }
+  });
+
+  const wiredNames = new Set();
+  resolvedConns.forEach(({ from, to }) => { wiredNames.add(from); wiredNames.add(to); });
+
+  document.querySelectorAll('.rack-device').forEach(el => {
+    const label = el.querySelector('.device-label');
+    if (!label) return;
+    const text = label.textContent.trim();
+    const matched = [...wiredNames].some(n => n === text || (text.endsWith('…') && n.startsWith(text.slice(0, -1)) && n !== text.slice(0, -1)));
+    if (matched) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+  document.querySelectorAll('.ext-device-row').forEach(el => {
+    const nameEl = el.querySelector('.ext-device-name');
+    if (!nameEl) return;
+    if (wiredNames.has(nameEl.textContent.trim())) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+  document.querySelectorAll('.zero-u-device').forEach(el => {
+    const nameEl = el.querySelector('.zero-u-name');
+    if (!nameEl) return;
+    if (wiredNames.has(nameEl.textContent.trim())) {
+      el.classList.add('wired');
+      el.style.setProperty('--wire-color', color);
+    }
+  });
+
+  const canvas = document.getElementById('rackCanvas');
+  const canvasW = canvas.scrollWidth;
+  const canvasH = canvas.scrollHeight;
+  svg.setAttribute('viewBox', `0 0 ${canvasW} ${canvasH}`);
+  svg.style.width  = canvasW + 'px';
+  svg.style.height = canvasH + 'px';
+
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const markerId = `arrow-${activeLayerIdx}`;
+  defs.innerHTML = `
+    <marker id="${markerId}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="${color}" opacity="0.85"/>
+    </marker>`;
+  svg.appendChild(defs);
+
+  const drawn = new Set();
+  resolvedConns.forEach(({ from, to, conn }) => {
+    const key = from + '|||' + to;
+    const keyRev = to + '|||' + from;
+    if (drawn.has(key) || drawn.has(keyRev)) return;
+    drawn.add(key);
+
+    const ptA = getDeviceCanvasPoint(from);
+    const ptB = getDeviceCanvasPoint(to);
+    if (!ptA || !ptB) return;
+
+    const x1 = ptA.x, y1 = ptA.y;
+    const x2 = ptB.x, y2 = ptB.y;
+
+    const dx = x2 - x1, dy = y2 - y1;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const curve = Math.min(dist * 0.35, 120);
+    const px = -dy / dist * curve;
+    const py =  dx / dist * curve;
+    const cx = (x1 + x2) / 2 + px;
+    const cy = (y1 + y2) / 2 + py;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+    path.setAttribute('d', d);
+    const arcColor = conn.edge_color || color;  // per-connection override or layer colour
+    const label = conn.label || conn.cable_type || '';
+
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', arcColor);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-opacity', '0.75');
+    path.setAttribute('marker-end', `url(#${markerId})`);
+
+    const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hitPath.setAttribute('d', d);
+    hitPath.setAttribute('fill', 'none');
+    hitPath.setAttribute('stroke', 'transparent');
+    hitPath.setAttribute('stroke-width', '12');
+    hitPath.style.pointerEvents = 'stroke';
+    hitPath.style.cursor = 'default';
+
+    const tip = document.getElementById('wireTip');
+    hitPath.addEventListener('mousemove', e => {
+      const tipText = `${from} → ${to}` + (label ? `\n${label}` : '');
+      tip.textContent = tipText;
+      tip.style.display = 'block';
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top  = (e.clientY - 8)  + 'px';
+      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('stroke-opacity', '1');
+    });
+    hitPath.addEventListener('mouseleave', () => {
+      tip.style.display = 'none';
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('stroke-opacity', '0.75');
+    });
+
+    svg.appendChild(path);
+    svg.appendChild(hitPath);
+
+    if (label) {
+      const tx = (x1 + 2*cx + x2) / 4;
+      const ty = (y1 + 2*cy + y2) / 4;
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', tx);
+      text.setAttribute('y', ty - 5);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-family', 'Share Tech Mono, monospace');
+      text.setAttribute('font-size', '9');
+      text.setAttribute('fill', arcColor);
+      text.setAttribute('opacity', '0.8');
+      text.textContent = label;
+      svg.appendChild(text);
+    }
+  });
+}
+
 function addWiringLayer() {
   const hues = ['#b551a9','#5192b5','#3ecf8e','#f5c842','#ff7b5b','#7c9ef9'];
   state.wiringLayers.push({
@@ -1270,7 +2547,7 @@ function addWiringLayer() {
     edge_color: hues[state.wiringLayers.length % hues.length],
     cable_type: 'Ethernet',
     connections: [],
-    collapsed: false
+    collapsed: true
   });
   renderWiringLayers();
   updateStatus();
@@ -1282,7 +2559,9 @@ function renderWiringLayers() {
 
   state.wiringLayers.forEach((layer, li) => {
     const card = document.createElement('div');
-    card.className = 'wiring-layer-card';
+    const isActive = (activeLayerIdx === li);
+    card.className = 'wiring-layer-card' + (isActive ? ' active-layer' : '');
+    card.style.setProperty('--layer-color', layer.edge_color);
 
     const header = document.createElement('div');
     header.className = 'wiring-layer-header';
@@ -1293,12 +2572,15 @@ function renderWiringLayers() {
         onchange="state.wiringLayers[${li}].name=this.value">
       <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
         style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;outline:none;max-width:82px;letter-spacing:0.5px">
-        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI'].map(ct =>
+        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI','Display Port'].map(ct =>
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
       </select>
       <input type="color" value="${layer.edge_color}" onclick="event.stopPropagation()"
-        onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers()"
+        onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers();renderWiringOverlay()"
         style="width:20px;height:20px;border:none;background:none;cursor:pointer;padding:0">
+      <button class="layer-viz-btn${isActive ? ' active' : ''}"
+        onclick="event.stopPropagation();setActiveLayer(${li})"
+        title="${isActive ? 'Hide wiring overlay' : 'Show wiring overlay on canvas'}">Visualise</button>
       <button onclick="event.stopPropagation();removeLayer(${li})"
         style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px">✕</button>
       <span style="color:var(--text3);font-size:10px">${layer.collapsed?'▶':'▼'}</span>
@@ -1320,6 +2602,7 @@ function renderWiringLayers() {
       ab.onclick = () => {
         state.wiringLayers[li].connections.push({ from: '', to: '' });
         renderWiringLayers();
+        renderWiringOverlay();
       };
       body.appendChild(ab);
       card.appendChild(body);
@@ -1336,11 +2619,9 @@ function buildConnectionCard(li, ci, conn) {
   const card = document.createElement('div');
   card.className = 'connection-card';
 
-  // ── Main from → to row ──────────────────────
   const mainRow = document.createElement('div');
   mainRow.className = 'conn-main-row';
 
-  // FROM endpoint
   const fromWrap = document.createElement('div');
   fromWrap.className = 'conn-endpoint';
 
@@ -1348,7 +2629,7 @@ function buildConnectionCard(li, ci, conn) {
   fromInput.className = 'conn-field';
   fromInput.placeholder = 'From device';
   fromInput.value = conn.from || '';
-  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; });
+  fromInput.addEventListener('change', e => { state.wiringLayers[li].connections[ci].from = e.target.value; renderWiringOverlay(); });
 
   const fromPick = document.createElement('button');
   fromPick.className = 'conn-pick-btn' + (isPickingFrom ? ' picking' : '');
@@ -1367,7 +2648,6 @@ function buildConnectionCard(li, ci, conn) {
   arrow.className = 'conn-arrow';
   arrow.textContent = '→';
 
-  // TO endpoint
   const toWrap = document.createElement('div');
   toWrap.className = 'conn-endpoint';
 
@@ -1379,6 +2659,7 @@ function buildConnectionCard(li, ci, conn) {
     const raw = e.target.value;
     const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
     state.wiringLayers[li].connections[ci].to = parts.length > 1 ? parts : (parts[0] || '');
+    renderWiringOverlay();
   });
 
   const toPick = document.createElement('button');
@@ -1394,7 +2675,6 @@ function buildConnectionCard(li, ci, conn) {
   toWrap.appendChild(toInput);
   toWrap.appendChild(toPick);
 
-  // Remove button
   const removeBtn = document.createElement('button');
   removeBtn.className = 'conn-remove';
   removeBtn.textContent = '✕';
@@ -1407,7 +2687,115 @@ function buildConnectionCard(li, ci, conn) {
   mainRow.appendChild(removeBtn);
   card.appendChild(mainRow);
 
-  // ── Cluster range toggle + fields ───────────
+  const hasOverrides = conn.cable_type !== undefined || conn.label !== undefined || conn.edge_color !== undefined || conn._showOverrides;
+  const hasPatch = conn.via_patch_from !== undefined || conn.via_patch_to !== undefined || conn._showPatch;
+
+  const overridesFooter = document.createElement('div');
+  overridesFooter.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;';
+
+  const overridesToggle = document.createElement('button');
+  overridesToggle.className = 'conn-overrides-toggle' + (hasOverrides ? ' active' : '');
+  overridesToggle.innerHTML = hasOverrides
+    ? '✎&nbsp;overrides ▾'
+    : '<span style="opacity:.5">✎</span>&nbsp;cable / label';
+  overridesToggle.title = 'Override the layer cable type or add a label for this connection';
+  overridesToggle.addEventListener('click', () => {
+    if (hasOverrides) {
+      delete state.wiringLayers[li].connections[ci].cable_type;
+      delete state.wiringLayers[li].connections[ci].label;
+      delete state.wiringLayers[li].connections[ci].edge_color;
+      state.wiringLayers[li].connections[ci]._showOverrides = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showOverrides = true;
+    }
+    renderWiringLayers();
+  });
+  overridesFooter.appendChild(overridesToggle);
+  card.appendChild(overridesFooter);
+
+  if (hasOverrides) {
+    const overridesBox = document.createElement('div');
+    overridesBox.style.cssText = 'margin-top:5px;padding-top:5px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
+
+    const cableRow = document.createElement('div');
+    cableRow.className = 'conn-overrides-row';
+    const cableLbl = document.createElement('span');
+    cableLbl.className = 'conn-override-label';
+    cableLbl.textContent = 'Cable';
+    const cableSelect = document.createElement('select');
+    cableSelect.className = 'conn-override-input';
+    cableSelect.style.cursor = 'pointer';
+    const cableTypes = ['', 'Ethernet', 'C13-C14', 'C19-C20', 'Included', 'Fibre', 'USB', 'HDMI'];
+    cableTypes.forEach(ct => {
+      const opt = document.createElement('option');
+      opt.value = ct;
+      opt.textContent = ct || '— inherit from layer —';
+      if (ct === (conn.cable_type || '')) opt.selected = true;
+      cableSelect.appendChild(opt);
+    });
+    cableSelect.addEventListener('change', e => {
+      const v = e.target.value;
+      if (v) state.wiringLayers[li].connections[ci].cable_type = v;
+      else delete state.wiringLayers[li].connections[ci].cable_type;
+    });
+    cableRow.appendChild(cableLbl);
+    cableRow.appendChild(cableSelect);
+    overridesBox.appendChild(cableRow);
+
+    const labelRow = document.createElement('div');
+    labelRow.className = 'conn-overrides-row';
+    const labelLbl = document.createElement('span');
+    labelLbl.className = 'conn-override-label';
+    labelLbl.textContent = 'Label';
+    const labelIn = document.createElement('input');
+    labelIn.className = 'conn-override-input';
+    labelIn.placeholder = 'e.g. DC adapter';
+    labelIn.value = conn.label || '';
+    labelIn.addEventListener('change', e => {
+      const v = e.target.value.trim();
+      if (v) state.wiringLayers[li].connections[ci].label = v;
+      else delete state.wiringLayers[li].connections[ci].label;
+    });
+    labelRow.appendChild(labelLbl);
+    labelRow.appendChild(labelIn);
+    overridesBox.appendChild(labelRow);
+
+    // Colour override row
+    const colorRow = document.createElement('div');
+    colorRow.className = 'conn-overrides-row';
+    const colorLbl = document.createElement('span');
+    colorLbl.className = 'conn-override-label';
+    colorLbl.textContent = 'Colour';
+    // Swatch — shows layer colour when no override is set
+    const colorSwatch = document.createElement('input');
+    colorSwatch.type = 'color';
+    colorSwatch.className = 'color-swatch';
+    colorSwatch.style.cssText = 'width:28px;height:24px;cursor:pointer;flex-shrink:0;';
+    colorSwatch.value = conn.edge_color || state.wiringLayers[li].edge_color || '#888888';
+    colorSwatch.title = conn.edge_color ? 'Override active — click to change' : 'Inheriting layer colour — click to override';
+    colorSwatch.addEventListener('input', e => {
+      state.wiringLayers[li].connections[ci].edge_color = e.target.value;
+      renderWiringOverlay();
+    });
+    // Clear button — removes the override and resets swatch to layer colour
+    const colorClear = document.createElement('button');
+    colorClear.textContent = conn.edge_color ? '✕ clear' : '— inherit';
+    colorClear.style.cssText = 'background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;font-family:var(--mono);font-size:9px;padding:2px 6px;letter-spacing:1px;transition:all 0.15s;';
+    colorClear.addEventListener('mouseenter', () => { colorClear.style.borderColor = 'var(--red)'; colorClear.style.color = 'var(--red)'; });
+    colorClear.addEventListener('mouseleave', () => { colorClear.style.borderColor = ''; colorClear.style.color = ''; });
+    colorClear.addEventListener('click', () => {
+      delete state.wiringLayers[li].connections[ci].edge_color;
+      renderWiringLayers();
+      renderWiringOverlay();
+    });
+    colorRow.appendChild(colorLbl);
+    colorRow.appendChild(colorSwatch);
+    colorRow.appendChild(colorClear);
+    overridesBox.appendChild(colorRow);
+
+    card.appendChild(overridesBox);
+  }
+
   const hasCluster = conn.start !== undefined || conn.end !== undefined || conn._showCluster;
 
   const clusterFooter = document.createElement('div');
@@ -1434,6 +2822,25 @@ function buildConnectionCard(li, ci, conn) {
     renderWiringLayers();
   });
   clusterFooter.appendChild(toggleBtn);
+
+  // ── Patch panel toggle ──
+  const patchToggle = document.createElement('button');
+  patchToggle.className = 'conn-patch-toggle' + (hasPatch ? ' active' : '');
+  patchToggle.title = 'Route via patch panels — adds via_patch_from / via_patch_to hops in YAML';
+  patchToggle.innerHTML = hasPatch
+    ? '⊞\u00a0via patch ▾'
+    : '<span style="opacity:.5">⊞</span>\u00a0via patch';
+  patchToggle.addEventListener('click', () => {
+    if (hasPatch) {
+      delete state.wiringLayers[li].connections[ci].via_patch_from;
+      delete state.wiringLayers[li].connections[ci].via_patch_to;
+      state.wiringLayers[li].connections[ci]._showPatch = false;
+    } else {
+      state.wiringLayers[li].connections[ci]._showPatch = true;
+    }
+    renderWiringLayers();
+  });
+  clusterFooter.appendChild(patchToggle);
   card.appendChild(clusterFooter);
 
   if (hasCluster) {
@@ -1485,11 +2892,406 @@ function buildConnectionCard(li, ci, conn) {
     card.appendChild(clusterRow);
   }
 
+  // Patch panel expanded fields
+  if (hasPatch) {
+    const patchBox = document.createElement('div');
+    patchBox.style.cssText = 'margin-top:5px;padding:5px 0 0;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
+
+    const patchNote = document.createElement('div');
+    patchNote.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);padding-bottom:2px;';
+    patchNote.textContent = 'from → PP(from) ⟶ PP(to) → to';
+    patchBox.appendChild(patchNote);
+
+    ['from', 'to'].forEach(side => {
+      const field = side === 'from' ? 'via_patch_from' : 'via_patch_to';
+      const isPickingPatch = pickState && pickState.layerIdx===li && pickState.connIdx===ci && pickState.field===field;
+
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:5px;';
+
+      const lbl = document.createElement('span');
+      lbl.className = 'conn-patch-label';
+      lbl.textContent = side === 'from' ? 'PP (from)' : 'PP (to)';
+
+      const input = document.createElement('input');
+      input.className = 'conn-patch-input' + (isPickingPatch ? ' picking' : '');
+      input.placeholder = side === 'from' ? 'Patch panel at source rack' : 'Patch panel at dest rack';
+      input.value = conn[field] || '';
+      input.addEventListener('mousedown', e => e.stopPropagation());
+      input.addEventListener('change', e => {
+        const v = e.target.value.trim();
+        if (v) state.wiringLayers[li].connections[ci][field] = v;
+        else delete state.wiringLayers[li].connections[ci][field];
+        renderWiringOverlay();
+      });
+
+      const pick = document.createElement('button');
+      pick.className = 'conn-patch-pick' + (isPickingPatch ? ' picking' : '');
+      pick.title = 'Pick from canvas';
+      pick.innerHTML = '⊕';
+      pick.addEventListener('click', e => {
+        e.stopPropagation();
+        if (isPickingPatch) { exitPickMode(); return; }
+        enterPickMode(li, ci, field);
+      });
+
+      row.appendChild(lbl);
+      row.appendChild(input);
+      row.appendChild(pick);
+      patchBox.appendChild(row);
+    });
+
+    card.appendChild(patchBox);
+  }
+
   return card;
 }
 
-function removeLayer(li) { state.wiringLayers.splice(li,1); renderWiringLayers(); updateStatus(); }
-function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); }
+function removeLayer(li) {
+  state.wiringLayers.splice(li, 1);
+  if (activeLayerIdx === li) activeLayerIdx = null;
+  else if (activeLayerIdx > li) activeLayerIdx--;
+  renderWiringLayers();
+  renderWiringOverlay();
+  updateStatus();
+}
+function removeConn(li, ci) { state.wiringLayers[li].connections.splice(ci,1); renderWiringLayers(); renderWiringOverlay(); }
+
+// ─── EXTERNAL GROUP WIDGETS (on canvas) ────────────────────────────────────
+// ── Build a single external-group canvas widget (no DOM insertion) ──────────
+function _buildExtGroupWidget(group, gi) {
+  const widget = document.createElement('div');
+  widget.className = 'ext-group-widget';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'ext-group-header-bar';
+  const lbl = document.createElement('span');
+  lbl.className = 'ext-group-label';
+  lbl.textContent = group.name || 'External Group';
+  const tag = document.createElement('span');
+  tag.className = 'ext-group-tag';
+  tag.textContent = 'EXT';
+  const distBadge = document.createElement('span');
+  distBadge.className = 'ext-group-dist-badge';
+  distBadge.textContent = group.distance_from_racks !== undefined ? `${group.distance_from_racks}m` : '';
+  distBadge.title = 'Distance from racks';
+  hdr.appendChild(lbl);
+  hdr.appendChild(distBadge);
+  hdr.appendChild(tag);
+  widget.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.className = 'ext-group-body';
+
+  const displayDevs = [];
+  group.devices.forEach(dev => {
+    const isCluster = dev.start !== undefined && dev.end !== undefined && dev.name.includes('{N}');
+    if (isCluster) {
+      for (let n = dev.start; n <= dev.end; n++) {
+        displayDevs.push({ dev, displayName: dev.name.replace('{N}', n) });
+      }
+    } else {
+      displayDevs.push({ dev, displayName: dev.name });
+    }
+  });
+
+  if (displayDevs.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:8px;font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:1px;';
+    empty.textContent = 'No devices';
+    body.appendChild(empty);
+  } else {
+    displayDevs.forEach(({ dev, displayName }) => {
+      const row = document.createElement('div');
+      row.className = 'ext-device-row';
+
+      const dot = document.createElement('div');
+      dot.className = 'ext-device-dot';
+      dot.style.background = (state.typeEntries.find(e => e.type === dev.type) || {}).color || '#888';
+
+      const name = document.createElement('span');
+      name.className = 'ext-device-name';
+      name.textContent = displayName;
+
+      const badge = document.createElement('span');
+      badge.className = 'ext-device-badge';
+      badge.textContent = dev.type;
+
+      row.appendChild(dot);
+      row.appendChild(name);
+      row.appendChild(badge);
+
+      row.addEventListener('click', e => {
+        if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
+      });
+
+      body.appendChild(row);
+    });
+  }
+
+  widget.appendChild(body);
+  return widget;
+}
+
+// Render all external group widgets onto the canvas.
+// Delegates to renderAllRacks which guarantees RHS placement — only call this
+// directly when racks have not changed (e.g. editing an ext-group property).
+function renderExtGroupWidgets() {
+  const canvas = document.getElementById('rackCanvas');
+  canvas.querySelectorAll('.ext-group-widget').forEach(el => el.remove());
+  const addBtn = document.getElementById('addRackBtn');
+  // Racks are already in the DOM here, so inserting before addBtn puts
+  // widgets to the right of all rack wrappers.
+  state.externalGroups.forEach((group, gi) => {
+    canvas.insertBefore(_buildExtGroupWidget(group, gi), addBtn);
+  });
+}
+
+// ─── EXTERNAL GROUPS TAB ───────────────────────────────────────────────────
+function addExtGroup() {
+  state.externalGroups.push({ name: `Group ${state.externalGroups.length + 1}`, distance_from_racks: 5, devices: [], collapsed: false });
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+  updateStatus();
+}
+
+function renderExtGroupPanel() {
+  const c = document.getElementById('extGroupList');
+  c.innerHTML = '';
+
+  state.externalGroups.forEach((group, gi) => {
+    const card = document.createElement('div');
+    card.className = 'ext-group-card';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'ext-group-card-header';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'ext-group-name-input';
+    nameInput.placeholder = 'Group name';
+    nameInput.value = group.name || '';
+    nameInput.addEventListener('click', e => e.stopPropagation());
+    nameInput.addEventListener('change', e => {
+      state.externalGroups[gi].name = e.target.value;
+      renderExtGroupWidgets();
+    });
+
+    const countBadge = document.createElement('span');
+    countBadge.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;flex-shrink:0;';
+    countBadge.textContent = `${group.devices.length} dev`;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'ext-remove-group-btn';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'Remove group';
+    removeBtn.addEventListener('click', e => { e.stopPropagation(); removeExtGroup(gi); });
+
+    const chevron = document.createElement('span');
+    chevron.style.cssText = 'color:var(--text3);font-size:10px;flex-shrink:0;';
+    chevron.textContent = group.collapsed ? '▶' : '▼';
+
+    hdr.appendChild(nameInput);
+    hdr.appendChild(countBadge);
+    hdr.appendChild(removeBtn);
+    hdr.appendChild(chevron);
+    hdr.addEventListener('click', () => {
+      state.externalGroups[gi].collapsed = !state.externalGroups[gi].collapsed;
+      renderExtGroupPanel();
+    });
+    card.appendChild(hdr);
+
+    if (!group.collapsed) {
+      const body = document.createElement('div');
+      body.className = 'ext-group-body-panel';
+
+      const distRow = document.createElement('div');
+      distRow.className = 'ext-group-dist-row';
+      const distLabel = document.createElement('span');
+      distLabel.className = 'ext-group-dist-label';
+      distLabel.textContent = 'Distance from racks';
+      const distInput = document.createElement('input');
+      distInput.className = 'ext-group-dist-input';
+      distInput.type = 'number';
+      distInput.min = '0';
+      distInput.step = '0.5';
+      distInput.placeholder = '0';
+      distInput.value = group.distance_from_racks !== undefined ? group.distance_from_racks : '';
+      distInput.title = 'Distance from the rack(s) to this external group in metres';
+      distInput.addEventListener('click', e => e.stopPropagation());
+      distInput.addEventListener('change', e => {
+        const v = parseFloat(e.target.value);
+        state.externalGroups[gi].distance_from_racks = isNaN(v) ? undefined : v;
+        renderExtGroupWidgets();
+      });
+      const distUnit = document.createElement('span');
+      distUnit.className = 'ext-group-dist-unit';
+      distUnit.textContent = 'm';
+      distRow.appendChild(distLabel);
+      distRow.appendChild(distInput);
+      distRow.appendChild(distUnit);
+      body.appendChild(distRow);
+
+      group.devices.forEach((dev, di) => {
+        body.appendChild(buildExtDevRow(gi, di, dev));
+      });
+
+      const addDevBtn = document.createElement('button');
+      addDevBtn.className = 'add-ext-dev-btn';
+      addDevBtn.textContent = '＋ Add Device';
+      addDevBtn.onclick = () => {
+        state.externalGroups[gi].devices.push({ name: '', type: 'pc' });
+        renderExtGroupPanel();
+        renderExtGroupWidgets();
+      };
+      body.appendChild(addDevBtn);
+      card.appendChild(body);
+    }
+
+    c.appendChild(card);
+  });
+}
+
+function buildExtDevRow(gi, di, dev) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'margin-bottom:5px;';
+
+  const row = document.createElement('div');
+  row.className = 'ext-dev-row';
+
+  const nameIn = document.createElement('input');
+  nameIn.className = 'ext-dev-name-input';
+  nameIn.placeholder = 'Device name (use {N} for cluster)';
+  nameIn.value = dev.name || '';
+  nameIn.addEventListener('change', e => {
+    state.externalGroups[gi].devices[di].name = e.target.value;
+    renderExtGroupWidgets();
+  });
+
+  const typeIn = document.createElement('select');
+  typeIn.className = 'ext-dev-type-input';
+  typeIn.title = 'Device type (used for colour lookup)';
+  // Blank option so an unset type is visible
+  const blankOpt = document.createElement('option');
+  blankOpt.value = '';
+  blankOpt.textContent = '— type —';
+  typeIn.appendChild(blankOpt);
+  state.typeEntries.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = entry.type;
+    opt.textContent = entry.type;
+    if (entry.type === (dev.type || '')) opt.selected = true;
+    typeIn.appendChild(opt);
+  });
+  typeIn.addEventListener('change', e => {
+    state.externalGroups[gi].devices[di].type = e.target.value;
+    renderExtGroupWidgets();
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'ext-dev-remove';
+  removeBtn.textContent = '✕';
+  removeBtn.addEventListener('click', () => removeExtDevice(gi, di));
+
+  row.appendChild(nameIn);
+  row.appendChild(typeIn);
+  row.appendChild(removeBtn);
+  wrapper.appendChild(row);
+
+  const hasCluster = dev.start !== undefined || dev.end !== undefined || dev._showCluster;
+
+  const clusterFooter = document.createElement('div');
+  clusterFooter.style.cssText = 'display:flex;align-items:center;gap:5px;margin-top:3px;margin-left:6px;';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'ext-dev-cluster-toggle' + (hasCluster ? ' active' : '');
+  toggleBtn.innerHTML = hasCluster
+    ? '<span style="color:var(--accent)">{N}</span>&nbsp;cluster ▾'
+    : '<span style="opacity:.5">{N}</span>&nbsp;add cluster';
+  toggleBtn.addEventListener('click', () => {
+    if (hasCluster) {
+      delete state.externalGroups[gi].devices[di].start;
+      delete state.externalGroups[gi].devices[di].end;
+      state.externalGroups[gi].devices[di]._showCluster = false;
+    } else {
+      state.externalGroups[gi].devices[di]._showCluster = true;
+      if (state.externalGroups[gi].devices[di].start === undefined)
+        state.externalGroups[gi].devices[di].start = 1;
+      if (state.externalGroups[gi].devices[di].end === undefined)
+        state.externalGroups[gi].devices[di].end = 3;
+    }
+    renderExtGroupPanel();
+    renderExtGroupWidgets();
+  });
+  clusterFooter.appendChild(toggleBtn);
+  wrapper.appendChild(clusterFooter);
+
+  if (hasCluster) {
+    const clusterRow = document.createElement('div');
+    clusterRow.className = 'conn-cluster-row';
+    clusterRow.style.marginLeft = '6px';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'conn-cluster-label';
+    lbl.textContent = 'N =';
+
+    const startIn = document.createElement('input');
+    startIn.className = 'ext-dev-range-input';
+    startIn.type = 'number';
+    startIn.title = 'Start N (inclusive)';
+    startIn.placeholder = '1';
+    startIn.value = dev.start !== undefined ? dev.start : '';
+    startIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.externalGroups[gi].devices[di].start = isNaN(v) ? undefined : v;
+      renderExtGroupWidgets();
+    });
+
+    const sep = document.createElement('span');
+    sep.className = 'conn-range-sep';
+    sep.textContent = '→';
+
+    const endIn = document.createElement('input');
+    endIn.className = 'ext-dev-range-input';
+    endIn.type = 'number';
+    endIn.title = 'End N (inclusive)';
+    endIn.placeholder = '3';
+    endIn.value = dev.end !== undefined ? dev.end : '';
+    endIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      state.externalGroups[gi].devices[di].end = isNaN(v) ? undefined : v;
+      renderExtGroupWidgets();
+    });
+
+    const hint = document.createElement('span');
+    hint.className = 'conn-range-hint';
+    const cnt = (dev.start !== undefined && dev.end !== undefined)
+      ? Math.max(0, dev.end - dev.start + 1) : '?';
+    hint.textContent = `(${cnt} device${cnt === 1 ? '' : 's'})`;
+
+    clusterRow.appendChild(lbl);
+    clusterRow.appendChild(startIn);
+    clusterRow.appendChild(sep);
+    clusterRow.appendChild(endIn);
+    clusterRow.appendChild(hint);
+    wrapper.appendChild(clusterRow);
+  }
+
+  return wrapper;
+}
+
+function removeExtGroup(gi) {
+  if (!confirm('Remove this external group?')) return;
+  state.externalGroups.splice(gi, 1);
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+  updateStatus();
+}
+
+function removeExtDevice(gi, di) {
+  state.externalGroups[gi].devices.splice(di, 1);
+  renderExtGroupPanel();
+  renderExtGroupWidgets();
+}
 
 // ───── YAML ─────
 let yamlDirty = false;
@@ -1520,7 +3322,7 @@ function generateYAML() {
   y += `front_to_back_length: ${fb}  # m\n\n`;
 
   y += 'type_colors:\n';
-  for (const [t, c] of Object.entries(state.typeColors)) y += `  ${t}: "${c}"\n`;
+  state.typeEntries.forEach(e => y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n`);
   y += '\n';
 
   y += 'racks:\n';
@@ -1530,6 +3332,7 @@ function generateYAML() {
     y += `      id: ${rack.id}\n`;
     y += `      name: ${rack.name}\n`;
     y += `      total_u: ${rack.total_u}\n`;
+    if (rack.u_order && rack.u_order !== 'bottom_top') y += `      u_order: ${rack.u_order}\n`;
 
     ['front','rear'].forEach(face => {
       const devs = rack[face];
@@ -1549,6 +3352,25 @@ function generateYAML() {
     y += '\n';
   });
 
+  if (state.externalGroups.length > 0) {
+    y += 'external_devices:\n';
+    state.externalGroups.forEach(group => {
+      y += `  - name: ${(group.name.includes(' ') || group.name.includes('{')) ? '"' + group.name + '"' : group.name}\n`;
+      if (group.distance_from_racks !== undefined) y += `    distance_from_racks: ${group.distance_from_racks}  # m\n`;
+      if (group.devices.length > 0) {
+        y += `    devices:\n`;
+        group.devices.forEach(d => {
+          const nm = (d.name.includes(' ') || d.name.includes('{')) ? `"${d.name}"` : d.name;
+          y += `      - name: ${nm}\n`;
+          if (d.start !== undefined) y += `        start: ${d.start}\n`;
+          if (d.end !== undefined) y += `        end: ${d.end}\n`;
+          y += `        type: ${d.type}\n`;
+        });
+      }
+    });
+    y += '\n';
+  }
+
   if (state.wiringLayers.length > 0) {
     y += 'wiring_layers:\n';
     state.wiringLayers.forEach(l => {
@@ -1567,8 +3389,13 @@ function generateYAML() {
           } else {
             y += `        to: ${c.to}\n`;
           }
+          if (c.cable_type !== undefined) y += `        cable_type: "${c.cable_type}"\n`;
+          if (c.label !== undefined) y += `        label: "${c.label}"\n`;
+          if (c.edge_color !== undefined) y += `        edge_color: "${c.edge_color}"\n`;
           if (c.start !== undefined) y += `        start: ${c.start}\n`;
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
+          if (c.via_patch_from !== undefined) y += `        via_patch_from: "${c.via_patch_from}"\n`;
+          if (c.via_patch_to !== undefined) y += `        via_patch_to: "${c.via_patch_to}"\n`;
         });
       }
     });
@@ -1601,6 +3428,8 @@ function copyYAML() {
 function exportYAML() {
   refreshYAML();
   const text = document.getElementById('yamlOutput').value || generateYAML();
+  // Save to server if available
+  saveYAMLToServer(text);
   const blob = new Blob([text], {type:'text/yaml'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1721,6 +3550,43 @@ function parseYAMLToState(text) {
     return conns;
   }
 
+  function parseExtGroups() {
+    const groups = [];
+    let curGroup = null;
+    while (i < lines.length) {
+      const ln = lines[i]; const tr = ln.trim();
+      if (!tr || tr.startsWith('#')) { i++; continue; }
+      const ind = indent(ln);
+      if (ind === 0) break;
+      if (ind === 2 && tr.startsWith('- ')) {
+        curGroup = { name: '', devices: [] };
+        groups.push(curGroup);
+        const rest = tr.slice(2).trim();
+        const ci2 = rest.indexOf(':');
+        if (ci2 !== -1) curGroup[rest.slice(0, ci2).trim()] = scalar(rest.slice(ci2 + 1));
+        i++;
+      } else if (ind === 4 && curGroup) {
+        const ci2 = tr.indexOf(':');
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
+          if (k === 'devices') {
+            i++;
+            curGroup.devices = parseDeviceList(6);
+          } else {
+            curGroup[k] = scalar(v);
+            i++;
+          }
+        } else {
+          i++;
+        }
+      } else {
+        i++;
+      }
+    }
+    return groups;
+  }
+
   const result = {};
   let i = 0;
 
@@ -1748,9 +3614,33 @@ function parseYAMLToState(text) {
         const l2 = lines[i]; const t2 = l2.trim();
         if (!t2 || t2.startsWith('#')) { i++; continue; }
         if (indent(l2) === 0) break;
-        const ci2 = t2.indexOf(':');
-        if (ci2 !== -1) obj[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
-        i++;
+        if (indent(l2) === 2) {
+          // Type name key (e.g. "  pc:" or "  cable management:")
+          const ci2 = t2.indexOf(':');
+          if (ci2 === -1) { i++; continue; }
+          const typeName = t2.slice(0, ci2).trim();
+          const inlineVal = t2.slice(ci2 + 1).trim();
+          if (inlineVal) {
+            // Legacy flat format: "  pc: "#E8F4F8""
+            obj[typeName] = scalar(inlineVal);
+            i++;
+          } else {
+            // New nested format: read color/units/label at indent 4
+            i++;
+            const entry = {};
+            while (i < lines.length) {
+              const l3 = lines[i]; const t3 = l3.trim();
+              if (!t3 || t3.startsWith('#')) { i++; continue; }
+              if (indent(l3) <= 2) break;
+              const ci3 = t3.indexOf(':');
+              if (ci3 !== -1) entry[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1));
+              i++;
+            }
+            obj[typeName] = entry;
+          }
+        } else {
+          i++;
+        }
       }
       result.type_colors = obj;
 
@@ -1788,6 +3678,9 @@ function parseYAMLToState(text) {
         }
       }
       result.racks = racks;
+
+    } else if (key === 'external_devices') {
+      result.external_devices = parseExtGroups();
 
     } else if (key === 'wiring_layers') {
       const layers = [];
@@ -1845,6 +3738,8 @@ function applyYAMLToCanvas() {
 
   try {
     applyParsedToState(parsed);
+    // Auto-save to server when applying
+    saveYAMLToServer(text);
     document.getElementById('yamlOutput').classList.remove('dirty','has-error');
     yamlDirty = false;
     setYAMLStatus('✓ Canvas updated successfully', 'ok');
@@ -1862,8 +3757,16 @@ function applyParsedToState(parsed) {
   if (parsed.front_to_back_length !== undefined) document.getElementById('gFrontBack').value = parsed.front_to_back_length;
 
   if (parsed.type_colors && typeof parsed.type_colors === 'object') {
-    state.typeColors = {};
-    for (const [k, v] of Object.entries(parsed.type_colors)) state.typeColors[k] = String(v);
+    state.typeEntries = [];
+    for (const [k, v] of Object.entries(parsed.type_colors)) {
+      if (v && typeof v === 'object') {
+        // New format: { color, units, label }
+        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1 });
+      } else {
+        // Legacy flat format: just a color string
+        state.typeEntries.push({ type: k, color: String(v), units: 1 });
+      }
+    }
   }
 
   if (Array.isArray(parsed.racks)) {
@@ -1893,9 +3796,29 @@ function applyParsedToState(parsed) {
         }).filter(Boolean);
       };
 
-      state.racks.push({ id, name, total_u, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
+      const u_order = (meta.u_order === 'top_bottom') ? 'top_bottom' : 'bottom_top';
+      state.racks.push({ id, name, total_u, u_order, front: parseDevList(rackEntry.front), rear: parseDevList(rackEntry.rear) });
     });
     state.nextRackId = rackIdMax;
+  }
+
+  if (Array.isArray(parsed.external_devices)) {
+    state.externalGroups = [];
+    parsed.external_devices.forEach(g => {
+      if (!g) return;
+      const group = { name: String(g.name || 'Group'), devices: [], collapsed: false };
+      if (g.distance_from_racks != null) group.distance_from_racks = parseFloat(g.distance_from_racks);
+      if (Array.isArray(g.devices)) {
+        g.devices.forEach(d => {
+          if (!d) return;
+          const dev = { name: String(d.name || 'Device'), type: String(d.type || 'pc') };
+          if (d.start != null) dev.start = parseInt(d.start);
+          if (d.end != null) dev.end = parseInt(d.end);
+          group.devices.push(dev);
+        });
+      }
+      state.externalGroups.push(group);
+    });
   }
 
   if (Array.isArray(parsed.wiring_layers)) {
@@ -1907,7 +3830,7 @@ function applyParsedToState(parsed) {
         edge_color: l.edge_color ? String(l.edge_color) : '#888888',
         cable_type: l.cable_type ? String(l.cable_type) : 'Ethernet',
         connections: [],
-        collapsed: false
+        collapsed: true
       };
       if (Array.isArray(l.connections)) {
         l.connections.forEach(c => {
@@ -1916,8 +3839,15 @@ function applyParsedToState(parsed) {
           if (Array.isArray(c.to)) conn.to = c.to.map(String);
           else if (c.to != null) conn.to = String(c.to);
           else conn.to = '';
+          if (c.cable_type != null) conn.cable_type = String(c.cable_type);
+          if (c.label != null) conn.label = String(c.label);
+          if (c.edge_color != null) conn.edge_color = String(c.edge_color);
           if (c.start !== undefined) conn.start = parseInt(c.start);
           if (c.end !== undefined) conn.end = parseInt(c.end);
+          if (c.via_patch_from != null) conn.via_patch_from = String(c.via_patch_from);
+          if (c.via_patch_to   != null) conn.via_patch_to   = String(c.via_patch_to);
+          // Restore the patch UI panel open state if patch data is present
+          if (conn.via_patch_from !== undefined || conn.via_patch_to !== undefined) conn._showPatch = true;
           layer.connections.push(conn);
         });
       }
@@ -1931,7 +3861,10 @@ function applyParsedToState(parsed) {
   document.getElementById('propsForm').style.display = 'none';
   renderTypeColors();
   renderAllRacks();
+  renderExtGroupWidgets();
+  renderExtGroupPanel();
   renderWiringLayers();
+  requestAnimationFrame(renderWiringOverlay);
   updateStatus();
 }
 
@@ -1964,17 +3897,18 @@ function updateStatus() {
   document.getElementById('statusRacks').textContent = `${state.racks.length} rack${state.racks.length!==1?'s':''}`;
   document.getElementById('statusDevices').textContent = `${td} device${td!==1?'s':''}`;
   document.getElementById('statusLayers').textContent = `${state.wiringLayers.length} wiring layer${state.wiringLayers.length!==1?'s':''}`;
+  document.getElementById('statusExtGroups').textContent = `${state.externalGroups.length} ext group${state.externalGroups.length!==1?'s':''}`;
 }
 
 // ───── CLEAR ─────
 function clearAll() {
-  if (!confirm('Clear all racks and wiring layers?')) return;
-  state.racks = []; state.wiringLayers = []; state.nextRackId = 1;
+  if (!confirm('Clear all racks, wiring layers and external devices?')) return;
+  state.racks = []; state.wiringLayers = []; state.externalGroups = []; state.nextRackId = 1;
   selectedDevRef = null;
   exitPickMode();
   document.getElementById('propsEmpty').style.display = 'flex';
   document.getElementById('propsForm').style.display = 'none';
-  renderAllRacks(); renderWiringLayers(); updateStatus();
+  renderAllRacks(); renderExtGroupWidgets(); renderExtGroupPanel(); renderWiringLayers(); renderWiringOverlay(); updateStatus();
 }
 
 // ───── KEYBOARD ─────
@@ -1992,10 +3926,9 @@ document.addEventListener('keydown', e => {
   if ((e.key==='Delete'||e.key==='Backspace') && selectedDevRef) deleteSelectedDevice();
 });
 
-// Click on canvas background in pick mode → cancel
 document.getElementById('canvasArea').addEventListener('click', e => {
   if (!pickState) return;
-  if (!e.target.closest('.rack-device')) exitPickMode();
+  if (!e.target.closest('.rack-device') && !e.target.closest('.ext-device-row')) exitPickMode();
 });
 
 // ───── SAMPLE DATA ─────
@@ -2102,10 +4035,223 @@ function loadSampleData() {
     ]},
   ];
 
+  state.externalGroups = [
+    { name: 'Operator Room', collapsed: false, devices: [
+        { name: 'Operator room beltpack {N}', type: 'beltpack', start: 1, end: 7 },
+        { name: 'Director headset', type: 'headset' },
+    ]},
+    { name: 'Chassis', collapsed: false, devices: [
+        { name: 'Driver beltpack', type: 'beltpack' },
+        { name: 'Co-driver beltpack', type: 'beltpack' },
+    ]},
+  ];
+
   renderAllRacks();
+  renderExtGroupWidgets();
+  renderExtGroupPanel();
   renderWiringLayers();
   updateStatus();
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// SERVER INTEGRATION
+// ═══════════════════════════════════════════════════════════════════
+
+let runPolling = null;
+
+// On page load: fetch any saved YAML from the server and restore the canvas
+async function loadYAMLFromServer() {
+  try {
+    const res = await fetch('/yaml');
+    if (!res.ok) return;
+    const text = await res.text();
+    if (!text.trim()) return;
+    const ta = document.getElementById('yamlOutput');
+    ta.value = text;
+    yamlDirty = false;
+    applyParsedToState(parseYAMLToState(text));
+    setYAMLStatus('✓ Loaded saved design from server', 'ok');
+    setTimeout(() => setYAMLStatus('', ''), 2500);
+  } catch (e) {
+    // Server unavailable — silent fail, works standalone
+  }
+}
+
+// POST the current YAML text to the server (fire-and-forget)
+async function saveYAMLToServer(yamlText) {
+  try {
+    await fetch('/yaml', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: yamlText
+    });
+  } catch (e) { /* offline — ignore */ }
+}
+
+// Click ▶ RUN: save YAML, POST /run, then poll /status for log + files
+async function runPipeline() {
+  const runBtn = document.getElementById('runBtn');
+  const runPanel = document.getElementById('runPanel');
+  const runLog = document.getElementById('runLog');
+  const runFiles = document.getElementById('runFiles');
+
+  // Generate + save current YAML first
+  const yaml = generateYAML();
+  document.getElementById('yamlOutput').value = yaml;
+  yamlDirty = false;
+  await saveYAMLToServer(yaml);
+
+  // Show panel, reset
+  runPanel.classList.add('visible');
+  runLog.innerHTML = '';
+  runFiles.innerHTML = '<div class="run-files-label">Output Files</div>';
+  setRunStatus('running', 'Running…');
+  runBtn.classList.add('running');
+  runBtn.disabled = true;
+
+  try {
+    const res = await fetch('/run', { method: 'POST' });
+    if (res.status === 409) {
+      setRunStatus('warn', 'Already running');
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      return;
+    }
+    if (!res.ok) {
+      setRunStatus('error', 'Failed to start');
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      return;
+    }
+  } catch (e) {
+    appendLog('✕ Server unreachable. Is run.py running?', 'err');
+    setRunStatus('error', 'Server unreachable');
+    runBtn.classList.remove('running');
+    runBtn.disabled = false;
+    return;
+  }
+
+  // Poll /status every 500ms
+  let lastLogLen = 0;
+  runPolling = setInterval(async () => {
+    try {
+      const r = await fetch('/status');
+      const data = await r.json();
+
+      // Stream new log lines
+      if (data.log && data.log.length > lastLogLen) {
+        data.log.slice(lastLogLen).forEach(line => appendLog(line));
+        lastLogLen = data.log.length;
+      }
+
+      if (!data.running) {
+        clearInterval(runPolling);
+        runPolling = null;
+        runBtn.classList.remove('running');
+        runBtn.disabled = false;
+
+        const hasError = data.log && data.log.some(l =>
+          l.toLowerCase().includes('failed') || l.toLowerCase().includes('error'));
+        setRunStatus(hasError ? 'error' : 'done', hasError ? 'Completed with errors' : '✓ Done');
+
+        if (data.files) renderOutputFiles(data.files);
+      }
+    } catch (e) {
+      clearInterval(runPolling);
+      runPolling = null;
+      runBtn.classList.remove('running');
+      runBtn.disabled = false;
+      setRunStatus('error', 'Lost connection');
+    }
+  }, 500);
+}
+
+function appendLog(line, forceClass) {
+  const runLog = document.getElementById('runLog');
+  const el = document.createElement('div');
+  el.className = 'log-line';
+  if (forceClass) {
+    el.classList.add(forceClass);
+  } else if (line.startsWith('[stderr]') || line.toLowerCase().includes('failed') || line.toLowerCase().includes('error')) {
+    el.classList.add('log-err');
+  } else if (line.includes('→') || line.includes('Running') || line.includes('completed')) {
+    el.classList.add('log-info');
+  } else if (line.includes('All files processed') || line.includes('[ok]') || line.toLowerCase().includes('done') || line.toLowerCase().includes('complete')) {
+    el.classList.add('log-done');
+  }
+  el.textContent = line;
+  runLog.appendChild(el);
+  runLog.scrollTop = runLog.scrollHeight;
+}
+
+function setRunStatus(state, text) {
+  const el = document.getElementById('runStatus');
+  el.className = 'run-status run-status-' + state;
+  el.textContent = text;
+}
+
+function renderOutputFiles(files) {
+  const container = document.getElementById('runFiles');
+  container.innerHTML = '<div class="run-files-label">Output Files</div>';
+
+  const pngs = (files.pngs || []).map(f => ({ name: f, url: `/pngs/${f}` }));
+  const others = (files.output || [])
+    .filter(f => !f.endsWith('.dot'))
+    .map(f => ({ name: f, url: `/output/${f}`, ext: f.split('.').pop() }));
+
+  if (pngs.length === 0 && others.length === 0) {
+    const empty = document.createElement('span');
+    empty.style.cssText = 'color:var(--text3);font-family:var(--mono);font-size:10px;';
+    empty.textContent = 'No output files generated';
+    container.appendChild(empty);
+    return;
+  }
+
+  if (pngs.length > 0) {
+    const grid = document.createElement('div');
+    grid.className = 'output-png-grid';
+    pngs.forEach(f => {
+      const a = document.createElement('a');
+      a.href = f.url;
+      a.target = '_blank';
+      a.className = 'output-png-thumb';
+      a.title = f.name;
+      const img = document.createElement('img');
+      // Cache-bust so re-runs show fresh images
+      img.src = f.url + '?t=' + Date.now();
+      img.alt = f.name;
+      img.onerror = () => { img.style.display='none'; };
+      const lbl = document.createElement('span');
+      lbl.textContent = f.name.replace(/\.[^.]+$/, '');
+      a.appendChild(img);
+      a.appendChild(lbl);
+      grid.appendChild(a);
+    });
+    container.appendChild(grid);
+  }
+
+  if (others.length > 0) {
+    const list = document.createElement('div');
+    list.className = 'output-file-list';
+    others.forEach(f => {
+      const a = document.createElement('a');
+      a.href = f.url;
+      a.target = '_blank';
+      a.className = 'output-file-link';
+      const icons = { csv: '📊', html: '🌐', pdf: '📄', xlsx: '📊', txt: '📝' };
+      const icon = icons[f.ext] || '📁';
+      a.innerHTML = `<span class="output-file-icon">${icon}</span><span>${f.name}</span>`;
+      list.appendChild(a);
+    });
+    container.appendChild(list);
+  }
+}
+
+function toggleRunPanel() {
+  document.getElementById('runPanel').classList.toggle('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════════
 
 init();
 </script>

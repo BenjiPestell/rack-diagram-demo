@@ -3,6 +3,7 @@ import os
 import csv
 import json
 import re
+import glob
 from collections import defaultdict
 from math import sqrt
 
@@ -12,6 +13,56 @@ from cable_length import generate_cable_length_table, generate_cable_length_html
 from clusters import expand_computer_info_clusters, expand_external_devices, expand_clusters, expand_wiring_clusters
 from rack_layout import generate_rack_layout_dot, build_device_map, build_occupancy
 from computer_info import export_computer_info_csv, export_computer_info_json, export_computer_info_html
+
+
+# -------------------------------------------------
+# Clean output directory
+# -------------------------------------------------
+def clean_output():
+    """Delete all generated files from the output directory before regenerating."""
+    if not os.path.exists("output"):
+        return
+
+    patterns = [
+        "output/*.dot",
+        "output/*.png",
+        "output/*.svg",
+        "output/*.csv",
+        "output/*.html",
+        "output/*.json",
+    ]
+
+    deleted = 0
+    for pattern in patterns:
+        for path in glob.glob(pattern):
+            try:
+                os.remove(path)
+                deleted += 1
+            except OSError as e:
+                print(f"Warning: could not delete {path}: {e}")
+
+    if deleted:
+        print(f"Cleaned {deleted} file(s) from output/")
+
+# -------------------------------------------------
+# Clean PNG directory
+# -------------------------------------------------
+def clean_png():
+    """Delete all generated PNG files from the png directory."""
+    if not os.path.exists("pngs"):
+        return
+
+    pattern = "pngs/*.png"
+    deleted = 0
+    for path in glob.glob(pattern):
+        try:
+            os.remove(path)
+            deleted += 1
+        except OSError as e:
+            print(f"Warning: could not delete {path}: {e}")
+
+    if deleted:
+        print(f"Cleaned {deleted} PNG file(s) from pngs/")
 
 
 # -------------------------------------------------
@@ -31,10 +82,12 @@ def main():
         "inter_rack_distance": config.get("inter_rack_distance", 2.5)
     }
     
-    # Create output directory if it doesn't exist
+    # Create output directory and clean stale files
     if not os.path.exists("output"):
         os.mkdir("output")
-    
+    clean_output()
+    clean_png()
+
     if "racks" in config:
         racks_config = config["racks"]
         external_devices_config = config.get("external_devices", [])
