@@ -1,3 +1,4 @@
 output/
 pngs/
 __pycache__/
+build/
