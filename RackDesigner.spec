@@ -20,7 +20,7 @@ a = Analysis(
     datas=[
         ('rack_designer.html',  '.'),
         ('rack_inspector.html', '.'),
-        # ('icon.ico', '.'),
+        ('icon.ico', '.'),
     ] + src_datas,
     hiddenimports=[
         'flask', 'werkzeug', 'werkzeug.serving', 'werkzeug.routing',
@@ -52,5 +52,5 @@ exe = EXE(
     runtime_tmpdir=None,
     console=False,   # no terminal window in release build
     onefile=True,
-    # icon='icon.ico',
+    icon='icon.ico',
 )
