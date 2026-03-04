@@ -367,10 +367,29 @@ def build_gui():
     root.configure(bg=BG)
     root.resizable(False, False)
 
+    # Set window + taskbar icon.
+    # Use wm_iconbitmap with the 'default' parameter so it applies to all
+    # windows and persists. Defer via root.after so the window handle exists.
     try:
-        icon = os.path.join(BASE_DIR, "icon.ico")
-        if os.path.exists(icon):
-            root.iconbitmap(icon)
+        icon_path = os.path.join(STATIC_DIR, "icon.ico")
+        if os.path.exists(icon_path):
+            def _set_icon():
+                try:
+                    root.wm_iconbitmap(default=icon_path)
+                    if sys.platform == "win32":
+                        # Also set via Windows API for taskbar / Alt+Tab
+                        import ctypes
+                        hwnd = ctypes.windll.user32.GetParent(
+                            int(root.frame(), 16))
+                        _load = ctypes.windll.user32.LoadImageW
+                        _send = ctypes.windll.user32.SendMessageW
+                        for sz, slot in [(16, 0), (32, 1)]:
+                            hicon = _load(None, icon_path, 1, sz, sz, 0x10)
+                            if hicon:
+                                _send(hwnd, 0x80, slot, hicon)
+                except Exception:
+                    pass
+            root.after(0, _set_icon)
     except Exception:
         pass
 
