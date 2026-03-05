@@ -454,7 +454,7 @@ def build_gui():
          ).pack(fill="x", pady=(0, 4))
     _btn(rf, "Open Inspector",
          lambda: webbrowser.open(f"{LOCAL_URL}/rack_inspector.html"),
-         color=ACCENT2, fg="#fff").pack(fill="x")
+         color="#6b0a0f", fg="#fff").pack(fill="x")
 
     # Separator
     tk.Frame(body, bg=CARD, height=1).pack(fill="x", pady=(4, 10))
