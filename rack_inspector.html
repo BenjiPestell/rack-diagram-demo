@@ -914,7 +914,7 @@ function parseYAML(text) {
               if (ci3 === -1) { i++; continue; }
               const k3 = t3.slice(0, ci3).trim();
               if (k3 === 'devices') { i++; group.devices = parseDeviceList(6); }
-              else { group[rest && rest.includes(':') ? rest.slice(0,rest.indexOf(':')).trim() : k3] = scalar(t3.slice(t3.indexOf(':')+1)); i++; }
+              else { group[k3] = scalar(t3.slice(ci3 + 1)); i++; }
             } else { i++; }
           }
           groups.push(group);
@@ -1065,17 +1065,27 @@ function calcCableLength(devA, devB) {
   }
 
   if (aExt || bExt) {
-    // One external, one rack — use group distance_from_racks if available
+    // One external, one rack — mirrors Python calculate_cable_length exactly:
+    //   unit_length  = (start_u - 1) * U_HEIGHT  (U distance from rack bottom to device bottom)
+    //   f2b_length   = front_to_back if rack device is on the front face
+    //   groupDist    = distance_from_racks of the external group
+    //   total        = unit_length + f2b_length + groupDist + slack
     const rackDev = aExt ? devB : devA;
     const extDev  = aExt ? devA : devB;
     const groupDist = extDev.distanceFromRacks ?? 10;
     if (!rackDev.located) {
       return { length: null, note: 'unpositioned' };
     }
-    const rackVertical = deviceMidpointU(rackDev) * U_HEIGHT;
-    let length = groupDist + rackVertical + cfg.slack;
+    // Unit distance: from rack bottom to bottom edge of device (matches Python's start_u - 1)
+    const bottomU = rackDev.uOrder === 'top_bottom'
+      ? rackDev.start_u + rackDev.units - 1   // top_bottom: bottom edge = start_u + units - 1
+      : rackDev.start_u - rackDev.units + 1;  // bottom_top: bottom edge = start_u - units + 1
+    const rackVertical = (bottomU - 1) * U_HEIGHT;
+    // Front-to-back: add if rack device is on front face (external cables exit rear)
+    const f2b = (rackDev.face === 'front') ? cfg.frontToBack : 0;
+    let length = groupDist + rackVertical + f2b + cfg.slack;
     length = Math.ceil(length * 2) / 2;
-    return { length, note: 'ext', breakdown: { groupDist, rackVertical, slack: cfg.slack } };
+    return { length, note: 'ext', breakdown: { groupDist, rackVertical, f2b, slack: cfg.slack } };
   }
 
   // Both rack devices
@@ -1640,6 +1650,7 @@ function renderSheet() {
             if (seg.breakdown.verticalB   != null) parts.push(['rack-B', seg.breakdown.verticalB.toFixed(3) + 'm']);
             if (seg.breakdown.frontToBack != null) parts.push(['f↔r',   seg.breakdown.frontToBack.toFixed(3) + 'm']);
             if (seg.breakdown.groupDist   != null) parts.push(['ext',    seg.breakdown.groupDist.toFixed(1) + 'm']);
+                if (seg.breakdown.f2b         != null && seg.breakdown.f2b > 0) parts.push(['f⇔r', seg.breakdown.f2b.toFixed(3) + 'm']);
             parts.push(['slack', seg.breakdown.slack.toFixed(2) + 'm']);
             parts.forEach(([k, v]) => {
               const s = document.createElement('span'); s.textContent = k + ' ';
@@ -1661,6 +1672,7 @@ function renderSheet() {
         if (breakdown.verticalB   != null) parts.push(['rack-B', breakdown.verticalB.toFixed(3) + 'm']);
         if (breakdown.frontToBack != null) parts.push(['f↔r',   breakdown.frontToBack.toFixed(3) + 'm']);
         if (breakdown.groupDist   != null) parts.push(['ext',    breakdown.groupDist.toFixed(1) + 'm']);
+            if (breakdown.f2b         != null && breakdown.f2b > 0) parts.push(['f⇔r', breakdown.f2b.toFixed(3) + 'm']);
         parts.push(['slack', breakdown.slack.toFixed(2) + 'm']);
         parts.forEach(([k, v]) => {
           const s = document.createElement('span'); s.textContent = k + ' ';
