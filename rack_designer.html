@@ -3021,9 +3021,7 @@ function _buildExtGroupWidget(group, gi) {
       row.appendChild(name);
       row.appendChild(badge);
 
-      row.addEventListener('click', e => {
-        if (pickState) { e.stopPropagation(); handleDevicePickClick(displayName); }
-      });
+      row.dataset.devName = displayName;  // store for delegated pick handler
 
       body.appendChild(row);
     });
@@ -3928,7 +3926,17 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('canvasArea').addEventListener('click', e => {
   if (!pickState) return;
-  if (!e.target.closest('.rack-device') && !e.target.closest('.ext-device-row')) exitPickMode();
+  // External device row — delegate pick from canvasArea so pickState is always current
+  const extRow = e.target.closest('.ext-device-row');
+  if (extRow) {
+    e.stopPropagation();
+    handleDevicePickClick(extRow.dataset.devName);
+    return;
+  }
+  // Rack device slots handle their own pick via their click listener
+  if (e.target.closest('.rack-device')) return;
+  // Click on empty canvas — exit pick mode
+  exitPickMode();
 });
 
 // ───── SAMPLE DATA ─────
