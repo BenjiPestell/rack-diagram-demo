@@ -13,6 +13,7 @@ from cable_length import generate_cable_length_table, generate_cable_length_html
 from clusters import expand_computer_info_clusters, expand_external_devices, expand_clusters, expand_wiring_clusters
 from rack_layout import generate_rack_layout_dot, build_device_map, build_occupancy
 from computer_info import export_computer_info_csv, export_computer_info_json, export_computer_info_html
+from patch_panel import collect_patch_assignments, generate_patch_panel_dot
 
 
 # -------------------------------------------------
@@ -141,6 +142,16 @@ def main():
                 f.write(wiring_dot)
             print(f"Generated {filename}")
         
+        # Generate patch panel schedule diagrams
+        pp_assignments = collect_patch_assignments(racks_config, layers)
+        for panel_name, (port_count, assignments) in pp_assignments.items():
+            safe_name = re.sub(r"[^a-z0-9]+", "_", panel_name.lower()).strip("_")
+            filename = f"output/{safe_name}.dot"
+            dot_content = generate_patch_panel_dot(panel_name, port_count, assignments, type_colors)
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(dot_content)
+            print(f"Generated {filename} ({port_count} ports, {len(assignments)} assigned)")
+
         # Generate cable length tables
         generate_cable_length_table(all_devices, racks_config, layers, cable_config)
         generate_cable_length_html(all_devices, racks_config, layers, cable_config)

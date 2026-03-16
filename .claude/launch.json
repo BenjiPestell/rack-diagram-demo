@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Rack Designer",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-3", "server.py"],
+      "port": 5000
+    }
+  ]
+}

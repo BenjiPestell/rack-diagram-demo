@@ -150,6 +150,7 @@ racks:
         start_u: 1
         units: 1
         type: Patch panel
+        ports: 12
 
   # Rack 2
   - rack:
@@ -365,6 +366,7 @@ wiring_layers:
         end: 3
         via_patch_from: "R{N} Patch panel"
         via_patch_to: "R{N+1} Patch panel"
+        patch_port_from: 2
       - from: Graphics Switch 1
         to:
           - Operator PC
@@ -411,7 +413,6 @@ wiring_layers:
           - Graphics Switch 1
       - from: Mains in 1
         to: Vertical PDU 1
-        cable_type: "Included"
       - from: Vertical PDU 1
         to:
           - R1 16A PDU A
@@ -436,7 +437,6 @@ wiring_layers:
         end: 2
       - from: Mains in 2
         to: Vertical PDU 2
-        cable_type: "Included"
       - from: Vertical PDU 2
         to:
           - R2 16A PDU A
@@ -456,7 +456,6 @@ wiring_layers:
         end: 7
       - from: Mains in 3
         to: Vertical PDU 3
-        cable_type: "Included"
       - from: Vertical PDU 3
         to:
           - R3 16A PDU A
@@ -476,7 +475,6 @@ wiring_layers:
         end: 13
       - from: Mains in 4
         to: Vertical PDU 4
-        cable_type: "Included"
       - from: Vertical PDU 4
         to:
           - R4 16A PDU A

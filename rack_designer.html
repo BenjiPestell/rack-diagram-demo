@@ -614,6 +614,20 @@
     text-transform: uppercase;
   }
 
+  /* PATCHING TAB */
+  .patch-port-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+  .patch-port-table th { background: var(--surface); color: var(--text3); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 5px 6px; border-bottom: 1px solid var(--border2); text-align: left; position: sticky; top: 0; z-index: 1; }
+  .patch-port-table td { padding: 3px 5px; border-bottom: 1px solid var(--border); vertical-align: middle; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .patch-port-row.assigned td { color: var(--text); }
+  .patch-port-row.empty td { color: var(--text3); }
+  .patch-port-row.overflow td { color: var(--red) !important; }
+  .patch-port-num { font-weight: bold; color: var(--text2); min-width: 24px; width: 28px; }
+  .patch-note-input { background: transparent; border: none; border-bottom: 1px solid transparent; color: var(--text); font-family: var(--mono); font-size: 10px; width: 100%; outline: none; padding: 1px 0; }
+  .patch-note-input:focus { border-bottom-color: var(--accent); }
+  .patch-note-input::placeholder { color: var(--text3); opacity: 0.6; }
+  .patch-move-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 0 2px; font-size: 11px; line-height: 1; }
+  .patch-move-btn:hover { color: var(--accent); }
+
   /* WIRING */
   .wiring-layer-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
 
@@ -1539,6 +1553,7 @@
       <button class="tab-btn active" onclick="switchTab('props',this)">Properties</button>
       <button class="tab-btn" onclick="switchTab('wiring',this)">Wiring</button>
       <button class="tab-btn" onclick="switchTab('external',this)">External</button>
+      <button class="tab-btn" onclick="switchTab('patching',this)">Patching</button>
       <button class="tab-btn" onclick="switchTab('yaml',this)">YAML</button>
     </div>
 
@@ -1587,6 +1602,21 @@
     <div class="tab-content" id="tab-external">
       <div id="extGroupList"></div>
       <button class="add-ext-group-btn" onclick="addExtGroup()">＋ Add External Group</button>
+    </div>
+
+    <div class="tab-content" id="tab-patching" style="flex-direction:column">
+      <div class="prop-section">
+        <div class="prop-row">
+          <span class="prop-label">Panel</span>
+          <select class="prop-select" id="patchPanelSelect" onchange="renderPatchingTab()"></select>
+        </div>
+        <div class="prop-row">
+          <span class="prop-label">Ports</span>
+          <input class="prop-input" id="patchPortCount" type="number" min="1" max="256" value="24" onchange="updatePatchPanelPortCount()">
+        </div>
+      </div>
+      <div id="patchPanelEmpty" class="empty-state" style="display:none">No patch panels defined.<br>Add a device with type "Patch panel" to a rack.</div>
+      <div id="patchPortTable" style="flex:1;overflow-y:auto;display:none"></div>
     </div>
 
     <div class="tab-content" id="tab-yaml" style="flex-direction:column">
@@ -3347,6 +3377,13 @@ function generateYAML() {
         if (d.units !== undefined) y += `        units: ${d.units}\n`;
         if (d.spacing !== undefined) y += `        spacing: ${d.spacing}\n`;
         y += `        type: ${d.type}\n`;
+        if (d.ports !== undefined) y += `        ports: ${d.ports}\n`;
+        if (d.port_notes && Object.keys(d.port_notes).length > 0) {
+          y += `        port_notes:\n`;
+          Object.keys(d.port_notes).map(Number).sort((a,b)=>a-b).forEach(k => {
+            y += `          ${k}: "${d.port_notes[k]}"\n`;
+          });
+        }
       });
     });
     y += '\n';
@@ -3396,6 +3433,8 @@ function generateYAML() {
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
           if (c.via_patch_from !== undefined) y += `        via_patch_from: "${c.via_patch_from}"\n`;
           if (c.via_patch_to !== undefined) y += `        via_patch_to: "${c.via_patch_to}"\n`;
+          if (c.patch_port_from !== undefined) y += `        patch_port_from: ${c.patch_port_from}\n`;
+          if (c.patch_port_to   !== undefined) y += `        patch_port_to: ${c.patch_port_to}\n`;
         });
       }
     });
@@ -3492,7 +3531,27 @@ function parseYAMLToState(text) {
         i++;
       } else if (cur !== null) {
         const ci2 = tr.indexOf(':');
-        if (ci2 !== -1) cur[tr.slice(0, ci2).trim()] = scalar(tr.slice(ci2 + 1));
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
+          if (!v || v.startsWith('#')) {
+            // Nested dict (e.g. port_notes:) — collect sub-keys at deeper indent
+            const nestedIndent = ind + 2;
+            i++;
+            const subDict = {};
+            while (i < lines.length) {
+              const ln3 = lines[i]; const tr3 = ln3.trim();
+              if (!tr3 || tr3.startsWith('#')) { i++; continue; }
+              if (indent(ln3) < nestedIndent) break;
+              const ci3 = tr3.indexOf(':');
+              if (ci3 !== -1) subDict[tr3.slice(0, ci3).trim()] = scalar(tr3.slice(ci3 + 1));
+              i++;
+            }
+            cur[k] = Object.keys(subDict).length > 0 ? subDict : null;
+            continue;
+          }
+          cur[k] = scalar(v);
+        }
         i++;
       } else {
         i++;
@@ -3792,6 +3851,15 @@ function applyParsedToState(parsed) {
           if (d.end != null) dev.end = parseInt(d.end);
           if (d.spacing != null) dev.spacing = parseInt(d.spacing);
           dev.type = String(d.type || 'pc');
+          if (d.ports != null) dev.ports = parseInt(d.ports);
+          if (d.port_notes && typeof d.port_notes === 'object') {
+            const notes = {};
+            for (const [k, v] of Object.entries(d.port_notes)) {
+              const portNum = parseInt(k);
+              if (!isNaN(portNum) && v != null) notes[portNum] = String(v);
+            }
+            if (Object.keys(notes).length > 0) dev.port_notes = notes;
+          }
           return dev;
         }).filter(Boolean);
       };
@@ -3846,6 +3914,8 @@ function applyParsedToState(parsed) {
           if (c.end !== undefined) conn.end = parseInt(c.end);
           if (c.via_patch_from != null) conn.via_patch_from = String(c.via_patch_from);
           if (c.via_patch_to   != null) conn.via_patch_to   = String(c.via_patch_to);
+          if (c.patch_port_from != null) conn.patch_port_from = parseInt(c.patch_port_from);
+          if (c.patch_port_to   != null) conn.patch_port_to   = parseInt(c.patch_port_to);
           // Restore the patch UI panel open state if patch data is present
           if (conn.via_patch_from !== undefined || conn.via_patch_to !== undefined) conn._showPatch = true;
           layer.connections.push(conn);
@@ -3868,6 +3938,315 @@ function applyParsedToState(parsed) {
   updateStatus();
 }
 
+// ───── PATCHING TAB ─────
+
+function lightenHex(hex, factor) {
+  hex = (hex || '#888888').replace(/^#/, '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.slice(0,2), 16) || 128;
+  const g = parseInt(hex.slice(2,4), 16) || 128;
+  const b = parseInt(hex.slice(4,6), 16) || 128;
+  return `rgb(${Math.round(r+(255-r)*factor)},${Math.round(g+(255-g)*factor)},${Math.round(b+(255-b)*factor)})`;
+}
+
+function getAllPatchPanels() {
+  const panels = [];
+  state.racks.forEach(rack => {
+    ['front','rear'].forEach(face => {
+      (rack[face] || []).forEach(dev => {
+        if (dev.type === 'Patch panel') {
+          panels.push({
+            name: dev.name,
+            ports: parseInt(dev.ports) || 24,
+            port_notes: dev.port_notes || {},
+            rackName: rack.name,
+            rackId: rack.id,
+            face,
+          });
+        }
+      });
+    });
+  });
+  return panels;
+}
+
+// Expand a single connection dict into individual connections (resolves {N} templates)
+function _expandConn(conn) {
+  if (conn.start === undefined || conn.end === undefined) return [conn];
+  const result = [];
+  const sub = (s, n) => {
+    if (typeof s !== 'string') return s;
+    s = s.replace(/\{N\}/g, String(n));
+    s = s.replace(/\{N\+(\d+)\}/g, (m, d) => String(n + parseInt(d)));
+    s = s.replace(/\{N-(\d+)\}/g, (m, d) => String(n - parseInt(d)));
+    return s;
+  };
+  for (let n = conn.start; n <= conn.end; n++) {
+    const ec = {};
+    for (const [k, v] of Object.entries(conn)) {
+      if (k === 'start' || k === 'end' || k.startsWith('_')) continue;
+      if (typeof v === 'string') ec[k] = sub(v, n);
+      else if (Array.isArray(v)) ec[k] = v.map(x => typeof x === 'string' ? sub(x, n) : x);
+      else ec[k] = v;
+    }
+    ec._expandedN = n;
+    ec._expandedIdx = n - conn.start;
+    result.push(ec);
+  }
+  return result;
+}
+
+function computeAllPatchAssignments() {
+  const allPanels = getAllPatchPanels();
+  if (!allPanels.length) return {};
+  const panelNames = new Set(allPanels.map(p => p.name));
+
+  const pending = {};
+  allPanels.forEach(p => { pending[p.name] = []; });
+  const links = [];
+
+  state.wiringLayers.forEach((layer, li) => {
+    (layer.connections || []).forEach((conn, ci) => {
+      const expanded = _expandConn(conn);
+      expanded.forEach((ec, expandedIdx) => {
+        const vpf = ec.via_patch_from || '';
+        const vpt = ec.via_patch_to || '';
+        if (!vpf && !vpt) return;
+        const cable = ec.cable_type || layer.cable_type || '';
+        const color = ec.edge_color || layer.edge_color || '#888888';
+        const connRef = { li, ci, expandedIdx, n: ec._expandedN, role: null };
+        const ppf = ec.patch_port_from != null ? parseInt(ec.patch_port_from) : null;
+        const ppt = ec.patch_port_to   != null ? parseInt(ec.patch_port_to)   : null;
+
+        if (panelNames.has(vpf) && panelNames.has(vpt)) {
+          const link = { from_port: null, to_port: null };
+          links.push(link);
+          pending[vpf].push({ side_a: ec.from, side_b: null, side_b_panel: vpt, side_a_panel: null, link, link_role: 'from', cable_type: cable, layer_name: layer.name, edge_color: color, requested_port: ppf, connRef: {...connRef, role: 'from'} });
+          pending[vpt].push({ side_a: null, side_b: ec.to,  side_b_panel: null, side_a_panel: vpf, link, link_role: 'to',   cable_type: cable, layer_name: layer.name, edge_color: color, requested_port: ppt, connRef: {...connRef, role: 'to'} });
+        } else if (panelNames.has(vpf)) {
+          pending[vpf].push({ side_a: ec.from, side_b: ec.to, link: null, link_role: null, cable_type: cable, layer_name: layer.name, edge_color: color, requested_port: ppf, connRef: {...connRef, role: 'from'} });
+        } else if (panelNames.has(vpt)) {
+          pending[vpt].push({ side_a: ec.from, side_b: ec.to, link: null, link_role: null, cable_type: cable, layer_name: layer.name, edge_color: color, requested_port: ppt, connRef: {...connRef, role: 'to'} });
+        }
+      });
+    });
+  });
+
+  // Assign port numbers (hybrid) for each panel
+  const resolved = {};
+  allPanels.forEach(p => {
+    const entries = pending[p.name];
+    const used = new Map();
+    const unassigned = [];
+    entries.forEach(entry => {
+      const req = entry.requested_port;
+      if (req != null && req >= 1 && !used.has(req)) { used.set(req, entry); }
+      else { unassigned.push(entry); }
+    });
+    let next = 1;
+    unassigned.forEach(entry => { while (used.has(next)) next++; used.set(next, entry); next++; });
+    resolved[p.name] = [...used.entries()].sort(([a],[b]) => a - b);
+  });
+
+  // Record port numbers into link objects
+  Object.values(resolved).forEach(sorted => {
+    sorted.forEach(([portNum, entry]) => {
+      if (!entry.link) return;
+      if (entry.link_role === 'from') entry.link.from_port = portNum;
+      else entry.link.to_port = portNum;
+    });
+  });
+
+  // Fill deferred cross-panel labels
+  Object.values(resolved).forEach(sorted => {
+    sorted.forEach(([portNum, entry]) => {
+      if (!entry.link) return;
+      if (entry.link_role === 'from') entry.side_b = `-> ${entry.side_b_panel} port ${entry.link.to_port ?? '?'}`;
+      else entry.side_a = `<- ${entry.side_a_panel} port ${entry.link.from_port ?? '?'}`;
+    });
+  });
+
+  // Build final result
+  const result = {};
+  allPanels.forEach(p => {
+    const portNotes = p.port_notes || {};
+    result[p.name] = {
+      portCount: p.ports,
+      assignments: resolved[p.name].map(([portNum, entry]) => ({
+        port: portNum,
+        side_a: entry.side_a || '?',
+        side_b: entry.side_b || '?',
+        cable_type: entry.cable_type,
+        layer_name: entry.layer_name,
+        edge_color: entry.edge_color,
+        note: String(portNotes[portNum] || portNotes[String(portNum)] || ''),
+        connRef: entry.connRef,
+        overflow: portNum > p.ports,
+      })),
+    };
+  });
+  return result;
+}
+
+function renderPatchingTab() {
+  const panels = getAllPatchPanels();
+  const sel    = document.getElementById('patchPanelSelect');
+  const empty  = document.getElementById('patchPanelEmpty');
+  const tableDiv = document.getElementById('patchPortTable');
+
+  if (!panels.length) {
+    sel.innerHTML = '';
+    document.getElementById('patchPortCount').value = 24;
+    empty.style.display = 'flex';
+    tableDiv.style.display = 'none';
+    return;
+  }
+
+  // Populate selector (preserve existing selection)
+  const prevVal = sel.value;
+  sel.innerHTML = panels.map(p =>
+    `<option value="${p.name.replace(/"/g,'&quot;')}">${p.name} (${p.rackName})</option>`
+  ).join('');
+  if (prevVal && panels.find(p => p.name === prevVal)) sel.value = prevVal;
+
+  const panelName = sel.value;
+  const panelInfo = panels.find(p => p.name === panelName);
+  if (!panelInfo) { empty.style.display='flex'; tableDiv.style.display='none'; return; }
+  document.getElementById('patchPortCount').value = panelInfo.ports;
+
+  empty.style.display = 'none';
+  tableDiv.style.display = 'block';
+
+  const allData = computeAllPatchAssignments();
+  const data = allData[panelName];
+  if (!data) { tableDiv.innerHTML = ''; return; }
+
+  const { portCount, assignments } = data;
+  const byPort = new Map(assignments.map(a => [a.port, a]));
+  const maxPort = Math.max(portCount, ...assignments.map(a => a.port), 0);
+
+  const table = document.createElement('table');
+  table.className = 'patch-port-table';
+  const thead = table.createTHead();
+  const hr = thead.insertRow();
+  ['#','Cable','Side A','Side B','Layer','Note',''].forEach(h => {
+    const th = document.createElement('th'); th.textContent = h; hr.appendChild(th);
+  });
+
+  const tbody = table.createTBody();
+  for (let port = 1; port <= maxPort; port++) {
+    const a = byPort.get(port);
+    const overflow = port > portCount;
+    const tr = tbody.insertRow();
+    tr.className = 'patch-port-row ' + (a ? (overflow ? 'overflow' : 'assigned') : 'empty');
+    if (a && !overflow) tr.style.background = lightenHex(a.edge_color, 0.80);
+
+    // Port number cell
+    const numTd = tr.insertCell(); numTd.className = 'patch-port-num'; numTd.textContent = port;
+
+    if (a) {
+      ['cable_type','side_a','side_b','layer_name'].forEach(f => {
+        const td = tr.insertCell(); td.textContent = a[f] || ''; td.title = a[f] || '';
+      });
+      // Note input
+      const noteTd = tr.insertCell();
+      const noteInput = document.createElement('input');
+      noteInput.className = 'patch-note-input';
+      noteInput.value = a.note || '';
+      noteInput.placeholder = 'note…';
+      noteInput.addEventListener('change', () => savePatchPortNote(panelName, port, noteInput.value));
+      noteTd.appendChild(noteInput);
+      // Move buttons
+      const moveTd = tr.insertCell();
+      moveTd.style.whiteSpace = 'nowrap';
+      if (port > 1) {
+        const up = document.createElement('button');
+        up.className = 'patch-move-btn'; up.textContent = '↑'; up.title = 'Move up';
+        up.addEventListener('click', () => movePatchPortAssignment(panelName, port, port - 1));
+        moveTd.appendChild(up);
+      }
+      const dn = document.createElement('button');
+      dn.className = 'patch-move-btn'; dn.textContent = '↓'; dn.title = 'Move down';
+      dn.addEventListener('click', () => movePatchPortAssignment(panelName, port, port + 1));
+      moveTd.appendChild(dn);
+    } else {
+      // Empty port — 4 blank cells, note input for the port, empty move cell
+      for (let j=0; j<4; j++) tr.insertCell();
+      const noteTd = tr.insertCell();
+      const noteInput = document.createElement('input');
+      noteInput.className = 'patch-note-input';
+      const pn = panelInfo.port_notes || {};
+      noteInput.value = String(pn[port] || pn[String(port)] || '');
+      noteInput.placeholder = 'note…';
+      noteInput.addEventListener('change', () => savePatchPortNote(panelName, port, noteInput.value));
+      noteTd.appendChild(noteInput);
+      tr.insertCell();
+    }
+  }
+  tableDiv.innerHTML = '';
+  tableDiv.appendChild(table);
+}
+
+function movePatchPortAssignment(panelName, portA, portB) {
+  const allData = computeAllPatchAssignments();
+  const data = allData[panelName];
+  if (!data) return;
+  const asgA = data.assignments.find(a => a.port === portA);
+  if (!asgA) return;
+  const asgB = data.assignments.find(a => a.port === portB);
+  const { li, ci, role } = asgA.connRef;
+  const conn = state.wiringLayers[li].connections[ci];
+  const fieldA = role === 'from' ? 'patch_port_from' : 'patch_port_to';
+  if (asgB) {
+    const { li: li2, ci: ci2, role: role2 } = asgB.connRef;
+    const conn2 = state.wiringLayers[li2].connections[ci2];
+    const fieldB = role2 === 'from' ? 'patch_port_from' : 'patch_port_to';
+    conn[fieldA] = portB;
+    conn2[fieldB] = portA;
+  } else {
+    conn[fieldA] = portB;
+  }
+  yamlDirty = true;
+  document.getElementById('yamlOutput').classList.add('dirty');
+  renderPatchingTab();
+}
+
+function savePatchPortNote(panelName, portNum, note) {
+  for (const rack of state.racks) {
+    for (const face of ['front','rear']) {
+      for (const dev of (rack[face] || [])) {
+        if (dev.type === 'Patch panel' && dev.name === panelName) {
+          if (!dev.port_notes) dev.port_notes = {};
+          if (note.trim()) dev.port_notes[portNum] = note.trim();
+          else delete dev.port_notes[portNum];
+          yamlDirty = true;
+          document.getElementById('yamlOutput').classList.add('dirty');
+          return;
+        }
+      }
+    }
+  }
+}
+
+function updatePatchPanelPortCount() {
+  const panelName = document.getElementById('patchPanelSelect').value;
+  const newCount = parseInt(document.getElementById('patchPortCount').value);
+  if (!panelName || isNaN(newCount) || newCount < 1) return;
+  for (const rack of state.racks) {
+    for (const face of ['front','rear']) {
+      for (const dev of (rack[face] || [])) {
+        if (dev.type === 'Patch panel' && dev.name === panelName) {
+          dev.ports = newCount;
+          yamlDirty = true;
+          document.getElementById('yamlOutput').classList.add('dirty');
+          renderPatchingTab();
+          return;
+        }
+      }
+    }
+  }
+}
+
 // ───── TABS ─────
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -3879,6 +4258,9 @@ function switchTab(id, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => {
       if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
     });
+  }
+  if (id==='patching') {
+    renderPatchingTab();
   }
   if (id==='yaml') {
     const ta = document.getElementById('yamlOutput');

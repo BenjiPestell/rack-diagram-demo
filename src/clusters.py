@@ -183,6 +183,10 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
         # via_patch fields -- passed through to _expand_patch_hops after {N} expansion
         via_patch_from = conn.get("via_patch_from", "")
         via_patch_to   = conn.get("via_patch_to",   "")
+
+        # Optional manual port assignment fields (not templated -- same port per panel)
+        patch_port_from = conn.get("patch_port_from")
+        patch_port_to   = conn.get("patch_port_to")
         
         # Normalize to_field to always be a list
         if isinstance(to_field, str):
@@ -230,8 +234,10 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
             if style:       base["style"]      = style
             if width:       base["width"]      = width
             if cable_type:  base["cable_type"] = cable_type
-            if vpf:         base["via_patch_from"] = vpf
-            if vpt:         base["via_patch_to"]   = vpt
+            if vpf:                        base["via_patch_from"]  = vpf
+            if vpt:                        base["via_patch_to"]    = vpt
+            if patch_port_from is not None: base["patch_port_from"] = patch_port_from
+            if patch_port_to   is not None: base["patch_port_to"]   = patch_port_to
 
             # Annotate patch connections (keeps single A--B edge, adds _patch_label)
             expanded.append(_annotate_patch(base))
