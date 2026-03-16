@@ -73,6 +73,12 @@ if not os.path.exists(YAML_PATH):
 if STATIC_DIR not in sys.path:
     sys.path.insert(0, STATIC_DIR)
 
+# When running from source (not frozen), pipeline modules live in src/.
+if not getattr(sys, "frozen", False):
+    _src_dir = os.path.join(BASE_DIR, "src")
+    if _src_dir not in sys.path:
+        sys.path.insert(0, _src_dir)
+
 # ---------------------------------------------------------------------------
 # Pipeline runner — in-process, no subprocess needed
 # ---------------------------------------------------------------------------
