@@ -48,18 +48,24 @@ def clean_output():
 # Clean PNG directory
 # -------------------------------------------------
 def clean_png():
-    """Delete all generated PNG files from the png directory."""
+    """Delete all generated PNG files from pngs/ and its subdirectories."""
     if not os.path.exists("pngs"):
         return
 
-    pattern = "pngs/*.png"
+    patterns = [
+        "pngs/*.png",
+        "pngs/rack/*.png",
+        "pngs/wiring/*.png",
+        "pngs/ports/*.png",
+    ]
     deleted = 0
-    for path in glob.glob(pattern):
-        try:
-            os.remove(path)
-            deleted += 1
-        except OSError as e:
-            print(f"Warning: could not delete {path}: {e}")
+    for pattern in patterns:
+        for path in glob.glob(pattern):
+            try:
+                os.remove(path)
+                deleted += 1
+            except OSError as e:
+                print(f"Warning: could not delete {path}: {e}")
 
     if deleted:
         print(f"Cleaned {deleted} PNG file(s) from pngs/")
@@ -82,9 +88,11 @@ def main():
         "inter_rack_distance": config.get("inter_rack_distance", 2.5)
     }
     
-    # Create output directory and clean stale files
+    # Create output directories and clean stale files
     if not os.path.exists("output"):
         os.mkdir("output")
+    for _d in ["pngs/rack", "pngs/wiring", "pngs/ports"]:
+        os.makedirs(_d, exist_ok=True)
     clean_output()
     clean_png()
 

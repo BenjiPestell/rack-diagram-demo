@@ -724,8 +724,27 @@ function parseYAML(text) {
           if (!t2 || t2.startsWith('#')) { i++; continue; }
           if (indent(l2) <= baseIndent) break;
           const ci2 = t2.indexOf(':');
-          if (ci2 !== -1) dev[t2.slice(0, ci2).trim()] = scalar(t2.slice(ci2 + 1));
-          i++;
+          if (ci2 !== -1) {
+            const k2 = t2.slice(0, ci2).trim();
+            const v2 = t2.slice(ci2 + 1).trim();
+            if (!v2 || v2.startsWith('#')) {
+              // Nested dict (e.g. port_notes)
+              i++;
+              const obj = {};
+              while (i < lines.length) {
+                const l3 = lines[i], t3 = l3.trim();
+                if (!t3 || t3.startsWith('#')) { i++; continue; }
+                if (indent(l3) <= indent(l2)) break;
+                const ci3 = t3.indexOf(':');
+                if (ci3 !== -1) obj[t3.slice(0, ci3).trim()] = scalar(t3.slice(ci3 + 1));
+                i++;
+              }
+              dev[k2] = obj;
+            } else {
+              dev[k2] = scalar(v2);
+              i++;
+            }
+          } else { i++; }
         }
         devs.push(dev);
       } else { i++; }
@@ -1002,7 +1021,9 @@ function buildDeviceMap(parsed) {
           face, start_u: dev.start_u, units: dev.units,
           type: dev.type,
           totalU, uOrder,
-          located: dev.start_u != null && dev.units != null
+          located: dev.start_u != null && dev.units != null,
+          ports: dev.ports,
+          port_notes: dev.port_notes,
         };
       });
     }
@@ -1218,8 +1239,10 @@ function buildConnectionIndex(parsed) {
         ensure(toName);
         const patchFrom = c.via_patch_from || null;
         const patchTo   = c.via_patch_to   || null;
-        index[fromName].push({ peer: toName, layer: layerName, cableType, layerColor, direction: '→', patchFrom, patchTo });
-        index[toName].push({ peer: fromName, layer: layerName, cableType, layerColor, direction: '←', patchFrom, patchTo });
+        const connCableType = c.cable_type || cableType;
+        const connLayerColor = c.edge_color || layerColor;
+        index[fromName].push({ peer: toName, layer: layerName, cableType: connCableType, layerColor: connLayerColor, direction: '→', patchFrom, patchTo });
+        index[toName].push({ peer: fromName, layer: layerName, cableType: connCableType, layerColor: connLayerColor, direction: '←', patchFrom, patchTo });
 
         // Register patch panel entries so selecting a PP shows its hosted connections.
         // Build the full ordered chain and add each PP's two immediate neighbours.
@@ -1243,7 +1266,7 @@ function buildConnectionIndex(parsed) {
               peerFrom: fromName,     // start device of the full connection
               segFrom: prevName,      // this patch panel's upstream neighbour
               segTo:   nextName,      // this patch panel's downstream neighbour
-              layer: layerName, cableType, layerColor,
+              layer: layerName, cableType: connCableType, layerColor: connLayerColor,
               direction: '↔', patchFrom, patchTo,
               isPatchLeg: true,
             });
@@ -1271,6 +1294,24 @@ function buildTypeColorMap(parsed) {
   const tc = parsed.type_colors || {};
   for (const [k, v] of Object.entries(tc)) {
     map[k] = (v && typeof v === 'object') ? (v.color || '#888') : String(v);
+  }
+  return map;
+}
+
+function buildPortedMap(parsed) {
+  // Returns map of type name → ported boolean.
+  // Reads explicit `ported: true` from YAML type_colors; falls back to name heuristic.
+  const portedKeywords = ['pc', 'switch', 'patch panel'];
+  const map = {};
+  const tc = parsed.type_colors || {};
+  for (const [k, v] of Object.entries(tc)) {
+    if (v && typeof v === 'object' && 'ported' in v) {
+      map[k] = !!v.ported;
+    } else {
+      // Legacy: infer from type name
+      const lower = k.toLowerCase();
+      map[k] = portedKeywords.some(kw => lower.includes(kw));
+    }
   }
   return map;
 }
@@ -1494,6 +1535,89 @@ function closeSheet() {
   applyHighlights();
 }
 
+function computePortSchedule(devName, dev, parsed) {
+  const totalPorts = dev.ports || 0;
+  const portNotes  = dev.port_notes || {};
+  const usages = [];
+
+  (parsed.wiring_layers || []).forEach(layer => {
+    const layerColor = layer.edge_color || '#888';
+    const layerName  = layer.name || '';
+    const layerCable = (layer.cable_type || '').toLowerCase();
+
+    (layer.connections || []).forEach(rawConn => {
+      expandWiringConn(rawConn).forEach(conn => {
+        const effCable = ((conn.cable_type || layerCable) || '').toLowerCase();
+        if (effCable && !effCable.includes('ethernet')) return;
+
+        const frm  = String(conn.from || '');
+        const toRaw = conn.to;
+        const toArr = Array.isArray(toRaw) ? toRaw.map(String) : (toRaw ? [String(toRaw)] : []);
+        const vpf  = conn.via_patch_from ? String(conn.via_patch_from) : '';
+        const vpt  = conn.via_patch_to   ? String(conn.via_patch_to)   : '';
+
+        if (frm === devName)
+          usages.push({ explicit: conn.from_port != null ? conn.from_port : null,
+            sideA: toArr.join(', '), sideAPort: conn.to_port, sideB: null, sideBPort: null, layerColor, layerName });
+        if (toArr.includes(devName))
+          usages.push({ explicit: conn.to_port != null ? conn.to_port : null,
+            sideA: frm, sideAPort: conn.from_port, sideB: null, sideBPort: null, layerColor, layerName });
+        // Patch panel entries: record both immediate neighbours in the chain,
+        // plus the end device when the immediate neighbour is itself a patch panel.
+        if (vpf === devName)
+          usages.push({ explicit: conn.patch_port_from != null ? conn.patch_port_from : null,
+            sideA: frm,                     sideAPort: conn.from_port, sideAFinal: null,
+            sideB: vpt || toArr.join(', '), sideBPort: vpt ? null : conn.to_port,
+            sideBFinal: vpt ? toArr.join(', ') : null,
+            layerColor, layerName });
+        if (vpt === devName)
+          usages.push({ explicit: conn.patch_port_to != null ? conn.patch_port_to : null,
+            sideA: vpf || frm,       sideAPort: vpf ? null : conn.from_port,
+            sideAFinal: vpf ? frm : null,
+            sideB: toArr.join(', '), sideBPort: conn.to_port, sideBFinal: null,
+            layerColor, layerName });
+      });
+    });
+  });
+
+  const occupied = new Set(usages.filter(u => u.explicit != null).map(u => Number(u.explicit)));
+  let nextFree = 1;
+  const assignments = new Map();
+  usages.forEach(u => {
+    let p;
+    if (u.explicit != null) {
+      p = Number(u.explicit);
+    } else {
+      while (occupied.has(nextFree)) nextFree++;
+      p = nextFree;
+      occupied.add(p);
+      nextFree++;
+    }
+    if (!assignments.has(p)) assignments.set(p, u);
+  });
+
+  const maxPort = Math.max(totalPorts, assignments.size > 0 ? Math.max(...assignments.keys()) : 0);
+  const rows = [];
+  for (let p = 1; p <= maxPort; p++) {
+    const u = assignments.get(p);
+    const note = portNotes[p] || portNotes[String(p)] || '';
+    rows.push({
+      port: p,
+      label: note,
+      sideA:      u ? u.sideA      : null,
+      sideAPort:  u ? u.sideAPort  : null,
+      sideAFinal: u ? u.sideAFinal : null,
+      sideB:      u ? u.sideB      : null,
+      sideBPort:  u ? u.sideBPort  : null,
+      sideBFinal: u ? u.sideBFinal : null,
+      layerColor: u ? u.layerColor : null,
+      layerName:  u ? u.layerName  : null,
+      overflow: totalPorts > 0 && p > totalPorts,
+    });
+  }
+  return rows;
+}
+
 function renderSheet() {
   if (!selectedDevName || !appState) return;
   const { deviceMap, connIndex, colorMap } = appState;
@@ -1687,6 +1811,74 @@ function renderSheet() {
   });
 
   setFooterStats(lengths, conns.length);
+
+  // Port schedule — shown only for ported device types
+  if (dev && appState.portedMap[dev.type]) {
+    const portRows = computePortSchedule(selectedDevName, dev, appState.parsed);
+    if (portRows.length > 0) {
+      const sec = document.createElement('div');
+      sec.className = 'conn-section-label';
+      sec.textContent = 'Port Schedule';
+      scroll.appendChild(sec);
+
+      const twoSided = portRows.some(r => r.sideB !== null);
+      const thStyle = 'text-align:left;padding:4px 6px;font-weight:500';
+      const tbl = document.createElement('table');
+      tbl.style.cssText = 'width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;';
+      const thead = document.createElement('thead');
+      if (twoSided) {
+        thead.innerHTML = `<tr style="color:var(--text3);border-bottom:1px solid var(--border)">`
+          + `<th style="${thStyle}">#</th>`
+          + `<th style="${thStyle}">Label</th>`
+          + `<th style="${thStyle}">Inside (rear)</th>`
+          + `<th style="${thStyle}">Outside (front)</th>`
+          + `</tr>`;
+      } else {
+        thead.innerHTML = `<tr style="color:var(--text3);border-bottom:1px solid var(--border)">`
+          + `<th style="${thStyle}">#</th>`
+          + `<th style="${thStyle}">Label</th>`
+          + `<th style="${thStyle}">Connected to</th>`
+          + `</tr>`;
+      }
+      tbl.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      portRows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid var(--border)';
+        const occupied = row.sideA !== null;
+        const textColor = row.overflow ? '#cc4444' : occupied ? 'var(--text)' : 'var(--text3)';
+
+        const tdNum = document.createElement('td');
+        tdNum.style.cssText = 'padding:5px 6px;white-space:nowrap;';
+        if (occupied && row.layerColor) {
+          tdNum.innerHTML = `<span style="color:${row.layerColor};margin-right:4px">&#9632;</span><span style="color:${textColor}">${row.port}</span>`;
+        } else {
+          tdNum.innerHTML = `<span style="color:${textColor}">${row.port}</span>`;
+        }
+
+        const tdLabel = document.createElement('td');
+        tdLabel.style.cssText = 'padding:5px 6px;color:var(--text2);';
+        tdLabel.textContent = row.label || '';
+
+        const tdSideA = document.createElement('td');
+        tdSideA.style.cssText = `padding:5px 6px;color:${textColor};`;
+        tdSideA.textContent = row.sideA || '—';
+
+        if (twoSided) {
+          tdSideA.textContent = row.sideAFinal ? `${row.sideA} → ${row.sideAFinal}` : (row.sideA || '—');
+          const tdSideB = document.createElement('td');
+          tdSideB.style.cssText = `padding:5px 6px;color:${row.sideB ? textColor : 'var(--text3)'};`;
+          tdSideB.textContent = row.sideBFinal ? `${row.sideB} → ${row.sideBFinal}` : (row.sideB || '—');
+          tr.appendChild(tdNum); tr.appendChild(tdLabel); tr.appendChild(tdSideA); tr.appendChild(tdSideB);
+        } else {
+          tr.appendChild(tdNum); tr.appendChild(tdLabel); tr.appendChild(tdSideA);
+        }
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      scroll.appendChild(tbl);
+    }
+  }
 }
 
 function setFooterStats(lengths, total) {
@@ -1762,14 +1954,15 @@ function parseAndRender(yamlText) {
     });
 
     const connIndex = buildConnectionIndex(parsed);
-    const colorMap = buildTypeColorMap(parsed);
+    const colorMap  = buildTypeColorMap(parsed);
+    const portedMap = buildPortedMap(parsed);
 
     // Pull config from YAML if present
     if (parsed.inter_rack_distance != null) document.getElementById('cfgInterRack').value = parsed.inter_rack_distance;
     if (parsed.front_to_back_length != null) document.getElementById('cfgFrontBack').value = parsed.front_to_back_length;
     if (parsed.cable_slack_length != null) document.getElementById('cfgSlack').value = parsed.cable_slack_length;
 
-    appState = { parsed, deviceMap, rackOrder, connIndex, colorMap };
+    appState = { parsed, deviceMap, rackOrder, connIndex, colorMap, portedMap };
     selectedDevName = null;
 
     document.getElementById('statusDot').className = 'status-dot ok';

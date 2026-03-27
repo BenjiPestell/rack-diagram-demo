@@ -41,19 +41,34 @@ def _base_dir() -> str:
     return os.path.dirname(os.path.abspath(__file__))
 
 
-BASE_DIR   = _base_dir()
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-PNG_DIR    = os.path.join(BASE_DIR, "pngs")
-YAML_PATH  = os.path.join(BASE_DIR, "system.yaml")
-PORT       = 5000
+BASE_DIR        = _base_dir()
+OUTPUT_DIR      = os.path.join(BASE_DIR, "output")
+PNG_DIR         = os.path.join(BASE_DIR, "pngs")
+RACK_PNG_DIR    = os.path.join(PNG_DIR,  "rack")
+WIRING_PNG_DIR  = os.path.join(PNG_DIR,  "wiring")
+PORTS_PNG_DIR   = os.path.join(PNG_DIR,  "ports")
+YAML_PATH       = os.path.join(BASE_DIR, "system.yaml")
+PORT            = 5000
+
+
+def _categorise_dot(filename):
+    """Return the PNG output directory for a given .dot filename."""
+    name = filename.lower()
+    if name == "rack_layout.dot":
+        return RACK_PNG_DIR, "rack"
+    if name.startswith("ports_"):
+        return PORTS_PNG_DIR, "ports"
+    return WIRING_PNG_DIR, "wiring"
 
 # Static files (HTML) are bundled inside the exe and unpacked to _MEIPASS.
 # When running from source they live alongside server.py (same as BASE_DIR).
 STATIC_DIR = getattr(sys, "_MEIPASS", BASE_DIR)
 
 # Ensure output directories exist immediately
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(PNG_DIR,    exist_ok=True)
+os.makedirs(OUTPUT_DIR,     exist_ok=True)
+os.makedirs(RACK_PNG_DIR,   exist_ok=True)
+os.makedirs(WIRING_PNG_DIR, exist_ok=True)
+os.makedirs(PORTS_PNG_DIR,  exist_ok=True)
 
 # When frozen with console=False, Windows sets sys.stdout/stderr to None.
 # Werkzeug and other libs write to stdout at startup and crash silently.
@@ -180,7 +195,8 @@ def _run_pipeline():
             import subprocess
             for filename in dot_files:
                 dot_path = os.path.join(OUTPUT_DIR, filename)
-                png_path = os.path.join(PNG_DIR, os.path.splitext(filename)[0] + ".png")
+                png_subdir, _ = _categorise_dot(filename)
+                png_path = os.path.join(png_subdir, os.path.splitext(filename)[0] + ".png")
                 # CREATE_NO_WINDOW prevents a console flash on Windows
                 _no_window = 0x08000000 if sys.platform == "win32" else 0
                 result = subprocess.run(
@@ -197,8 +213,12 @@ def _run_pipeline():
 
         log("Done.")
         run_state["files"] = {
-            "output": os.listdir(OUTPUT_DIR) if os.path.isdir(OUTPUT_DIR) else [],
-            "pngs":   os.listdir(PNG_DIR)    if os.path.isdir(PNG_DIR)    else [],
+            "output": os.listdir(OUTPUT_DIR)     if os.path.isdir(OUTPUT_DIR)     else [],
+            "pngs": {
+                "rack":   os.listdir(RACK_PNG_DIR)   if os.path.isdir(RACK_PNG_DIR)   else [],
+                "wiring": os.listdir(WIRING_PNG_DIR) if os.path.isdir(WIRING_PNG_DIR) else [],
+                "ports":  os.listdir(PORTS_PNG_DIR)  if os.path.isdir(PORTS_PNG_DIR)  else [],
+            },
         }
 
     except Exception as e:

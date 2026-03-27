@@ -183,6 +183,14 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
         # via_patch fields -- passed through to _expand_patch_hops after {N} expansion
         via_patch_from = conn.get("via_patch_from", "")
         via_patch_to   = conn.get("via_patch_to",   "")
+
+        # port assignment fields -- passed through unchanged
+        from_port       = conn.get("from_port")
+        to_port         = conn.get("to_port")
+        patch_port_from = conn.get("patch_port_from")
+        patch_port_to   = conn.get("patch_port_to")
+        from_ip         = conn.get("from_ip")
+        to_ip           = conn.get("to_ip")
         
         # Normalize to_field to always be a list
         if isinstance(to_field, str):
@@ -193,15 +201,18 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
             to_list = [to_field]
         
         # -- Step 1 & 2: {N} cluster expansion -------------------------------
-        base_conns = []   # flat list of (from, to, via_patch_from, via_patch_to)
+        # Tuple: (from, to, via_patch_from, via_patch_to, from_ip, to_ip)
+        base_conns = []
 
         if "start" in conn and "end" in conn:
             start = int(conn["start"]) if isinstance(conn["start"], str) else conn["start"]
             end   = int(conn["end"])   if isinstance(conn["end"],   str) else conn["end"]
-            
+
             for to_template in to_list:
                 for n in range(start, end + 1):
                     def _sub(s, n=n):
+                        if not isinstance(s, str):
+                            return s
                         s = s.replace("{N}", str(n))
                         m = re.search(r'\{N\+(\d+)\}', s)
                         if m:
@@ -216,13 +227,15 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
                         _sub(to_template),
                         _sub(via_patch_from) if via_patch_from else "",
                         _sub(via_patch_to)   if via_patch_to   else "",
+                        _sub(from_ip)        if from_ip is not None else None,
+                        _sub(to_ip)          if to_ip   is not None else None,
                     ))
         else:
             for to_template in to_list:
-                base_conns.append((from_template, to_template, via_patch_from, via_patch_to))
+                base_conns.append((from_template, to_template, via_patch_from, via_patch_to, from_ip, to_ip))
 
         # -- Step 3: build connection dicts and expand patch hops -------------
-        for (frm, to, vpf, vpt) in base_conns:
+        for (frm, to, vpf, vpt, fip, tip) in base_conns:
             base = {"from": frm, "to": to}
             if label:       base["label"]      = label
             if color:       base["color"]      = color
@@ -232,6 +245,12 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
             if cable_type:  base["cable_type"] = cable_type
             if vpf:         base["via_patch_from"] = vpf
             if vpt:         base["via_patch_to"]   = vpt
+            if from_port is not None:       base["from_port"]       = from_port
+            if to_port is not None:         base["to_port"]         = to_port
+            if patch_port_from is not None: base["patch_port_from"] = patch_port_from
+            if patch_port_to is not None:   base["patch_port_to"]   = patch_port_to
+            if fip is not None:             base["from_ip"]         = fip
+            if tip is not None:             base["to_ip"]           = tip
 
             # Annotate patch connections (keeps single A--B edge, adds _patch_label)
             expanded.append(_annotate_patch(base))

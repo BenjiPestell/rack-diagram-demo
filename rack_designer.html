@@ -615,6 +615,19 @@
   }
 
   /* WIRING */
+  .cable-types-panel { margin: 7px 7px 0; background: var(--surface2); border: 1px solid var(--border); }
+  .cable-types-header { display: flex; align-items: center; gap: 6px; padding: 6px 8px; cursor: pointer; user-select: none; font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; }
+  .cable-types-header:hover { background: var(--surface3); }
+  .cable-types-body { padding: 6px 8px 8px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .cable-type-chip { display: inline-flex; align-items: center; gap: 2px; background: var(--surface3); border: 1px solid var(--border2); padding: 2px 4px 2px 6px; font-family: var(--mono); font-size: 10px; color: var(--text2); white-space: nowrap; }
+  .cable-type-chip .ct-rm { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 10px; padding: 0 2px; line-height: 1; }
+  .cable-type-chip .ct-rm:hover { color: var(--red); }
+  .cable-type-add { display: flex; align-items: center; gap: 4px; margin-top: 2px; width: 100%; }
+  .cable-type-add input { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 10px; padding: 2px 5px; outline: none; flex: 1; }
+  .cable-type-add input:focus { border-color: var(--accent); }
+  .cable-type-add button { background: var(--surface3); border: 1px solid var(--border2); color: var(--text2); font-family: var(--mono); font-size: 10px; padding: 2px 7px; cursor: pointer; white-space: nowrap; }
+  .cable-type-add button:hover { background: var(--border2); color: var(--text); }
+
   .wiring-layer-card { margin: 7px; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; }
 
   .wiring-layer-header { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; user-select: none; }
@@ -1532,6 +1545,16 @@
         <span>ADD RACK</span>
       </button>
     </div>
+    <div id="portAssignView" style="display:none;flex:1;flex-direction:column;overflow:auto;padding:28px 32px;background:var(--bg)">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-shrink:0">
+        <button class="header-btn" onclick="exitPortAssign()">← Back to Rack</button>
+        <span id="portAssignTitle" style="font-size:18px;font-weight:600;color:var(--text)"></span>
+        <span id="portAssignSubtitle" style="color:var(--text2);font-size:12px;font-family:var(--mono);letter-spacing:0.5px"></span>
+        <button class="header-btn" onclick="renderPortFace(portAssignDev)" style="margin-left:auto">↻ Refresh</button>
+      </div>
+      <div id="portFacePanel" style="flex-shrink:0"></div>
+      <div id="portDetailPanel" style="margin-top:20px;flex-shrink:0"></div>
+    </div>
   </div>
 
   <div class="right-panel">
@@ -1572,6 +1595,14 @@
             <div class="prop-row"><span class="prop-label">Spacing</span><input class="prop-input" id="pSpacing" type="number" value="0"></div>
           </div>
         </div>
+        <div class="prop-section" id="portSection" style="display:none">
+          <div class="prop-section-title">Ethernet Ports</div>
+          <div class="prop-row">
+            <span class="prop-label">Port count</span>
+            <input class="prop-input" id="pPorts" type="number" min="1" max="96" placeholder="e.g. 24">
+          </div>
+          <button onclick="openPortAssign()" style="margin-top:10px;width:100%;padding:7px;background:var(--accent);color:#000;border:none;border-radius:4px;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;font-weight:600">ASSIGN PORTS</button>
+        </div>
         <div class="prop-section">
           <button class="prop-btn" onclick="applyProps()">✓ Apply Changes</button>
           <button class="prop-btn danger" onclick="deleteSelectedDevice()">✕ Delete Device</button>
@@ -1580,6 +1611,7 @@
     </div>
 
     <div class="tab-content" id="tab-wiring">
+      <div id="cableTypesPanel"></div>
       <div id="wiringLayerList"></div>
       <button class="add-layer-btn" onclick="addWiringLayer()">＋ Add Wiring Layer</button>
     </div>
@@ -1642,18 +1674,18 @@ const state = {
   wiringLayers: [],
   externalGroups: [],
   typeEntries: [
-    { type: 'PC / Workstation',  color: '#E8F4F8', units: 4  },
-    { type: 'Server',            color: '#dde8f4', units: 2  },
-    { type: 'PDU',               color: '#AAAAAA', units: 1  },
-    { type: 'UPS',               color: '#c8c8d8', units: 2  },
-    { type: 'Switch (1U)',       color: '#B8D6D6', units: 1  },
-    { type: 'Switch (2U)',       color: '#9ecece', units: 2  },
-    { type: 'Patch Panel',       color: '#d4c9e8', units: 1  },
-    { type: 'Realtime System',   color: '#FFE8D8', units: 2  },
-    { type: 'Shelf (1U)',        color: '#ced3db', units: 1  },
-    { type: 'Shelf (2U)',        color: '#bec3cb', units: 2  },
-    { type: 'Cable Management',  color: '#C4C4C4', units: 1  },
-    { type: 'Customer',          color: '#ffd9d6', units: 4  },
+    { type: 'PC / Workstation',  color: '#E8F4F8', units: 4,  ported: true  },
+    { type: 'Server',            color: '#dde8f4', units: 2,  ported: false },
+    { type: 'PDU',               color: '#AAAAAA', units: 1,  ported: false },
+    { type: 'UPS',               color: '#c8c8d8', units: 2,  ported: false },
+    { type: 'Switch (1U)',       color: '#B8D6D6', units: 1,  ported: true  },
+    { type: 'Switch (2U)',       color: '#9ecece', units: 2,  ported: true  },
+    { type: 'Patch Panel',       color: '#d4c9e8', units: 1,  ported: true  },
+    { type: 'Realtime System',   color: '#FFE8D8', units: 2,  ported: false },
+    { type: 'Shelf (1U)',        color: '#ced3db', units: 1,  ported: false },
+    { type: 'Shelf (2U)',        color: '#bec3cb', units: 2,  ported: false },
+    { type: 'Cable Management',  color: '#C4C4C4', units: 1,  ported: false },
+    { type: 'Customer',          color: '#ffd9d6', units: 4,  ported: false },
   ],
   // Convenience accessor — kept so external code can still read typeColors[type]
   get typeColors() {
@@ -1661,7 +1693,9 @@ const state = {
     this.typeEntries.forEach(e => { m[e.type] = e.color; });
     return m;
   },
-  nextRackId: 1
+  nextRackId: 1,
+  cableTypes: ['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI','Display Port'],
+  cableTypesPanelOpen: false,
 };
 
 let selectedDevRef = null;
@@ -1713,7 +1747,7 @@ function renderPalette() {
   const c = document.getElementById('typeColorList');
   c.innerHTML = '';
   state.typeEntries.forEach((entry, idx) => {
-    const { type, color, units, label } = entry;
+    const { type, color, units, label, ported } = entry;
 
     const row = document.createElement('div');
     row.className = 'type-color-row';
@@ -1803,6 +1837,17 @@ function renderPalette() {
     unitsLbl.className = 'type-units-label';
     unitsLbl.textContent = 'U';
 
+    // Ported checkbox
+    const portedChk = document.createElement('input');
+    portedChk.type = 'checkbox';
+    portedChk.checked = !!ported;
+    portedChk.title = 'Show port assignments for this device type';
+    portedChk.style.cssText = 'width:14px;height:14px;cursor:pointer;flex-shrink:0;accent-color:var(--accent);';
+    portedChk.addEventListener('mousedown', e => e.stopPropagation());
+    portedChk.addEventListener('change', e => {
+      state.typeEntries[idx].ported = e.target.checked;
+    });
+
     // Delete button
     const delBtn = document.createElement('button');
     delBtn.className = 'type-delete-btn';
@@ -1822,6 +1867,7 @@ function renderPalette() {
     row.appendChild(nameInput);
     row.appendChild(unitsIn);
     row.appendChild(unitsLbl);
+    row.appendChild(portedChk);
     row.appendChild(delBtn);
     c.appendChild(row);
   });
@@ -2150,7 +2196,7 @@ function buildDeviceEl(dev, rackId, face, totalU, displayName, startU, uOrder) {
       handleDevicePickClick(displayName);
       return;
     }
-    selectDevice(dev, rackId, face);
+    selectDevice(dev, rackId, face, displayName);
   });
 
   el.addEventListener('dragstart', e => {
@@ -2213,8 +2259,8 @@ function slotDrop(e) {
 }
 
 // ───── SELECTION ─────
-function selectDevice(dev, rackId, face) {
-  selectedDevRef = { dev, rackId, face };
+function selectDevice(dev, rackId, face, displayName) {
+  selectedDevRef = { dev, rackId, face, displayName: displayName || dev.name };
   renderAllRacks();
 
   document.getElementById('propsEmpty').style.display = 'none';
@@ -2236,6 +2282,14 @@ function selectDevice(dev, rackId, face) {
   document.getElementById('pStart').value = dev.start ?? 1;
   document.getElementById('pEnd').value = dev.end ?? 3;
   document.getElementById('pSpacing').value = dev.spacing ?? 0;
+
+  // Port section — show for ported device types or if ports already set
+  const typeEntry = state.typeEntries.find(e => e.type === dev.type);
+  const showPorts = (typeEntry && typeEntry.ported) || dev.ports;
+  document.getElementById('portSection').style.display = showPorts ? 'block' : 'none';
+  if (showPorts) {
+    document.getElementById('pPorts').value = dev.ports || '';
+  }
 
   switchTab('props', document.querySelector('.tab-btn'));
 }
@@ -2265,6 +2319,11 @@ function applyProps() {
     delete dev.start; delete dev.end; delete dev.spacing;
   }
 
+  // Port count
+  const pp = parseInt(document.getElementById('pPorts').value);
+  if (!isNaN(pp) && pp > 0) dev.ports = pp;
+  else delete dev.ports;
+
   renderAllRacks();
   updateStatus();
 }
@@ -2279,6 +2338,409 @@ function deleteSelectedDevice() {
   document.getElementById('propsForm').style.display = 'none';
   renderAllRacks();
   updateStatus();
+}
+
+// ───── PORT ASSIGNMENT ─────
+let portAssignDev = null;
+let portAssignDevName = null;   // expanded display name for the selected member (e.g. "IG 1")
+let portAssignRackInfo = null;
+let portDragPortNum = null;
+let portSelectedPort = null;
+
+function renderPortNoteRows() {
+  const container = document.getElementById('portNoteRows');
+  if (!container) return;
+  const dev = selectedDevRef ? selectedDevRef.dev : null;
+  const n = parseInt(document.getElementById('pPorts').value);
+  if (!n || n < 1) { container.innerHTML = ''; return; }
+  container.innerHTML = '';
+  for (let p = 1; p <= Math.min(n, 48); p++) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:3px;';
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);width:38px;text-align:right;flex-shrink:0;';
+    lbl.textContent = `p${p}`;
+    const inp = document.createElement('input');
+    inp.dataset.port = p;
+    inp.style.cssText = 'flex:1;padding:3px 6px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;';
+    inp.placeholder = `Port ${p} label`;
+    const notes = dev && dev.port_notes;
+    inp.value = notes ? (notes[p] || notes[String(p)] || '') : '';
+    row.appendChild(lbl);
+    row.appendChild(inp);
+    container.appendChild(row);
+  }
+  if (n > 48) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);padding:4px 0;';
+    note.textContent = `(showing 1-48 of ${n}; edit remaining in YAML or Port Assign view)`;
+    container.appendChild(note);
+  }
+}
+
+function openPortAssign() {
+  if (!selectedDevRef) return;
+  applyProps();
+  portAssignDev = selectedDevRef.dev;
+  portAssignDevName = selectedDevRef.displayName || selectedDevRef.dev.name;
+  portAssignRackInfo = { rackId: selectedDevRef.rackId, face: selectedDevRef.face };
+  portSelectedPort = null;
+
+  document.getElementById('rackCanvas').style.display = 'none';
+  document.getElementById('wiringOverlay').style.display = 'none';
+  document.getElementById('portAssignView').style.display = 'flex';
+
+  document.getElementById('portAssignTitle').textContent = portAssignDevName;
+  const rack = state.racks.find(r => r.id === portAssignRackInfo.rackId);
+  const rackName = rack ? rack.name : portAssignRackInfo.rackId;
+  document.getElementById('portAssignSubtitle').textContent =
+    `${rackName} · ${portAssignRackInfo.face} · U${portAssignDev.start_u || '?'}`;
+
+  renderPortFace(portAssignDev);
+}
+
+function exitPortAssign() {
+  document.getElementById('portAssignView').style.display = 'none';
+  document.getElementById('rackCanvas').style.display = '';
+  document.getElementById('wiringOverlay').style.display = '';
+  portAssignDev = null;
+  portAssignDevName = null;
+}
+
+function computePortAssignments(devName, totalPorts) {
+  // Substitute {N}, {N+X}, {N-X} patterns
+  function subN(s, n) {
+    if (s == null) return s;
+    s = String(s);
+    s = s.replace(/\{N\}/g, n);
+    s = s.replace(/\{N\+(\d+)\}/g, (_, d) => n + parseInt(d));
+    s = s.replace(/\{N-(\d+)\}/g, (_, d) => n - parseInt(d));
+    return s;
+  }
+
+  // Collect all usages of devName across ethernet wiring layers only
+  const usages = [];
+  state.wiringLayers.forEach(layer => {
+    const layerCable = (layer.cable_type || '').toLowerCase();
+    layer.connections.forEach(conn => {
+      // Only include ethernet connections (connection override or layer default)
+      const effCable = (conn.cable_type || layerCable).toLowerCase();
+      if (!effCable.includes('ethernet') && effCable !== '') return;
+
+      const frm = conn.from || '';
+      const to  = conn.to || '';
+      const toArr = Array.isArray(to) ? to : (to ? [to] : []);
+      const vpf = conn.via_patch_from || '';
+      const vpt = conn.via_patch_to   || '';
+      const start = conn.start != null ? parseInt(conn.start) : null;
+      const end   = conn.end   != null ? parseInt(conn.end)   : null;
+      const isCluster = start != null && end != null;
+
+      if (isCluster) {
+        // Expand every N in the cluster and do exact matching on the resolved strings
+        // Per-member port overrides are stored in conn._member_port[devName] to avoid
+        // contaminating other cluster members via the shared template connection.
+        const memberPorts = conn._member_port || {};
+        for (let n = start; n <= end; n++) {
+          const frmN    = subN(frm, n);
+          const toArrN  = toArr.map(t => subN(t, n));
+          const toStrN  = toArrN.join(', ');
+          const vpfN    = vpf ? subN(vpf, n) : '';
+          const vptN    = vpt ? subN(vpt, n) : '';
+          const fipN    = conn.from_ip != null ? subN(conn.from_ip, n) : undefined;
+          const tipN    = conn.to_ip   != null ? subN(conn.to_ip,   n) : undefined;
+
+          // Resolve explicit port: per-member override wins over template value
+          const memberPort = memberPorts[devName];
+          const explFrm  = memberPort !== undefined ? memberPort : conn.from_port;
+          const explTo   = memberPort !== undefined ? memberPort : conn.to_port;
+          const explPpf  = memberPort !== undefined ? memberPort : conn.patch_port_from;
+          const explPpt  = memberPort !== undefined ? memberPort : conn.patch_port_to;
+
+          if (frmN === devName)              usages.push({ explicit: explFrm,  peer: toStrN, peerPort: conn.to_port,   ip: fipN, role: 'from',       conn, layer });
+          else if (toArrN.includes(devName)) usages.push({ explicit: explTo,   peer: frmN,   peerPort: conn.from_port, ip: tipN, role: 'to',         conn, layer });
+          if (vpfN === devName)              usages.push({ explicit: explPpf,  peer: frmN,   peerPort: conn.from_port, ip: null, role: 'patch_from',  conn, layer });
+          if (vptN === devName)              usages.push({ explicit: explPpt,  peer: toStrN, peerPort: conn.to_port,   ip: null, role: 'patch_to',    conn, layer });
+        }
+      } else {
+        // Non-cluster: exact name match
+        const toStr = toArr.join(', ');
+        if (frm === devName)             usages.push({ explicit: conn.from_port,       peer: toStr, peerPort: conn.to_port,   ip: conn.from_ip, role: 'from',      conn, layer });
+        else if (toArr.includes(devName)) usages.push({ explicit: conn.to_port,        peer: frm,   peerPort: conn.from_port, ip: conn.to_ip,   role: 'to',        conn, layer });
+        if (vpf === devName)             usages.push({ explicit: conn.patch_port_from, peer: frm,   peerPort: conn.from_port, ip: null,         role: 'patch_from', conn, layer });
+        if (vpt === devName)             usages.push({ explicit: conn.patch_port_to,   peer: toStr, peerPort: conn.to_port,   ip: null,         role: 'patch_to',   conn, layer });
+      }
+    });
+  });
+
+  // Auto-assign: manual-first
+  const occupied = new Set(usages.filter(u => u.explicit != null).map(u => u.explicit));
+  let nextFree = 1;
+  const assignments = new Map(); // port_num -> usage
+  usages.forEach(u => {
+    let p;
+    if (u.explicit != null) {
+      p = u.explicit;
+    } else {
+      while (occupied.has(nextFree)) nextFree++;
+      p = nextFree;
+      occupied.add(p);
+      nextFree++;
+    }
+    if (!assignments.has(p)) assignments.set(p, u);
+  });
+  return assignments;
+}
+
+function renderPortFace(dev) {
+  if (!dev) return;
+  const total = dev.ports || 0;
+  const assignments = computePortAssignments(portAssignDevName || dev.name, total);
+  const container = document.getElementById('portFacePanel');
+  container.innerHTML = '';
+
+  const maxPort = Math.max(total, ...assignments.keys(), 0);
+  if (maxPort === 0) {
+    container.innerHTML = '<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:20px 0">No ports configured. Set port count in Properties first.</div>';
+    return;
+  }
+
+  // Determine columns per row based on port count
+  const cols = maxPort <= 12 ? maxPort : maxPort <= 24 ? 12 : maxPort <= 48 ? 12 : 16;
+
+  const grid = document.createElement('div');
+  grid.style.cssText = `display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;max-width:${cols * 72}px;`;
+
+  for (let p = 1; p <= maxPort; p++) {
+    const usage = assignments.get(p);
+    const isSelected = portSelectedPort === p;
+    const portNotes = dev.port_notes || {};
+    const label = portNotes[p] || portNotes[String(p)] || '';
+    const layerColor = usage ? (usage.layer.edge_color || '#666') : null;
+
+    const slot = document.createElement('div');
+    slot.dataset.port = p;
+    slot.draggable = !!usage;
+    slot.style.cssText = [
+      'border-radius:6px;padding:6px 4px 5px;cursor:pointer;user-select:none;',
+      'display:flex;flex-direction:column;align-items:center;gap:2px;',
+      'transition:all 0.12s;position:relative;min-height:68px;',
+      isSelected
+        ? 'border:2px solid var(--accent);background:rgba(0,212,255,0.08);'
+        : 'border:1px solid var(--border2);background:var(--surface);',
+    ].join('');
+
+    // Port number badge
+    const badge = document.createElement('div');
+    badge.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.5px;';
+    badge.textContent = p;
+
+    // Indicator dot
+    const dot = document.createElement('div');
+    dot.style.cssText = `width:10px;height:10px;border-radius:50%;background:${usage ? (layerColor || '#666') : '#2a2a2a'};`;
+
+    // Peer label
+    const peerDiv = document.createElement('div');
+    peerDiv.style.cssText = 'font-family:var(--mono);font-size:9px;color:' + (usage ? 'var(--text)' : 'var(--text3)') + ';text-align:center;overflow:hidden;max-width:100%;word-break:break-all;line-height:1.2;';
+    if (usage) {
+      const peer = usage.peer || '—';
+      peerDiv.textContent = peer.length > 14 ? peer.slice(0, 13) + '…' : peer;
+      peerDiv.title = peer;
+    } else {
+      peerDiv.textContent = '—';
+    }
+
+    // Interface label
+    if (label) {
+      const labelDiv = document.createElement('div');
+      labelDiv.style.cssText = 'font-size:8px;color:var(--accent2);font-family:var(--mono);text-align:center;overflow:hidden;max-width:100%;';
+      labelDiv.textContent = label.length > 12 ? label.slice(0, 11) + '…' : label;
+      labelDiv.title = label;
+      slot.appendChild(badge);
+      slot.appendChild(dot);
+      slot.appendChild(peerDiv);
+      slot.appendChild(labelDiv);
+    } else {
+      slot.appendChild(badge);
+      slot.appendChild(dot);
+      slot.appendChild(peerDiv);
+    }
+
+    // IP address (if set)
+    const ip = usage ? usage.ip : null;
+    if (ip) {
+      const ipDiv = document.createElement('div');
+      ipDiv.style.cssText = 'font-size:8px;color:var(--text2);font-family:var(--mono);text-align:center;';
+      ipDiv.textContent = ip;
+      slot.appendChild(ipDiv);
+    }
+
+    // Drag
+    if (usage) {
+      slot.addEventListener('dragstart', e => {
+        portDragPortNum = p;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(p));
+        slot.style.opacity = '0.4';
+      });
+      slot.addEventListener('dragend', () => {
+        slot.style.opacity = '';
+        document.querySelectorAll('[data-port]').forEach(s => s.style.outline = '');
+      });
+    }
+    slot.addEventListener('dragover', e => {
+      e.preventDefault();
+      slot.style.outline = '2px solid var(--accent)';
+    });
+    slot.addEventListener('dragleave', () => { slot.style.outline = ''; });
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      slot.style.outline = '';
+      if (portDragPortNum === null || portDragPortNum === p) return;
+      portSwapAssignment(dev, portDragPortNum, p);
+      portDragPortNum = null;
+      portSelectedPort = p;
+      renderPortFace(dev);
+      selectPort(dev, p);
+    });
+
+    slot.addEventListener('click', () => {
+      portSelectedPort = p;
+      renderPortFace(dev);
+      selectPort(dev, p);
+    });
+
+    slot.addEventListener('mouseenter', () => { if (!isSelected) slot.style.borderColor = 'var(--accent)'; });
+    slot.addEventListener('mouseleave', () => { if (!isSelected) slot.style.borderColor = 'var(--border2)'; });
+
+    grid.appendChild(slot);
+  }
+  container.appendChild(grid);
+
+  if (portSelectedPort !== null) selectPort(dev, portSelectedPort);
+}
+
+function portSwapAssignment(dev, fromPort, toPort) {
+  const assignments = computePortAssignments(portAssignDevName || dev.name, dev.ports || 0);
+  const fromUsage = assignments.get(fromPort);
+  const toUsage   = assignments.get(toPort);
+
+  function setPort(usage, portNum) {
+    if (!usage) return;
+    const conn = usage.conn;
+    const layerIdx = state.wiringLayers.indexOf(usage.layer);
+    const connIdx  = usage.layer.connections.indexOf(conn);
+    if (layerIdx === -1 || connIdx === -1) return;
+    const c = state.wiringLayers[layerIdx].connections[connIdx];
+    const isCluster = c.start != null && c.end != null;
+    if (isCluster) {
+      // Store per-member to avoid contaminating other cluster members
+      if (!c._member_port) c._member_port = {};
+      c._member_port[portAssignDevName] = portNum;
+    } else {
+      switch (usage.role) {
+        case 'from':       c.from_port       = portNum; break;
+        case 'to':         c.to_port         = portNum; break;
+        case 'patch_from': c.patch_port_from = portNum; break;
+        case 'patch_to':   c.patch_port_to   = portNum; break;
+      }
+    }
+  }
+
+  setPort(fromUsage, toPort);
+  setPort(toUsage, fromPort);
+}
+
+function selectPort(dev, portNum) {
+  portSelectedPort = portNum;
+  const detail = document.getElementById('portDetailPanel');
+  if (!detail) return;
+
+  const assignments = computePortAssignments(portAssignDevName || dev.name, dev.ports || 0);
+  const usage = assignments.get(portNum);
+  const portNotes = dev.port_notes || {};
+  const label = portNotes[portNum] || portNotes[String(portNum)] || '';
+
+  detail.innerHTML = '';
+  const card = document.createElement('div');
+  card.style.cssText = 'background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:16px 20px;max-width:500px;';
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;';
+  title.textContent = `Port ${portNum}`;
+  if (usage) {
+    const layerBadge = document.createElement('span');
+    layerBadge.style.cssText = `margin-left:10px;font-size:10px;background:${usage.layer.edge_color || '#444'};color:#fff;padding:2px 8px;border-radius:10px;font-weight:400;`;
+    layerBadge.textContent = usage.layer.name || '';
+    title.appendChild(layerBadge);
+  }
+  card.appendChild(title);
+
+  if (usage) {
+    const connInfo = document.createElement('div');
+    connInfo.style.cssText = 'font-family:var(--mono);font-size:11px;color:var(--text2);margin-bottom:12px;';
+    const peerPort = usage.peerPort != null ? ` → port ${usage.peerPort}` : '';
+    connInfo.textContent = `Connected to: ${usage.peer || '—'}${peerPort}`;
+    card.appendChild(connInfo);
+  } else {
+    const unassigned = document.createElement('div');
+    unassigned.style.cssText = 'font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:12px;';
+    unassigned.textContent = '— unassigned —';
+    card.appendChild(unassigned);
+  }
+
+  function makeRow(labelText, inputEl) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;';
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-family:var(--mono);font-size:10px;color:var(--text3);width:110px;flex-shrink:0;letter-spacing:0.5px;';
+    lbl.textContent = labelText;
+    row.appendChild(lbl);
+    row.appendChild(inputEl);
+    return row;
+  }
+
+  // Interface label
+  const labelIn = document.createElement('input');
+  labelIn.style.cssText = 'flex:1;padding:5px 8px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:4px;';
+  labelIn.placeholder = 'e.g. eth0 (mobo), uplink to SW1';
+  labelIn.value = label;
+  labelIn.addEventListener('change', e => {
+    if (!dev.port_notes) dev.port_notes = {};
+    const v = e.target.value.trim();
+    if (v) dev.port_notes[portNum] = v;
+    else delete dev.port_notes[portNum];
+    renderPortFace(dev);
+    // Re-render detail to stay selected
+    selectPort(dev, portNum);
+  });
+  card.appendChild(makeRow('Interface label', labelIn));
+
+  // IP Address (only when connection exists)
+  if (usage) {
+    const ipIn = document.createElement('input');
+    ipIn.style.cssText = 'flex:1;padding:5px 8px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:4px;';
+    ipIn.placeholder = '0.0.0.0';
+    ipIn.value = usage.ip || '';
+    ipIn.addEventListener('change', e => {
+      const v = e.target.value.trim();
+      const conn = usage.conn;
+      const layerIdx = state.wiringLayers.indexOf(usage.layer);
+      const connIdx  = usage.layer.connections.indexOf(conn);
+      if (layerIdx === -1 || connIdx === -1) return;
+      const c = state.wiringLayers[layerIdx].connections[connIdx];
+      if (usage.role === 'from' || usage.role === 'patch_from') {
+        if (v) c.from_ip = v; else delete c.from_ip;
+      } else {
+        if (v) c.to_ip = v; else delete c.to_ip;
+      }
+      renderPortFace(dev);
+      selectPort(dev, portNum);
+    });
+    card.appendChild(makeRow('IP Address', ipIn));
+  }
+
+  detail.appendChild(card);
 }
 
 function updateRackU(id, val) {
@@ -2553,7 +3015,63 @@ function addWiringLayer() {
   updateStatus();
 }
 
+function renderCableTypes() {
+  const panel = document.getElementById('cableTypesPanel');
+  if (!panel) return;
+  panel.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'cable-types-panel';
+
+  const header = document.createElement('div');
+  header.className = 'cable-types-header';
+  header.innerHTML = `<span style="flex:1">Cable Types</span><span>${state.cableTypesPanelOpen ? '▼' : '▶'}</span>`;
+  header.addEventListener('click', () => { state.cableTypesPanelOpen = !state.cableTypesPanelOpen; renderCableTypes(); });
+  card.appendChild(header);
+
+  if (state.cableTypesPanelOpen) {
+    const body = document.createElement('div');
+    body.className = 'cable-types-body';
+
+    state.cableTypes.forEach((ct, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'cable-type-chip';
+      chip.innerHTML = `${ct}<button class="ct-rm" title="Remove cable type" onclick="removeCableType(${idx})">✕</button>`;
+      body.appendChild(chip);
+    });
+
+    const addRow = document.createElement('div');
+    addRow.className = 'cable-type-add';
+    const addInput = document.createElement('input');
+    addInput.placeholder = 'New cable type…';
+    addInput.id = 'newCableTypeInput';
+    addInput.addEventListener('keydown', e => { if (e.key === 'Enter') addCableType(); });
+    const addBtn = document.createElement('button');
+    addBtn.textContent = '＋ Add';
+    addBtn.addEventListener('click', addCableType);
+    addRow.appendChild(addInput);
+    addRow.appendChild(addBtn);
+    body.appendChild(addRow);
+    card.appendChild(body);
+  }
+
+  panel.appendChild(card);
+}
+
+function addCableType() {
+  const input = document.getElementById('newCableTypeInput');
+  const val = input ? input.value.trim() : '';
+  if (!val || state.cableTypes.includes(val)) return;
+  state.cableTypes.push(val);
+  renderWiringLayers();
+}
+
+function removeCableType(idx) {
+  state.cableTypes.splice(idx, 1);
+  renderWiringLayers();
+}
+
 function renderWiringLayers() {
+  renderCableTypes();
   const c = document.getElementById('wiringLayerList');
   c.innerHTML = '';
 
@@ -2572,8 +3090,9 @@ function renderWiringLayers() {
         onchange="state.wiringLayers[${li}].name=this.value">
       <select onclick="event.stopPropagation()" onchange="state.wiringLayers[${li}].cable_type=this.value"
         style="background:var(--bg);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:9px;padding:2px 4px;outline:none;max-width:82px;letter-spacing:0.5px">
-        ${['Ethernet','C13-C14','C19-C20','Included','Fibre','USB','HDMI','Display Port'].map(ct =>
+        ${state.cableTypes.map(ct =>
           `<option ${ct===layer.cable_type?'selected':''}>${ct}</option>`).join('')}
+        ${!state.cableTypes.includes(layer.cable_type) && layer.cable_type ? `<option selected>${layer.cable_type}</option>` : ''}
       </select>
       <input type="color" value="${layer.edge_color}" onclick="event.stopPropagation()"
         onchange="state.wiringLayers[${li}].edge_color=this.value;renderWiringLayers();renderWiringOverlay()"
@@ -2725,14 +3244,20 @@ function buildConnectionCard(li, ci, conn) {
     const cableSelect = document.createElement('select');
     cableSelect.className = 'conn-override-input';
     cableSelect.style.cursor = 'pointer';
-    const cableTypes = ['', 'Ethernet', 'C13-C14', 'C19-C20', 'Included', 'Fibre', 'USB', 'HDMI'];
-    cableTypes.forEach(ct => {
+    ['', ...state.cableTypes].forEach(ct => {
       const opt = document.createElement('option');
       opt.value = ct;
       opt.textContent = ct || '— inherit from layer —';
       if (ct === (conn.cable_type || '')) opt.selected = true;
       cableSelect.appendChild(opt);
     });
+    if (conn.cable_type && !state.cableTypes.includes(conn.cable_type)) {
+      const opt = document.createElement('option');
+      opt.value = conn.cable_type;
+      opt.textContent = conn.cable_type;
+      opt.selected = true;
+      cableSelect.appendChild(opt);
+    }
     cableSelect.addEventListener('change', e => {
       const v = e.target.value;
       if (v) state.wiringLayers[li].connections[ci].cable_type = v;
@@ -2841,7 +3366,63 @@ function buildConnectionCard(li, ci, conn) {
     renderWiringLayers();
   });
   clusterFooter.appendChild(patchToggle);
+
+  // ── Ports toggle ──
+  const hasPorts = conn.from_port !== undefined || conn.to_port !== undefined || conn.from_ip !== undefined || conn._showPorts;
+  const portsToggle = document.createElement('button');
+  portsToggle.className = 'conn-cluster-toggle' + (hasPorts ? ' active' : '');
+  portsToggle.title = 'Set port numbers and IP addresses for each endpoint';
+  portsToggle.innerHTML = hasPorts
+    ? '<span style="color:var(--accent2)">⊡</span>\u00a0ports ▾'
+    : '<span style="opacity:.5">⊡</span>\u00a0ports';
+  portsToggle.addEventListener('click', () => {
+    state.wiringLayers[li].connections[ci]._showPorts = !hasPorts;
+    renderWiringLayers();
+  });
+  clusterFooter.appendChild(portsToggle);
   card.appendChild(clusterFooter);
+
+  if (hasPorts) {
+    const portsBox = document.createElement('div');
+    portsBox.style.cssText = 'margin-top:5px;padding:5px 0 0;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;';
+
+    const portsNote = document.createElement('div');
+    portsNote.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);padding-bottom:2px;';
+    portsNote.textContent = 'Port numbers (blank = auto-assign)';
+    portsBox.appendChild(portsNote);
+
+    const portRow = document.createElement('div');
+    portRow.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+
+    function makePortInput(label, stateKey, width) {
+      const lbl = document.createElement('span');
+      lbl.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.5px;white-space:nowrap;';
+      lbl.textContent = label;
+      const inp = document.createElement('input');
+      inp.type = stateKey === 'from_ip' ? 'text' : 'number';
+      if (stateKey !== 'from_ip') inp.min = '1';
+      inp.style.cssText = `width:${width}px;padding:3px 5px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;`;
+      inp.value = conn[stateKey] !== undefined ? conn[stateKey] : '';
+      inp.placeholder = stateKey === 'from_ip' ? '0.0.0.0' : 'auto';
+      inp.addEventListener('change', e => {
+        const raw = e.target.value.trim();
+        if (!raw) { delete state.wiringLayers[li].connections[ci][stateKey]; return; }
+        const v = (stateKey === 'from_ip') ? raw : parseInt(raw);
+        if (stateKey !== 'from_ip' && isNaN(v)) return;
+        state.wiringLayers[li].connections[ci][stateKey] = v;
+      });
+      return [lbl, inp];
+    }
+
+    const [fpLbl, fpIn] = makePortInput('from port', 'from_port', 52);
+    const [ipLbl, ipIn] = makePortInput('from IP', 'from_ip', 110);
+    const [tpLbl, tpIn] = makePortInput('to port', 'to_port', 52);
+    portRow.appendChild(fpLbl); portRow.appendChild(fpIn);
+    portRow.appendChild(ipLbl); portRow.appendChild(ipIn);
+    portRow.appendChild(tpLbl); portRow.appendChild(tpIn);
+    portsBox.appendChild(portRow);
+    card.appendChild(portsBox);
+  }
 
   if (hasCluster) {
     const clusterRow = document.createElement('div');
@@ -2940,6 +3521,44 @@ function buildConnectionCard(li, ci, conn) {
       row.appendChild(pick);
       patchBox.appendChild(row);
     });
+
+    // Patch port number inputs
+    const patchPortRow = document.createElement('div');
+    patchPortRow.style.cssText = 'display:flex;align-items:center;gap:6px;padding-top:3px;flex-wrap:wrap;';
+
+    const ppFromLbl = document.createElement('span');
+    ppFromLbl.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.5px;white-space:nowrap;';
+    ppFromLbl.textContent = 'PP port (from)';
+    const ppFromIn = document.createElement('input');
+    ppFromIn.type = 'number'; ppFromIn.min = '1';
+    ppFromIn.style.cssText = 'width:52px;padding:3px 5px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;';
+    ppFromIn.value = conn.patch_port_from !== undefined ? conn.patch_port_from : '';
+    ppFromIn.placeholder = 'auto';
+    ppFromIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      if (!isNaN(v)) state.wiringLayers[li].connections[ci].patch_port_from = v;
+      else delete state.wiringLayers[li].connections[ci].patch_port_from;
+    });
+
+    const ppToLbl = document.createElement('span');
+    ppToLbl.style.cssText = 'font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.5px;white-space:nowrap;margin-left:6px;';
+    ppToLbl.textContent = 'PP port (to)';
+    const ppToIn = document.createElement('input');
+    ppToIn.type = 'number'; ppToIn.min = '1';
+    ppToIn.style.cssText = 'width:52px;padding:3px 5px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;';
+    ppToIn.value = conn.patch_port_to !== undefined ? conn.patch_port_to : '';
+    ppToIn.placeholder = 'auto';
+    ppToIn.addEventListener('change', e => {
+      const v = parseInt(e.target.value);
+      if (!isNaN(v)) state.wiringLayers[li].connections[ci].patch_port_to = v;
+      else delete state.wiringLayers[li].connections[ci].patch_port_to;
+    });
+
+    patchPortRow.appendChild(ppFromLbl);
+    patchPortRow.appendChild(ppFromIn);
+    patchPortRow.appendChild(ppToLbl);
+    patchPortRow.appendChild(ppToIn);
+    patchBox.appendChild(patchPortRow);
 
     card.appendChild(patchBox);
   }
@@ -3319,8 +3938,15 @@ function generateYAML() {
   y += `cable_slack_length: ${cs}  # m\n`;
   y += `front_to_back_length: ${fb}  # m\n\n`;
 
+  y += 'cable_types:\n';
+  state.cableTypes.forEach(ct => { y += `  - ${ct}\n`; });
+  y += '\n';
+
   y += 'type_colors:\n';
-  state.typeEntries.forEach(e => y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n`);
+  state.typeEntries.forEach(e => {
+    y += `  ${e.type}:\n    color: "${e.color}"\n    units: ${e.units}\n`;
+    if (e.ported) y += `    ported: true\n`;
+  });
   y += '\n';
 
   y += 'racks:\n';
@@ -3345,6 +3971,13 @@ function generateYAML() {
         if (d.units !== undefined) y += `        units: ${d.units}\n`;
         if (d.spacing !== undefined) y += `        spacing: ${d.spacing}\n`;
         y += `        type: ${d.type}\n`;
+        if (d.ports) y += `        ports: ${d.ports}\n`;
+        if (d.port_notes && Object.keys(d.port_notes).length) {
+          y += `        port_notes:\n`;
+          Object.keys(d.port_notes).sort((a,b)=>+a-+b).forEach(k => {
+            if (d.port_notes[k]) y += `          ${k}: "${d.port_notes[k]}"\n`;
+          });
+        }
       });
     });
     y += '\n';
@@ -3393,7 +4026,13 @@ function generateYAML() {
           if (c.start !== undefined) y += `        start: ${c.start}\n`;
           if (c.end !== undefined) y += `        end: ${c.end}\n`;
           if (c.via_patch_from !== undefined) y += `        via_patch_from: "${c.via_patch_from}"\n`;
-          if (c.via_patch_to !== undefined) y += `        via_patch_to: "${c.via_patch_to}"\n`;
+          if (c.via_patch_to !== undefined)   y += `        via_patch_to: "${c.via_patch_to}"\n`;
+          if (c.patch_port_from != null) y += `        patch_port_from: ${c.patch_port_from}\n`;
+          if (c.patch_port_to   != null) y += `        patch_port_to: ${c.patch_port_to}\n`;
+          if (c.from_port != null) y += `        from_port: ${c.from_port}\n`;
+          if (c.to_port   != null) y += `        to_port: ${c.to_port}\n`;
+          if (c.from_ip)  y += `        from_ip: "${c.from_ip}"\n`;
+          if (c.to_ip)    y += `        to_ip: "${c.to_ip}"\n`;
         });
       }
     });
@@ -3490,8 +4129,30 @@ function parseYAMLToState(text) {
         i++;
       } else if (cur !== null) {
         const ci2 = tr.indexOf(':');
-        if (ci2 !== -1) cur[tr.slice(0, ci2).trim()] = scalar(tr.slice(ci2 + 1));
-        i++;
+        if (ci2 !== -1) {
+          const k = tr.slice(0, ci2).trim();
+          const v = tr.slice(ci2 + 1).trim();
+          if ((k === 'port_notes' || k === 'ip_addresses') && (!v || v.startsWith('#'))) {
+            // nested map: read following indented key: value lines
+            i++;
+            const submap = {};
+            const subIndent = ind + 2;
+            while (i < lines.length) {
+              const ln2 = lines[i]; const tr2 = ln2.trim();
+              if (!tr2 || tr2.startsWith('#')) { i++; continue; }
+              if (indent(ln2) < subIndent) break;
+              const ci3 = tr2.indexOf(':');
+              if (ci3 !== -1) submap[tr2.slice(0, ci3).trim()] = scalar(tr2.slice(ci3 + 1));
+              i++;
+            }
+            cur[k] = submap;
+          } else {
+            cur[k] = scalar(tr.slice(ci2 + 1));
+            i++;
+          }
+        } else {
+          i++;
+        }
       } else {
         i++;
       }
@@ -3606,7 +4267,18 @@ function parseYAMLToState(text) {
       continue;
     }
 
-    if (key === 'type_colors') {
+    if (key === 'cable_types') {
+      const types = [];
+      while (i < lines.length) {
+        const l2 = lines[i]; const t2 = l2.trim();
+        if (!t2 || t2.startsWith('#')) { i++; continue; }
+        if (indent(l2) === 0) break;
+        if (t2.startsWith('- ')) types.push(t2.slice(2).trim());
+        i++;
+      }
+      result.cable_types = types;
+
+    } else if (key === 'type_colors') {
       const obj = {};
       while (i < lines.length) {
         const l2 = lines[i]; const t2 = l2.trim();
@@ -3754,15 +4426,18 @@ function applyParsedToState(parsed) {
   if (parsed.cable_slack_length !== undefined) document.getElementById('gCableSlack').value = parsed.cable_slack_length;
   if (parsed.front_to_back_length !== undefined) document.getElementById('gFrontBack').value = parsed.front_to_back_length;
 
+  if (Array.isArray(parsed.cable_types) && parsed.cable_types.length > 0) {
+    state.cableTypes = parsed.cable_types;
+  }
+
   if (parsed.type_colors && typeof parsed.type_colors === 'object') {
     state.typeEntries = [];
     for (const [k, v] of Object.entries(parsed.type_colors)) {
       if (v && typeof v === 'object') {
-        // New format: { color, units, label }
-        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1 });
+        state.typeEntries.push({ type: k, color: String(v.color || '#888'), units: parseInt(v.units) || 1, ported: !!v.ported });
       } else {
         // Legacy flat format: just a color string
-        state.typeEntries.push({ type: k, color: String(v), units: 1 });
+        state.typeEntries.push({ type: k, color: String(v), units: 1, ported: false });
       }
     }
   }
@@ -3790,6 +4465,8 @@ function applyParsedToState(parsed) {
           if (d.end != null) dev.end = parseInt(d.end);
           if (d.spacing != null) dev.spacing = parseInt(d.spacing);
           dev.type = String(d.type || 'pc');
+          if (d.ports != null) dev.ports = parseInt(d.ports);
+          if (d.port_notes && typeof d.port_notes === 'object') dev.port_notes = {...d.port_notes};
           return dev;
         }).filter(Boolean);
       };
@@ -3844,8 +4521,15 @@ function applyParsedToState(parsed) {
           if (c.end !== undefined) conn.end = parseInt(c.end);
           if (c.via_patch_from != null) conn.via_patch_from = String(c.via_patch_from);
           if (c.via_patch_to   != null) conn.via_patch_to   = String(c.via_patch_to);
+          if (c.patch_port_from != null) conn.patch_port_from = parseInt(c.patch_port_from);
+          if (c.patch_port_to   != null) conn.patch_port_to   = parseInt(c.patch_port_to);
+          if (c.from_port != null) conn.from_port = parseInt(c.from_port);
+          if (c.to_port   != null) conn.to_port   = parseInt(c.to_port);
+          if (c.from_ip) conn.from_ip = String(c.from_ip);
+          if (c.to_ip)   conn.to_ip   = String(c.to_ip);
           // Restore the patch UI panel open state if patch data is present
           if (conn.via_patch_from !== undefined || conn.via_patch_to !== undefined) conn._showPatch = true;
+          if (conn.from_port !== undefined || conn.to_port !== undefined || conn.from_ip !== undefined) conn._showPorts = true;
           layer.connections.push(conn);
         });
       }
@@ -4202,12 +4886,22 @@ function renderOutputFiles(files) {
   const container = document.getElementById('runFiles');
   container.innerHTML = '<div class="run-files-label">Output Files</div>';
 
-  const pngs = (files.pngs || []).map(f => ({ name: f, url: `/pngs/${f}` }));
+  const pngGroups = (files.pngs && typeof files.pngs === 'object' && !Array.isArray(files.pngs))
+    ? files.pngs
+    : {};
+
+  const pngSections = [
+    { key: 'rack',   label: 'Rack Layout' },
+    { key: 'wiring', label: 'Wiring Diagrams' },
+    { key: 'ports',  label: 'Port Schedules' },
+  ];
+
   const others = (files.output || [])
     .filter(f => !f.endsWith('.dot'))
     .map(f => ({ name: f, url: `/output/${f}`, ext: f.split('.').pop() }));
 
-  if (pngs.length === 0 && others.length === 0) {
+  const anyPngs = pngSections.some(s => (pngGroups[s.key] || []).length > 0);
+  if (!anyPngs && others.length === 0) {
     const empty = document.createElement('span');
     empty.style.cssText = 'color:var(--text3);font-family:var(--mono);font-size:10px;';
     empty.textContent = 'No output files generated';
@@ -4215,30 +4909,44 @@ function renderOutputFiles(files) {
     return;
   }
 
-  if (pngs.length > 0) {
+  const ts = Date.now();
+  pngSections.forEach(({ key, label }) => {
+    const items = pngGroups[key] || [];
+    if (items.length === 0) return;
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin:10px 0 4px;';
+    hdr.textContent = label;
+    container.appendChild(hdr);
+
     const grid = document.createElement('div');
     grid.className = 'output-png-grid';
-    pngs.forEach(f => {
+    items.forEach(fname => {
+      const url = `/pngs/${key}/${fname}`;
       const a = document.createElement('a');
-      a.href = f.url;
+      a.href = url;
       a.target = '_blank';
       a.className = 'output-png-thumb';
-      a.title = f.name;
+      a.title = fname;
       const img = document.createElement('img');
-      // Cache-bust so re-runs show fresh images
-      img.src = f.url + '?t=' + Date.now();
-      img.alt = f.name;
+      img.src = url + '?t=' + ts;
+      img.alt = fname;
       img.onerror = () => { img.style.display='none'; };
       const lbl = document.createElement('span');
-      lbl.textContent = f.name.replace(/\.[^.]+$/, '');
+      lbl.textContent = fname.replace(/\.[^.]+$/, '');
       a.appendChild(img);
       a.appendChild(lbl);
       grid.appendChild(a);
     });
     container.appendChild(grid);
-  }
+  });
 
   if (others.length > 0) {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin:10px 0 4px;';
+    hdr.textContent = 'Data Files';
+    container.appendChild(hdr);
+
     const list = document.createElement('div');
     list.className = 'output-file-list';
     others.forEach(f => {

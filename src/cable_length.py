@@ -180,6 +180,13 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
         external_length += from_info.get("distance_from_racks", 0) or 0
     if to_is_ext:
         external_length += to_info.get("distance_from_racks", 0) or 0
+    if from_is_ext and to_is_ext and from_info.get("group_name") != to_info.get("group_name"):
+        # If both devices are external but in different groups, add inter-rack distance as a baseline
+        external_length += inter_rack_distance
+    if from_is_ext and to_is_ext and from_info.get("group_name") == to_info.get("group_name"):
+        # If both devices are external and in the same group, assume no distance (e.g. same wall outlet)
+        external_length = 0
+        cable_slack = 0
 
     # 5. Total — round up to nearest 0.5 m
     total_length = unit_length + f2b_length + inter_rack_length + external_length + cable_slack

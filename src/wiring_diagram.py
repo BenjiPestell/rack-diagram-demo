@@ -258,7 +258,7 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
 
         edge_attrs_str = ", ".join(edge_attrs)
 
-        lines.append(f"  {from_id} -- {to_id} [")
+        lines.append(f"  \"{from_id}\" -- \"{to_id}\" [")
         lines.append(f"    {edge_attrs_str}")
         lines.append("  ];")
 
