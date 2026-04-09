@@ -9,7 +9,7 @@ from math import sqrt
 
 from utils import load_config, get_device_color
 from wiring_diagram import generate_wiring_diagram
-from cable_length import generate_cable_length_table, generate_cable_length_html, generate_cable_summary_csv, generate_cable_summary_html
+from cable_length import generate_cable_length_table, generate_cable_length_html, generate_cable_summary_csv, generate_cable_summary_html, build_all_devices as build_cable_devices
 from clusters import expand_computer_info_clusters, expand_external_devices, expand_clusters, expand_wiring_clusters
 from rack_layout import generate_rack_layout_dot, build_device_map, build_occupancy
 from computer_info import export_computer_info_csv, export_computer_info_json, export_computer_info_html
@@ -85,7 +85,8 @@ def main():
         "cable_slack_length": config.get("cable_slack_length", 0.2),
         "standard_u_height": config.get("standard_u_height", 0.045),
         "front_to_back_length": config.get("front_to_back_length", 0.5),
-        "inter_rack_distance": config.get("inter_rack_distance", 2.5)
+        "inter_rack_distance": config.get("inter_rack_distance", 2.5),
+        "rail_extension_length": config.get("rail_extension_length", 0.5),
     }
     
     # Create output directories and clean stale files
@@ -149,11 +150,12 @@ def main():
                 f.write(wiring_dot)
             print(f"Generated {filename}")
         
-        # Generate cable length tables
-        generate_cable_length_table(all_devices, racks_config, layers, cable_config)
-        generate_cable_length_html(all_devices, racks_config, layers, cable_config)
-        generate_cable_summary_csv(all_devices, racks_config, layers, config)
-        generate_cable_summary_html(all_devices, racks_config, layers, config)
+        # Generate cable length tables (use build_cable_devices for full u_order/cable_exit data)
+        cable_all_devices = build_cable_devices(racks_config, external_devices_config)
+        generate_cable_length_table(cable_all_devices, racks_config, layers, cable_config)
+        generate_cable_length_html(cable_all_devices, racks_config, layers, cable_config)
+        generate_cable_summary_csv(cable_all_devices, racks_config, layers, config)
+        generate_cable_summary_html(cable_all_devices, racks_config, layers, config)
         
         # Process computer_info
         computer_info_raw = config.get("computer_info", [])

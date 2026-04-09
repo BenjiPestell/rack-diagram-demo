@@ -6,6 +6,50 @@ from utils import hex_to_color_name
 
 
 # -------------------------------------------------
+# Helper geometry functions
+# -------------------------------------------------
+def _u_dist_to_rack_bottom(start_u, units, u_order='bottom_top', total_u=42):
+    """U count from physical bottom edge of device to physical rack bottom."""
+    if start_u is None or units is None:
+        return 0
+    if u_order == 'bottom_top':
+        # U1 = physical rack bottom; device bottom edge = start_u - units + 1
+        return max(0, (start_u - units + 1) - 1)
+    else:
+        # top_bottom: U1 = physical rack top; device bottom edge = start_u + units - 1
+        return max(0, total_u - (start_u + units - 1))
+
+def _intra_rack_u_delta(from_start_u, from_units, to_start_u, to_units, u_order='bottom_top'):
+    """U delta between physical bottom edges of two devices in the same rack."""
+    if from_start_u is None or from_units is None or to_start_u is None or to_units is None:
+        return 0
+    if u_order == 'bottom_top':
+        a_bot = from_start_u - from_units + 1
+        b_bot = to_start_u - to_units + 1
+    else:
+        a_bot = from_start_u + from_units - 1
+        b_bot = to_start_u + to_units - 1
+    return abs(a_bot - b_bot)
+
+def _round_cable_length(length):
+    """Round up to nearest 0.2 m for lengths ≤ 1.0 m, then nearest 0.5 m."""
+    if length <= 1.0:
+        return math.ceil(length * 5) / 5
+    return math.ceil(length * 2) / 2
+
+def _stepped_slack(raw_total, slack_max):
+    """Step-based slack: scales from 0 to slack_max based on raw cable length."""
+    if raw_total < 1.0:
+        return 0.0
+    elif raw_total < 3.0:
+        return slack_max * 0.25
+    elif raw_total < 10.0:
+        return slack_max * 0.5
+    else:
+        return slack_max
+
+
+# -------------------------------------------------
 # Build all_devices lookup from parsed YAML config
 # -------------------------------------------------
 def build_all_devices(rack_configs, external_device_groups=None):
@@ -35,6 +79,8 @@ def build_all_devices(rack_configs, external_device_groups=None):
                 end_n   = dev.get("end")
                 spacing = dev.get("spacing", 0)
 
+                on_rails      = bool(dev.get("on_rails", False))
+                is_patch_panel = "patch panel" in (dev.get("type") or "").lower()
                 if start_n is not None and end_n is not None and "{N}" in name:
                     step = units + (spacing or 0)
                     for i, n in enumerate(range(start_n, end_n + 1)):
@@ -46,6 +92,11 @@ def build_all_devices(rack_configs, external_device_groups=None):
                             "start_u":             member_start_u,
                             "units":               units,
                             "distance_from_racks": 0,
+                            "on_rails":            on_rails,
+                            "is_patch_panel":      is_patch_panel,
+                            "cable_exit":          dev.get("cable_exit", "rear"),
+                            "u_order":             rack_config["rack"].get("u_order", "bottom_top"),
+                            "total_u":             int(rack_config["rack"].get("total_u", 42)),
                         }
                 else:
                     all_devices[name] = {
@@ -54,6 +105,11 @@ def build_all_devices(rack_configs, external_device_groups=None):
                         "start_u":             start_u,
                         "units":               units,
                         "distance_from_racks": 0,
+                        "on_rails":            on_rails,
+                        "is_patch_panel":      is_patch_panel,
+                        "cable_exit":          dev.get("cable_exit", "rear"),
+                        "u_order":             rack_config["rack"].get("u_order", "bottom_top"),
+                        "total_u":             int(rack_config["rack"].get("total_u", 42)),
                     }
 
     # --- External devices ---
@@ -108,10 +164,11 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
     if not from_info or not to_info:
         return None
 
-    cable_slack         = config.get("cable_slack_length",  0.2)
+    cable_slack_max     = config.get("cable_slack_length",  0.2)
     standard_u_height   = config.get("standard_u_height",   0.045)
     front_to_back       = config.get("front_to_back_length", 0.5)
     inter_rack_distance = config.get("inter_rack_distance",  2.5)
+    rail_extension      = config.get("rail_extension_length", 0.5)
 
     rack_name_map     = {}
     rack_position_map = {}
@@ -123,10 +180,8 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
 
     from_rack    = from_info.get("rack_id")
     to_rack      = to_info.get("rack_id")
-    from_side    = from_info.get("side",    "front")
-    to_side      = to_info.get("side",      "front")
-    from_start_u = from_info.get("start_u", 0)
-    to_start_u   = to_info.get("start_u",   0)
+    from_start_u = from_info.get("start_u")
+    to_start_u   = to_info.get("start_u")
     from_units   = from_info.get("units",   1)
     to_units     = to_info.get("units",     1)
 
@@ -136,61 +191,100 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
     from_rack_name = from_info.get("group_name", "External") if from_is_ext else rack_name_map.get(from_rack, from_rack)
     to_rack_name   = to_info.get("group_name",   "External") if to_is_ext   else rack_name_map.get(to_rack,   to_rack)
 
-    # 1. Unit delta
-    if not from_is_ext and not to_is_ext and from_rack != to_rack:
-        from_u_dist = (from_start_u - 1) if from_start_u else 0
-        to_u_dist   = (to_start_u   - 1) if to_start_u   else 0
-        unit_delta  = from_u_dist + to_u_dist
-    elif from_is_ext and not to_is_ext:
-        unit_delta = (to_start_u - 1) if to_start_u else 0
-    elif not from_is_ext and to_is_ext:
-        unit_delta = (from_start_u - 1) if from_start_u else 0
-    elif from_is_ext and to_is_ext:
-        unit_delta = 0
-    else:
-        # Intra-rack
-        if from_start_u and to_start_u:
-            from_bottom_u = from_start_u - from_units + 1
-            to_bottom_u   = to_start_u   - to_units   + 1
-            unit_delta    = abs(from_bottom_u - to_bottom_u)
+    from_cable_exit = from_info.get("cable_exit", "rear")
+    to_cable_exit   = to_info.get("cable_exit",   "rear")
+
+    # Patch panels accept cables on either face — adopt the peer's cable exit
+    from_is_pp = from_info.get("is_patch_panel", False)
+    to_is_pp   = to_info.get("is_patch_panel",   False)
+    if from_is_pp and not to_is_pp:
+        from_cable_exit = to_cable_exit
+    elif to_is_pp and not from_is_pp:
+        to_cable_exit = from_cable_exit
+
+    from_u_order    = from_info.get("u_order",    "bottom_top")
+    to_u_order      = to_info.get("u_order",      "bottom_top")
+    from_total_u    = from_info.get("total_u",    42)
+    to_total_u      = to_info.get("total_u",      42)
+    from_rails      = from_info.get("on_rails",   False)
+    to_rails        = to_info.get("on_rails",     False)
+
+    # --- Route calculation ---
+    if not from_is_ext and not to_is_ext and from_rack == to_rack:
+        # INTRA-RACK
+        if from_cable_exit == to_cable_exit:
+            unit_delta = _intra_rack_u_delta(from_start_u, from_units, to_start_u, to_units, from_u_order)
+            f2b_length = 0.0
         else:
-            unit_delta = 0
+            # Different exits: direct U delta between devices + one f2b crossing
+            unit_delta = _intra_rack_u_delta(from_start_u, from_units, to_start_u, to_units, from_u_order)
+            f2b_length = front_to_back
+        unit_length       = unit_delta * standard_u_height
+        inter_rack_length = 0.0
+        external_length   = 0.0
 
-    unit_length = unit_delta * standard_u_height
+    elif not from_is_ext and not to_is_ext:
+        # INTER-RACK
+        from_to_bot = _u_dist_to_rack_bottom(from_start_u, from_units, from_u_order, from_total_u)
+        to_to_bot   = _u_dist_to_rack_bottom(to_start_u,   to_units,   to_u_order,   to_total_u)
+        unit_delta  = from_to_bot + to_to_bot
+        unit_length = unit_delta * standard_u_height
 
-    # 2. Front-to-back
-    f2b_count = 0
-    if not from_is_ext and from_side == "front":
-        f2b_count += 1
-    if not to_is_ext and to_side == "front":
-        f2b_count += 1
-    f2b_length = f2b_count * front_to_back
+        f2b_length = 0.0
+        if from_cable_exit == 'front': f2b_length += front_to_back
+        if to_cable_exit   == 'front': f2b_length += front_to_back
 
-    # 3. Inter-rack distance
-    inter_rack_length = 0
-    if not from_is_ext and not to_is_ext and from_rack != to_rack:
         from_pos          = rack_position_map.get(from_rack, 0)
         to_pos            = rack_position_map.get(to_rack,   0)
-        rack_delta        = abs(from_pos - to_pos)
-        inter_rack_length = rack_delta * inter_rack_distance
+        inter_rack_length = abs(from_pos - to_pos) * inter_rack_distance
+        external_length   = 0.0
 
-    # 4. External distance
-    external_length = 0
-    if from_is_ext:
-        external_length += from_info.get("distance_from_racks", 0) or 0
-    if to_is_ext:
-        external_length += to_info.get("distance_from_racks", 0) or 0
-    if from_is_ext and to_is_ext and from_info.get("group_name") != to_info.get("group_name"):
-        # If both devices are external but in different groups, add inter-rack distance as a baseline
-        external_length += inter_rack_distance
+    elif from_is_ext and not to_is_ext:
+        # FROM external, TO rack
+        to_to_bot   = _u_dist_to_rack_bottom(to_start_u, to_units, to_u_order, to_total_u)
+        unit_delta  = to_to_bot
+        unit_length = unit_delta * standard_u_height
+        f2b_length  = front_to_back if to_cable_exit == 'front' else 0.0
+        inter_rack_length = 0.0
+        external_length   = from_info.get("distance_from_racks", 0) or 0
+
+    elif not from_is_ext and to_is_ext:
+        # FROM rack, TO external
+        from_to_bot = _u_dist_to_rack_bottom(from_start_u, from_units, from_u_order, from_total_u)
+        unit_delta  = from_to_bot
+        unit_length = unit_delta * standard_u_height
+        f2b_length  = front_to_back if from_cable_exit == 'front' else 0.0
+        inter_rack_length = 0.0
+        external_length   = to_info.get("distance_from_racks", 0) or 0
+
+    else:
+        # BOTH external
+        unit_delta        = 0
+        unit_length       = 0.0
+        f2b_length        = 0.0
+        inter_rack_length = 0.0
+        if from_info.get("group_name") == to_info.get("group_name"):
+            external_length = 0.0
+        else:
+            external_length = (
+                (from_info.get("distance_from_racks", 0) or 0)
+                + (to_info.get("distance_from_racks", 0) or 0)
+                + inter_rack_distance
+            )
+
+    # Rail extension
+    rail_length = 0.0
+    if not from_is_ext and from_rails: rail_length += rail_extension
+    if not to_is_ext   and to_rails:   rail_length += rail_extension
+
+    # Slack (stepped) + total
+    raw_total   = unit_length + f2b_length + inter_rack_length + external_length + rail_length
+    # Both-external same-group: zero slack
     if from_is_ext and to_is_ext and from_info.get("group_name") == to_info.get("group_name"):
-        # If both devices are external and in the same group, assume no distance (e.g. same wall outlet)
-        external_length = 0
-        cable_slack = 0
-
-    # 5. Total — round up to nearest 0.5 m
-    total_length = unit_length + f2b_length + inter_rack_length + external_length + cable_slack
-    total_length = math.ceil(total_length * 2) / 2
+        cable_slack = 0.0
+    else:
+        cable_slack = _stepped_slack(raw_total, cable_slack_max)
+    total_length = _round_cable_length(raw_total + cable_slack)
 
     return {
         "from_rack":         from_rack_name,
@@ -200,6 +294,7 @@ def calculate_cable_length(from_device, to_device, all_devices, rack_configs, co
         "f2b_length":        f2b_length,
         "inter_rack_length": inter_rack_length,
         "external_length":   external_length,
+        "rail_length":       rail_length,
         "cable_slack":       cable_slack,
         "total_length":      total_length,
     }
@@ -266,6 +361,7 @@ def calculate_cable_length_for_conn(conn, all_devices, rack_configs, config):
                 "f2b_length":        0,
                 "inter_rack_length": 0,
                 "external_length":   0,
+                "rail_length":       0,
                 "cable_slack":       config.get("cable_slack_length", 0.2),
                 "total_length":      0,
             }
@@ -417,7 +513,8 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
             display: none;
             position: absolute;
             right: 0;
-            top: 100%;
+            bottom: 100%;
+            margin-bottom: 6px;
             z-index: 100;
             background: #1a1a2e;
             color: #fff;
@@ -436,13 +533,27 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
         .tip::before {
             content: '';
             position: absolute;
-            top: -5px;
+            bottom: -5px;
             right: 14px;
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
-            border-bottom: 5px solid #1a1a2e;
+            border-top: 5px solid #1a1a2e;
         }
         .tip-wrap:hover .tip { display: block; }
+
+        /* Flip tooltip below when it would clip off the top */
+        .tip.below {
+            bottom: auto;
+            top: 100%;
+            margin-bottom: 0;
+            margin-top: 6px;
+        }
+        .tip.below::before {
+            bottom: auto;
+            top: -5px;
+            border-top: none;
+            border-bottom: 5px solid #1a1a2e;
+        }
     </style>
 </head>
 <body>
@@ -506,6 +617,7 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
                     f"Front-to-back: {seg['f2b_length']:.3f} m\n"
                     f"Inter-rack: {seg['inter_rack_length']:.1f} m\n"
                     f"External: {seg['external_length']:.1f} m\n"
+                    f"Rail extension: {seg['rail_length']:.3f} m\n"
                     f"Slack: {seg['cable_slack']:.3f} m\n"
                     f"Total: {seg['total_length']:.2f} m"
                 )
@@ -535,6 +647,19 @@ def generate_cable_length_html(all_devices, racks_config, wiring_layers, config,
         </tbody>
     </table>
     </div>
+    <script>
+        document.querySelectorAll('.tip-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                var tip = wrap.querySelector('.tip');
+                if (!tip) return;
+                tip.classList.remove('below');
+                var rect = tip.getBoundingClientRect();
+                if (rect.top < 8) {
+                    tip.classList.add('below');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 """

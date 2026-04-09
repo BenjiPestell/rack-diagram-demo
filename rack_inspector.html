@@ -646,6 +646,13 @@
         <span class="cfg-unit">m</span>
       </div>
     </div>
+    <div class="cfg-group">
+      <div class="cfg-label">Rail ext.</div>
+      <div class="cfg-input-row">
+        <input class="cfg-input" id="cfgRailExt" type="number" step="0.1" value="0.5" inputmode="decimal">
+        <span class="cfg-unit">m</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1024,6 +1031,9 @@ function buildDeviceMap(parsed) {
           located: dev.start_u != null && dev.units != null,
           ports: dev.ports,
           port_notes: dev.port_notes,
+          onRails: !!dev.on_rails,
+          cableExit: dev.cable_exit || 'rear',
+          isPatchPanel: (dev.type || '').toLowerCase().includes('patch panel'),
         };
       });
     }
@@ -1058,104 +1068,120 @@ function getConfig() {
     interRack:   parseFloat(document.getElementById('cfgInterRack').value) || 5.0,
     frontToBack: parseFloat(document.getElementById('cfgFrontBack').value) || 0.5,
     slack:       parseFloat(document.getElementById('cfgSlack').value)     || 0.2,
+    railExt:     parseFloat(document.getElementById('cfgRailExt').value)   || 0.5,
   };
 }
 
-function deviceMidpointU(dev) {
-  // Returns the U-number at the midpoint of the device
-  if (!dev.located) return null;
-  const { start_u, units, uOrder, totalU } = dev;
-  if (uOrder === 'top_bottom') {
-    // start_u is top of device, extends downward
-    return start_u + (units - 1) / 2;
+function deviceBottomDistU(dev) {
+  // U count from physical bottom of device to physical rack bottom
+  if (!dev.located) return 0;
+  if (dev.uOrder === 'top_bottom') {
+    const physBottom = dev.start_u + dev.units - 1;
+    return Math.max(0, dev.totalU - physBottom);
   } else {
-    // start_u is top of device, extends downward (start_u is highest U)
-    return start_u - (units - 1) / 2;
+    const physBottom = dev.start_u - dev.units + 1;
+    return Math.max(0, physBottom - 1);
   }
+}
+
+function intraRackUDelta(devA, devB) {
+  // U delta between physical bottom edges of two same-rack devices
+  if (!devA.located || !devB.located) return 0;
+  let botA, botB;
+  if (devA.uOrder === 'top_bottom') {
+    botA = devA.start_u + devA.units - 1;
+    botB = devB.start_u + devB.units - 1;
+  } else {
+    botA = devA.start_u - devA.units + 1;
+    botB = devB.start_u - devB.units + 1;
+  }
+  return Math.abs(botA - botB);
+}
+
+function steppedSlack(rawTotal, slackMax) {
+  if (rawTotal < 1.0)  return 0;
+  if (rawTotal < 3.0)  return slackMax * 0.25;
+  if (rawTotal < 10.0) return slackMax * 0.5;
+  return slackMax;
+}
+
+function roundCableLength(length) {
+  // ≤ 1.0 m: nearest 0.2 m; above: nearest 0.5 m
+  if (length <= 1.0) return Math.ceil(length * 5) / 5;
+  return Math.ceil(length * 2) / 2;
 }
 
 function calcCableLength(devA, devB) {
   const cfg = getConfig();
-
-  // External devices: use a flat distance estimate
   const aExt = devA.face === 'external';
   const bExt = devB.face === 'external';
 
-  if (aExt && bExt) {
-    return { length: null, note: 'ext↔ext' };
-  }
+  if (aExt && bExt) return { length: null, note: 'ext↔ext' };
+
+  // Patch panels accept cables on either face — adopt the peer's cable exit
+  let exitA = devA.cableExit || 'rear';
+  let exitB = devB.cableExit || 'rear';
+  if (devA.isPatchPanel && !devB.isPatchPanel) exitA = exitB;
+  if (devB.isPatchPanel && !devA.isPatchPanel) exitB = exitA;
+
+  let vertical = 0, verticalA = 0, verticalB = 0, horizontal = 0,
+      frontToBack = 0, groupDist = 0, railExt = 0;
 
   if (aExt || bExt) {
-    // One external, one rack — mirrors Python calculate_cable_length exactly:
-    //   unit_length  = (start_u - 1) * U_HEIGHT  (U distance from rack bottom to device bottom)
-    //   f2b_length   = front_to_back if rack device is on the front face
-    //   groupDist    = distance_from_racks of the external group
-    //   total        = unit_length + f2b_length + groupDist + slack
     const rackDev = aExt ? devB : devA;
     const extDev  = aExt ? devA : devB;
-    const groupDist = extDev.distanceFromRacks ?? 10;
-    if (!rackDev.located) {
-      return { length: null, note: 'unpositioned' };
-    }
-    // Unit distance: from rack bottom to bottom edge of device (matches Python's start_u - 1)
-    const bottomU = rackDev.uOrder === 'top_bottom'
-      ? rackDev.start_u + rackDev.units - 1   // top_bottom: bottom edge = start_u + units - 1
-      : rackDev.start_u - rackDev.units + 1;  // bottom_top: bottom edge = start_u - units + 1
-    const rackVertical = (bottomU - 1) * U_HEIGHT;
-    // Front-to-back: add if rack device is on front face (external cables exit rear)
-    const f2b = (rackDev.face === 'front') ? cfg.frontToBack : 0;
-    let length = groupDist + rackVertical + f2b + cfg.slack;
-    length = Math.ceil(length * 2) / 2;
-    return { length, note: 'ext', breakdown: { groupDist, rackVertical, f2b, slack: cfg.slack } };
+    if (!rackDev.located) return { length: null, note: 'unpositioned' };
+    groupDist = extDev.distanceFromRacks ?? 10;
+    const distU = deviceBottomDistU(rackDev);
+    verticalA = distU * U_HEIGHT;
+    const rackExit = aExt ? exitB : exitA;
+    if (rackExit === 'front') frontToBack = cfg.frontToBack;
+    if (rackDev.onRails) railExt += cfg.railExt;
+    const raw = verticalA + frontToBack + groupDist + railExt;
+    const slack = steppedSlack(raw, cfg.slack);
+    const length = roundCableLength(raw + slack);
+    return { length, note: 'ext', breakdown: { verticalA, frontToBack: frontToBack || null, groupDist, rails: railExt || null, slack } };
   }
 
-  // Both rack devices
-  if (!devA.located || !devB.located) {
-    return { length: null, note: 'unpositioned' };
-  }
+  if (!devA.located || !devB.located) return { length: null, note: 'unpositioned' };
 
-  const midA = deviceMidpointU(devA);
-  const midB = deviceMidpointU(devB);
-
-  // Vertical distance within rack (in metres)
-  // For cross-rack: each device's vertical position from bottom of its rack
-  const vA = devA.uOrder === 'top_bottom'
-    ? (devA.totalU - midA) * U_HEIGHT
-    : (midA - 1) * U_HEIGHT;
-  const vB = devB.uOrder === 'top_bottom'
-    ? (devB.totalU - midB) * U_HEIGHT
-    : (midB - 1) * U_HEIGHT;
-
-  let length = cfg.slack;
-  let breakdown = { slack: cfg.slack };
+  let breakdown = {};
 
   if (devA.rackId === devB.rackId) {
-    // Same rack
-    const vertical = Math.abs(midA - midB) * U_HEIGHT;
-    breakdown.vertical = vertical;
-    length += vertical;
-
-    if (devA.face !== devB.face) {
-      // Different faces — add front-to-back traverse
-      breakdown.frontToBack = cfg.frontToBack;
-      length += cfg.frontToBack;
+    // === INTRA-RACK ===
+    if (exitA === exitB) {
+      // Same exit side: direct cable management run
+      vertical = intraRackUDelta(devA, devB) * U_HEIGHT;
+      breakdown.vertical = vertical;
+    } else {
+      // Different exit sides: direct U delta + one f2b crossing
+      vertical = intraRackUDelta(devA, devB) * U_HEIGHT;
+      breakdown.vertical = vertical;
+      frontToBack = cfg.frontToBack;
+      breakdown.frontToBack = frontToBack;
     }
   } else {
-    // Different racks
+    // === INTER-RACK ===
+    verticalA = deviceBottomDistU(devA) * U_HEIGHT;
+    verticalB = deviceBottomDistU(devB) * U_HEIGHT;
+    breakdown.verticalA = verticalA;
+    breakdown.verticalB = verticalB;
     const rackDelta = Math.abs(devA.rackIdx - devB.rackIdx);
-    const horizontal = rackDelta * cfg.interRack;
+    horizontal = rackDelta * cfg.interRack;
     breakdown.horizontal = horizontal;
-    breakdown.verticalA = vA;
-    breakdown.verticalB = vB;
-    length += horizontal + vA + vB;
-
-    if (devA.face !== devB.face) {
-      breakdown.frontToBack = cfg.frontToBack;
-      length += cfg.frontToBack;
-    }
+    if (exitA === 'front') frontToBack += cfg.frontToBack;
+    if (exitB === 'front') frontToBack += cfg.frontToBack;
+    if (frontToBack > 0) breakdown.frontToBack = frontToBack;
   }
 
-  length = Math.ceil(length * 2) / 2;
+  if (devA.onRails) railExt += cfg.railExt;
+  if (devB.onRails) railExt += cfg.railExt;
+  if (railExt > 0) breakdown.rails = railExt;
+
+  const raw = vertical + verticalA + verticalB + horizontal + frontToBack + railExt;
+  const slack = steppedSlack(raw, cfg.slack);
+  breakdown.slack = slack;
+  const length = roundCableLength(raw + slack);
   return { length, breakdown };
 }
 
@@ -1686,7 +1712,7 @@ function renderSheet() {
         // Only show segments adjacent to this PP
         const adjSegs = segments.filter(s => s.from === selectedDevName || s.to === selectedDevName);
         const adjTotal = adjSegs.every(s => s.length != null)
-          ? Math.ceil(adjSegs.reduce((a, s) => a + s.length, 0) * 2) / 2
+          ? roundCableLength(adjSegs.reduce((a, s) => a + s.length, 0))
           : null;
         segments = adjSegs;
         total = adjTotal;
@@ -1774,7 +1800,7 @@ function renderSheet() {
             if (seg.breakdown.verticalB   != null) parts.push(['rack-B', seg.breakdown.verticalB.toFixed(3) + 'm']);
             if (seg.breakdown.frontToBack != null) parts.push(['f↔r',   seg.breakdown.frontToBack.toFixed(3) + 'm']);
             if (seg.breakdown.groupDist   != null) parts.push(['ext',    seg.breakdown.groupDist.toFixed(1) + 'm']);
-                if (seg.breakdown.f2b         != null && seg.breakdown.f2b > 0) parts.push(['f⇔r', seg.breakdown.f2b.toFixed(3) + 'm']);
+            if (seg.breakdown.rails != null && seg.breakdown.rails > 0) parts.push(['rails', seg.breakdown.rails.toFixed(3) + 'm']);
             parts.push(['slack', seg.breakdown.slack.toFixed(2) + 'm']);
             parts.forEach(([k, v]) => {
               const s = document.createElement('span'); s.textContent = k + ' ';
@@ -1796,7 +1822,7 @@ function renderSheet() {
         if (breakdown.verticalB   != null) parts.push(['rack-B', breakdown.verticalB.toFixed(3) + 'm']);
         if (breakdown.frontToBack != null) parts.push(['f↔r',   breakdown.frontToBack.toFixed(3) + 'm']);
         if (breakdown.groupDist   != null) parts.push(['ext',    breakdown.groupDist.toFixed(1) + 'm']);
-            if (breakdown.f2b         != null && breakdown.f2b > 0) parts.push(['f⇔r', breakdown.f2b.toFixed(3) + 'm']);
+        if (breakdown.rails != null && breakdown.rails > 0) parts.push(['rails', breakdown.rails.toFixed(3) + 'm']);
         parts.push(['slack', breakdown.slack.toFixed(2) + 'm']);
         parts.forEach(([k, v]) => {
           const s = document.createElement('span'); s.textContent = k + ' ';
@@ -1961,6 +1987,7 @@ function parseAndRender(yamlText) {
     if (parsed.inter_rack_distance != null) document.getElementById('cfgInterRack').value = parsed.inter_rack_distance;
     if (parsed.front_to_back_length != null) document.getElementById('cfgFrontBack').value = parsed.front_to_back_length;
     if (parsed.cable_slack_length != null) document.getElementById('cfgSlack').value = parsed.cable_slack_length;
+    if (parsed.rail_extension_length != null) document.getElementById('cfgRailExt').value = parsed.rail_extension_length;
 
     appState = { parsed, deviceMap, rackOrder, connIndex, colorMap, portedMap };
     selectedDevName = null;
@@ -1995,7 +2022,7 @@ async function loadFromServer() {
 }
 
 // Re-render sidebar when config knobs change (lengths update live)
-['cfgInterRack','cfgFrontBack','cfgSlack'].forEach(id => {
+['cfgInterRack','cfgFrontBack','cfgSlack','cfgRailExt'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
     if (appState) renderSheet();
   });
@@ -2005,7 +2032,7 @@ async function loadFromServer() {
 loadFromServer();
 
 // Re-render sheet when config changes
-['cfgInterRack','cfgFrontBack','cfgSlack'].forEach(id => {
+['cfgInterRack','cfgFrontBack','cfgSlack','cfgRailExt'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
     if (appState && selectedDevName) renderSheet();
   });
