@@ -911,6 +911,14 @@
     outline: 2px solid var(--accent) !important;
     filter: brightness(1.2) !important;
   }
+  .canvas-area.picking-device .zero-u-device {
+    cursor: crosshair !important;
+    outline: 1px dashed rgba(0,212,255,0.35) !important;
+  }
+  .canvas-area.picking-device .zero-u-device:hover {
+    outline: 2px solid var(--accent) !important;
+    filter: brightness(1.2) !important;
+  }
 
   .ext-group-widget {
     flex-shrink: 0;
@@ -2129,7 +2137,10 @@ function buildColumnEl(rack, face) {
     row.appendChild(name);
     row.appendChild(badge);
 
-    row.addEventListener('click', () => selectDevice(dev, rack.id, face));
+    row.addEventListener('click', e => {
+      if (pickState) { e.stopPropagation(); handleDevicePickClick(dev.name); return; }
+      selectDevice(dev, rack.id, face);
+    });
 
     // Drag out of strip — treated like a rack device drag so it can be dropped onto a slot
     row.addEventListener('dragstart', e => {

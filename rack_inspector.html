@@ -1201,7 +1201,15 @@ function calcPatchedCableLength(conn, thisName, deviceMap) {
 
   // Build ordered segment list based on original from→to direction
   let orderedNames;
-  if (conn.direction === '→') {
+  if (conn.isPatchLeg) {
+    // thisName is a middle node (patch panel selected); reconstruct full chain
+    // from the true start (peerFrom) to the true end (peer)
+    orderedNames = patchFrom && patchTo
+      ? [conn.peerFrom, patchFrom, patchTo, conn.peer]
+      : patchFrom
+        ? [conn.peerFrom, patchFrom, conn.peer]
+        : [conn.peerFrom, patchTo,   conn.peer];
+  } else if (conn.direction === '→') {
     // thisName is the "from" end
     orderedNames = patchFrom && patchTo
       ? [thisName, patchFrom, patchTo, conn.peer]
