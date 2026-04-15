@@ -65,12 +65,12 @@ function expandNExpr(s: string, n: number): string {
 }
 
 // Normalise a connection's `to` field to an array of target name strings.
-// Accepts: single string, YAML array, or comma-separated list ("A, B, C").
+// Accepts: single string, YAML array, or comma-separated list ("A,B" or "A, B").
 function toArray(to: string | string[] | undefined): string[] {
   if (!to) return []
   if (Array.isArray(to)) return to.map(s => s.trim()).filter(Boolean)
-  // Split on ", " (comma + space) to allow device names that contain bare commas
-  return to.split(/,\s+/).map(s => s.trim()).filter(Boolean)
+  // Split on comma with optional surrounding whitespace ("A,B", "A, B", "A ,B" all work)
+  return to.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
 }
 
 /** N-pattern regex — matches {N}, {N+3}, {N-1}, etc. */

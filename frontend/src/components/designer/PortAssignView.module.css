@@ -90,12 +90,23 @@
 }
 
 .gridTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
   font-size: 10px;
   font-family: var(--mono);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text3);
   margin-bottom: 12px;
+}
+
+.gridHint {
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  opacity: 0.6;
+  text-transform: none;
 }
 
 .grid {
@@ -129,11 +140,24 @@
 
 .portOccupied {
   background: var(--bg);
+  cursor: grab;
 }
+.portOccupied:active { cursor: grabbing; }
 
 .portSelected {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.portDragging {
+  opacity: 0.45;
+  border-style: dashed !important;
+}
+
+.portDragOver {
+  border-color: var(--accent) !important;
+  background: var(--accent-dim) !important;
+  box-shadow: none !important;
 }
 
 .portNum {
@@ -154,6 +178,20 @@
   font-family: var(--mono);
   font-size: 9px;
   color: var(--text2);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+.portNote {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  font-style: italic;
   text-align: center;
   line-height: 1.2;
   max-width: 100%;
@@ -214,3 +252,69 @@
   text-align: right;
   word-break: break-all;
 }
+
+.emptyTag {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: normal;
+  letter-spacing: 0;
+}
+
+.detailDivider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 8px 0;
+}
+
+/* ── Port number reassignment row ── */
+
+.portNumRow {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.portNumInput {
+  width: 54px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 3px 5px;
+  border-radius: 2px;
+  text-align: right;
+}
+.portNumInput:focus { outline: none; border-color: var(--accent); }
+
+.makeAutoBtn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  padding: 3px 6px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s;
+}
+.makeAutoBtn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Port note input ── */
+
+.noteInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 0;
+  text-align: right;
+  transition: border-color 0.12s;
+}
+.noteInput:focus { outline: none; border-bottom-color: var(--accent); color: var(--text); }
+.noteInput::placeholder { color: var(--text3); font-style: italic; }

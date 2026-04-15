@@ -17,24 +17,24 @@ cable_types:
 
 type_colors:
   pc:
-    color: "#787878"
+    color: "#80a9b7"
     units: 4
     ported: true
   pdu:
-    color: "#858585"
+    color: "#292929"
   Shelf:
-    color: "#424242"
+    color: "#9db3d7"
   realtime:
-    color: "#c89d7e"
+    color: "#FFE8D8"
     units: 4
     ported: true
   cable management:
-    color: "#988181"
+    color: "#555353"
   switch:
-    color: "#459292"
+    color: "#69b0b0"
     ported: true
   customer:
-    color: "#af7d79"
+    color: "#f3a5a0"
   projector:
     color: "#d194b3"
   beltpack:
@@ -46,7 +46,7 @@ type_colors:
   vertical pdu:
     color: "#8a8a8a"
   Patch panel:
-    color: "#666666"
+    color: "#c2c2c2"
     ported: true
 
 racks:
@@ -78,19 +78,24 @@ racks:
         type: pc
         start_u: 23
         units: 4
-        ports: 1
+        ports: 5
         port_notes:
           1: Mobo
       - name: Spectator IG
         type: pc
         start_u: 19
         units: 4
+        ports: 1
         port_notes:
           1: Mobo
       - name: Telemetry
         type: pc
         start_u: 12
         units: 3
+        ports: 2
+        port_notes:
+          1: Mobo
+          2: NIC
       - name: dSPACE Controller
         type: realtime
         start_u: 9
@@ -179,6 +184,7 @@ racks:
         units: 4
         start: 1
         end: 3
+        ports: 1
         port_notes:
           1: Mobo 1
       - name: "IG {N}"
@@ -505,6 +511,7 @@ wiring_layers:
         to: "Operator beltpack {N}"
         start: 1
         end: 5
+        via_patch_from: R1 Patch panel
       - from: Media Converters
         to: Audio fibre converter
         cable_type: Fibre

@@ -184,6 +184,58 @@
   flex-shrink: 0;
 }
 
+/* ─── Layer meta (compact 3-row header) ───────────────────────────────────── */
+
+.layerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px 0 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.layerMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 12px;
+  gap: 6px;
+}
+
+.layerMetaKey {
+  font-size: 11px;
+  font-family: var(--sans);
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.layerMetaInput {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: var(--mono);
+  width: 140px;
+  flex-shrink: 0;
+}
+.layerMetaInput:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+
+.layerMetaSelect {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: var(--mono);
+  width: 140px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.layerMetaSelect:focus { outline: 1px solid var(--accent); }
+
 /* ─── Connection rows ─────────────────────────────────────────────────────── */
 
 .connEmpty {
@@ -195,37 +247,167 @@
 
 .connRow {
   display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  padding: 7px 10px 7px 14px;
+  flex-direction: column;
   border-top: 1px solid var(--border);
 }
 
-.connIndex {
+.connIndexSmall {
   font-family: var(--mono);
   font-size: 10px;
   color: var(--text3);
-  padding-top: 4px;
-  min-width: 24px;
+  flex-shrink: 0;
+  min-width: 22px;
 }
 
+/* ── Collapsed/header bar ── */
+.connHeader {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px 5px 12px;
+  cursor: pointer;
+  user-select: none;
+  min-height: 32px;
+}
+.connHeader:hover { background: rgba(255,255,255,0.02); }
+
+.connSummaryFrom,
+.connSummaryTo {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+.connSummaryFrom em,
+.connSummaryTo em {
+  color: var(--text3);
+  font-style: normal;
+}
+
+.connArrow {
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.connBadges {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 0 3px;
+  line-height: 14px;
+}
+
+/* ── Expanded field area ── */
 .connFields {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  padding: 6px 10px 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.12);
 }
 
-.connField {
+/* ── Field groups with dividers ── */
+.connGroup {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  font-family: var(--sans);
-  color: var(--text2);
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.connGroup:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ── Pair rows: two fields side by side ── */
+.pairRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
-.connField span { flex-shrink: 0; }
+
+.pairCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pairLabel {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.pairInput {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 5px;
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 100%;
+  box-sizing: border-box;
+  text-align: right;
+}
+.pairInput:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+
+.pairInputText {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 5px;
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 100%;
+  box-sizing: border-box;
+}
+.pairInputText:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+.pairInputText::placeholder { color: var(--text3); font-style: italic; }
+
+.pairSelect {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 4px;
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.pairSelect:focus { outline: 1px solid var(--accent); }
+
+.connLabelInput {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 5px;
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 100%;
+  box-sizing: border-box;
+}
+.connLabelInput:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+.connLabelInput::placeholder { color: var(--text3); font-style: italic; }
 
 /* Color override row */
 .colorRow {
@@ -277,11 +459,12 @@
   border: 1px solid var(--border2);
   color: var(--text);
   border-radius: 3px;
-  padding: 4px 7px;
-  font-size: 12px;
+  padding: 3px 6px;
+  font-size: 11px;
   font-family: var(--mono);
   cursor: pointer;
-  width: 145px;
+  width: 100%;
+  box-sizing: border-box;
   text-align: left;
   overflow: hidden;
   white-space: nowrap;
@@ -295,11 +478,12 @@
   border: 1px solid var(--accent);
   color: var(--accent);
   border-radius: 3px;
-  padding: 4px 7px;
-  font-size: 12px;
+  padding: 3px 6px;
+  font-size: 11px;
   font-family: var(--mono);
   cursor: default;
-  width: 145px;
+  width: 100%;
+  box-sizing: border-box;
   text-align: center;
   animation: pulse 1s ease-in-out infinite;
 }

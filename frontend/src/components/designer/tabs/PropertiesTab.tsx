@@ -164,7 +164,7 @@ export default function PropertiesTab() {
             <span></span>
             <button
               className={css.assignPortsBtn}
-              onClick={() => openPortAssign(dev.name)}
+              onClick={() => openPortAssign(selectedDevRef.displayName)}
             >
               Assign ports
             </button>
