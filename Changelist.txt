@@ -3,3 +3,5 @@
 - Add ID-based tracking for objects such that names can be updated dynamically (e.g. changing PC name currently breaks all its wiring connections)
 - Add YAML file loading and saving with different names. (Not just system.YAML, instead a given YAML is named after its project and can be edited and saved with that name. YAMLs should have a dedicated directory next to executable)
 - Allow rack duplication to make multi-rack setup easier (e.g. there may be 3 racks where their content is just 5 PCs & switches)
+- Port assignment broken for cluster connections e.g. Intercom routes in Patch panel 1
+- Port schedule missing from rack inspector, and no port assignment outputs yet
