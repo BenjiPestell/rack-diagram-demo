@@ -1,0 +1,29 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--accent-dim);
+  border-bottom: 1px solid var(--accent);
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text2);
+  flex-shrink: 0;
+}
+
+.text { flex: 1; }
+.text strong { color: var(--accent); }
+
+.cancelBtn {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.cancelBtn:hover { background: var(--accent-dim); }

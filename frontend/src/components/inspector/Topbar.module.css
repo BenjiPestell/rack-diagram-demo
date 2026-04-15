@@ -1,0 +1,49 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  height: 46px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.logo {
+  font-family: 'Orbitron', 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #58a6ff;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.logo span {
+  color: #c91622;
+}
+
+.spacer { flex: 1; }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3fb950;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: #8b949e;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.iconBtn:hover {
+  color: #c9d1d9;
+  background: #21262d;
+}

@@ -1,0 +1,438 @@
+/* ─── Common tab shell ────────────────────────────────────────────────────── */
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.empty {
+  padding: 24px 16px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text3);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ─── Section headings ────────────────────────────────────────────────────── */
+
+.section {
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.section:last-of-type { border-bottom: none; }
+
+.sectionTitle {
+  padding: 7px 14px 5px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ─── Form fields ─────────────────────────────────────────────────────────── */
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text2);
+}
+.field span:first-child { flex-shrink: 0; }
+
+.checkField {
+  justify-content: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+.checkField input[type="checkbox"] { cursor: pointer; accent-color: var(--accent); width: 14px; height: 14px; }
+
+.input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 13px;
+  font-family: var(--mono);
+  width: 160px;
+  flex-shrink: 0;
+}
+.input:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+.input[type="number"] { text-align: right; width: 88px; }
+
+.select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 13px;
+  font-family: var(--mono);
+  width: 160px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.select:focus { outline: 1px solid var(--accent); }
+
+/* ─── Meta rows ───────────────────────────────────────────────────────────── */
+
+.metaRow {
+  display: flex;
+  padding: 4px 14px;
+  gap: 10px;
+  font-size: 12px;
+}
+.metaKey { color: var(--text3); min-width: 68px; flex-shrink: 0; font-family: var(--mono); }
+.metaVal {
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* ─── Footer actions ──────────────────────────────────────────────────────── */
+
+.footer {
+  padding: 12px 14px;
+  margin-top: auto;
+}
+
+.deleteBtn {
+  width: 100%;
+  background: rgba(225, 6, 19, 0.08);
+  border: 1px solid rgba(225, 6, 19, 0.3);
+  color: var(--red);
+  padding: 7px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--sans);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.deleteBtn:hover { background: rgba(225, 6, 19, 0.18); }
+
+/* ─── Wiring layer cards ──────────────────────────────────────────────────── */
+
+.layer {
+  border-bottom: 1px solid var(--border);
+}
+.layerActive { background: rgba(201, 22, 34, 0.04); }
+
+.layerHeader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+.layerHeader:hover { background: rgba(255,255,255,0.02); }
+
+.layerDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.25);
+}
+.layerName { flex: 1; font-size: 13px; font-family: var(--sans); color: var(--text); }
+.layerCount { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.chevron { font-size: 10px; color: var(--text3); }
+
+.layerBody {
+  padding: 4px 0 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Visualise toggle ────────────────────────────────────────────────────── */
+
+.vizBtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.1s, border-color 0.1s;
+}
+.vizBtn:hover { color: var(--text2); border-color: var(--text3); }
+
+.vizBtnOn {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ─── Connection rows ─────────────────────────────────────────────────────── */
+
+.connEmpty {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: var(--sans);
+  color: var(--text3);
+}
+
+.connRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 7px 10px 7px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.connIndex {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  padding-top: 4px;
+  min-width: 24px;
+}
+
+.connFields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.connField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-family: var(--sans);
+  color: var(--text2);
+  gap: 6px;
+}
+.connField span { flex-shrink: 0; }
+
+/* Color override row */
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.clearColorBtn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  transition: color 0.1s;
+}
+.clearColorBtn:hover { color: var(--red); }
+
+/* Assign ports button */
+.assignPortsBtn {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-glow);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--sans);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 160px;
+  text-align: center;
+}
+.assignPortsBtn:hover { background: var(--accent-glow); }
+
+/* External device inline edit */
+.extDevEdit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 0;
+}
+
+/* Pick button */
+.pickBtn {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  width: 145px;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: background 0.1s;
+}
+.pickBtn:hover { background: var(--border2); border-color: var(--accent); }
+
+.pickBtnActive {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: default;
+  width: 145px;
+  text-align: center;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* Add buttons */
+.addConnBtn {
+  margin: 7px 14px 0;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px dashed var(--border2);
+  color: var(--text2);
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: color 0.1s, border-color 0.1s;
+  text-align: left;
+}
+.addConnBtn:hover { color: var(--text); border-color: var(--text3); }
+
+.addLayerBtn {
+  margin: 10px;
+  padding: 8px;
+  background: none;
+  border: 1px dashed var(--border2);
+  color: var(--text2);
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: color 0.1s, border-color 0.1s;
+  width: calc(100% - 20px);
+}
+.addLayerBtn:hover { color: var(--text); border-color: var(--text3); }
+
+/* ─── External devices ────────────────────────────────────────────────────── */
+
+.deviceList {
+  padding: 0 14px 4px;
+}
+
+.extDevRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0;
+  font-size: 12px;
+  font-family: var(--sans);
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+}
+.extDevRow:last-child { border-bottom: none; }
+.extDevRow span:first-child { flex: 1; }
+
+.dimText { color: var(--text3); font-family: var(--mono); font-size: 11px; }
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+}
+
+/* ─── Icon button ─────────────────────────────────────────────────────────── */
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 17px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+.iconBtn:hover { color: var(--red); }
+
+/* ─── YAML tab ────────────────────────────────────────────────────────────── */
+
+.yamlTab {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.yamlToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.yamlBtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s;
+}
+.yamlBtn:hover { border-color: var(--text3); color: var(--text); }
+
+.yamlError {
+  padding: 7px 12px;
+  background: rgba(225, 6, 19, 0.1);
+  color: var(--red);
+  font-size: 12px;
+  font-family: var(--mono);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.yamlArea {
+  flex: 1;
+  background: var(--bg);
+  color: var(--cyan);
+  border: none;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.65;
+  resize: none;
+  outline: none;
+}

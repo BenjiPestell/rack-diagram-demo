@@ -1,0 +1,48 @@
+:root {
+  /* Backgrounds */
+  --bg:       #0b0d10;
+  --surface:  #08090a;
+  --surface2: #181b20;
+  --surface3: #2b3039;
+
+  /* Borders */
+  --border:  #2a2e34;
+  --border2: #353a42;
+
+  /* Text */
+  --text:  #f1f3f5;
+  --text2: #b3b7bd;
+  --text3: #6c7077;
+
+  /* Accent — cyberred */
+  --accent:      #c91622;
+  --accent-hover: #e10613;
+  --accent-dim:  rgba(201, 22, 34, 0.15);
+  --accent-glow: rgba(201, 22, 34, 0.25);
+
+  /* Status */
+  --green:   #3fdc6f;
+  --red:     #e10613;
+  --amber:   #f5c842;
+  --cyan:    #00d4ff;
+
+  /* Fonts */
+  --mono:    'Share Tech Mono', monospace;
+  --sans:    'Rajdhani', system-ui, sans-serif;
+  --display: 'Orbitron', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }

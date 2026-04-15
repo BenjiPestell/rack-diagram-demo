@@ -1,0 +1,185 @@
+.panel {
+  width: 250px;
+  flex-shrink: 0;
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.addRackBtn {
+  margin: 8px;
+  padding: 8px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.addRackBtn:hover { background: var(--accent-hover); }
+
+.sectionHeader {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+
+.typeList { display: flex; flex-direction: column; }
+
+.typeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px 6px 12px;
+  cursor: grab;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text2);
+  transition: background 0.1s;
+  user-select: none;
+}
+.typeRow:hover { background: var(--surface3); color: var(--text); }
+.typeRow:active { cursor: grabbing; }
+
+.typeDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+.typeName {
+  flex: 1;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colorInput {
+  width: 24px;
+  height: 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 17px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+.iconBtn:hover { color: var(--red); }
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-top: 1px solid var(--border);
+}
+.textInput {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 12px;
+  font-family: var(--mono);
+  min-width: 0;
+}
+.textInput:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+
+.addBtn {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.1s;
+}
+.addBtn:hover { background: var(--border2); }
+
+.collapsible { border-top: 1px solid var(--border); }
+.collapsibleHeader {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text2);
+  text-align: left;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.1s;
+}
+.collapsibleHeader:hover { color: var(--text); }
+
+.configGrid {
+  padding: 5px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.configGrid label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text2);
+  gap: 6px;
+}
+.configGrid input {
+  width: 80px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: var(--mono);
+  text-align: right;
+}
+.configGrid input:focus { outline: 1px solid var(--accent); }
+
+.cableItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text2);
+}

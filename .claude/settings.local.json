@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python src/main.py)",
+      "Bash(python server.py --test)",
+      "Bash(python -c \"import sys; sys.path.insert\\(0,''''src''''\\); from patch_panel import generate_all_port_schedules; print\\(''''import OK''''\\)\")",
+      "Bash(python -c \"import sys; sys.path.insert\\(0,''src''\\); from patch_panel import generate_all_port_schedules; print\\(''import OK''\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(node -e \":*)",
+      "Bash(python -c \"import sys; sys.path.insert\\(0, 'src'\\); import cable_length; print\\('OK'\\)\")",
+      "Bash(python -m py_compile \"C:\\\\Users\\\\benji\\\\Documents\\\\Dynisma\\\\rack-diagram-demo\\\\src\\\\cable_length.py\")",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

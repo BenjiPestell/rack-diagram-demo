@@ -1,0 +1,38 @@
+.drawer {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 4px 7px;
+  border-radius: 3px;
+  width: 100%;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #58a6ff;
+}

@@ -64,6 +64,9 @@ def _categorise_dot(filename):
 # When running from source they live alongside server.py (same as BASE_DIR).
 STATIC_DIR = getattr(sys, "_MEIPASS", BASE_DIR)
 
+# React build output — served when present, otherwise falls back to legacy HTML.
+REACT_DIST = os.path.join(BASE_DIR, "frontend_dist")
+
 # Ensure output directories exist immediately
 os.makedirs(OUTPUT_DIR,     exist_ok=True)
 os.makedirs(RACK_PNG_DIR,   exist_ok=True)
@@ -283,11 +286,20 @@ logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 @flask_app.route("/")
 def index():
+    if os.path.isdir(REACT_DIST):
+        return send_from_directory(REACT_DIST, "index.html")
     return send_from_directory(STATIC_DIR, "rack_designer.html")
 
 @flask_app.route("/rack_inspector.html")
+@flask_app.route("/rack_inspector")
 def inspector():
+    if os.path.isdir(REACT_DIST):
+        return send_from_directory(REACT_DIST, "index.html")
     return send_from_directory(STATIC_DIR, "rack_inspector.html")
+
+@flask_app.route("/assets/<path:filename>")
+def react_assets(filename):
+    return send_from_directory(os.path.join(REACT_DIST, "assets"), filename)
 
 @flask_app.route("/<path:filename>")
 def static_files(filename):

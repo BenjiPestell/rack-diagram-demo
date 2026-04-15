@@ -1,0 +1,525 @@
+inter_rack_distance: 5
+cable_slack_length: 0.2
+front_to_back_length: 0.5
+rail_extension_length: 0.5
+standard_u_height: 0.045
+
+cable_types:
+  - Ethernet
+  - C13-C14
+  - C19-C20
+  - Included
+  - Fibre
+  - USB
+  - HDMI
+  - Display Port
+  - 3.5mm to XLR4
+
+type_colors:
+  pc:
+    color: "#787878"
+    units: 4
+    ported: true
+  pdu:
+    color: "#858585"
+  Shelf:
+    color: "#424242"
+  realtime:
+    color: "#c89d7e"
+    units: 4
+    ported: true
+  cable management:
+    color: "#988181"
+  switch:
+    color: "#459292"
+    ported: true
+  customer:
+    color: "#af7d79"
+  projector:
+    color: "#d194b3"
+  beltpack:
+    color: "#ffc852"
+  fibre converter:
+    color: "#d19494"
+  mirror display:
+    color: "#86a4ca"
+  vertical pdu:
+    color: "#8a8a8a"
+  Patch panel:
+    color: "#666666"
+    ported: true
+
+racks:
+  - rack:
+      id: rack1
+      name: Rack 1
+      total_u: 42
+    front:
+      - name: UPS
+        type: pdu
+        start_u: 42
+        units: 3
+      - name: "KVM Shelf {N}"
+        type: Shelf
+        start_u: 39
+        units: 1
+        start: 1
+        end: 3
+      - name: Operator PC
+        type: pc
+        start_u: 27
+        units: 4
+        ports: 5
+        port_notes:
+          1: Mobo
+          2: NIC 2
+          3: NIC 3
+      - name: Physics PC
+        type: pc
+        start_u: 23
+        units: 4
+        ports: 1
+        port_notes:
+          1: Mobo
+      - name: Spectator IG
+        type: pc
+        start_u: 19
+        units: 4
+        port_notes:
+          1: Mobo
+      - name: Telemetry
+        type: pc
+        start_u: 12
+        units: 3
+      - name: dSPACE Controller
+        type: realtime
+        start_u: 9
+        units: 3
+      - name: dSPACE
+        type: realtime
+        start_u: 6
+        units: 6
+      - name: 4-wire interface
+        type: beltpack
+        start_u: 15
+        units: 1
+    rear:
+      - name: R1 16A PDU A
+        type: pdu
+        start_u: 42
+        units: 1
+      - name: Company Network Switch
+        type: switch
+        start_u: 41
+        units: 1
+        ports: 24
+      - name: CCTV Switch
+        type: switch
+        start_u: 40
+        units: 1
+      - name: KVM Switch
+        type: switch
+        start_u: 39
+        units: 1
+      - name: Audio Switch
+        type: switch
+        start_u: 38
+        units: 1
+        ports: 12
+      - name: R1 EU PDU
+        type: pdu
+        start_u: 37
+        units: 1
+      - name: RME Digiface
+        type: Shelf
+        start_u: 36
+        units: 2
+      - name: Media Converters
+        type: Shelf
+        start_u: 34
+        units: 4
+      - name: Cable Manager
+        type: cable management
+        start_u: 24
+        units: 1
+      - name: R1 16A PDU B
+        type: pdu
+        start_u: 22
+        units: 1
+      - name: Cable Manager
+        type: cable management
+        start_u: 6
+        units: 1
+      - name: Graphics Switch 1
+        type: switch
+        start_u: 3
+        units: 1
+      - name: Vertical PDU 1
+        type: pdu
+      - name: Mains in 1
+        type: pdu
+      - name: Company Net in
+        type: switch
+      - name: R1 16A PDU C
+        type: pdu
+        start_u: 12
+        units: 1
+      - name: R1 Patch panel
+        type: Patch panel
+        start_u: 1
+        units: 1
+  - rack:
+      id: rack2
+      name: Rack 2
+      total_u: 42
+    front:
+      - name: "RVD {N}"
+        type: pc
+        start_u: 20
+        units: 4
+        start: 1
+        end: 3
+        port_notes:
+          1: Mobo 1
+      - name: "IG {N}"
+        type: pc
+        start_u: 8
+        units: 4
+        start: 1
+        end: 2
+        port_notes:
+          1: Mobo 1
+      - name: Customer 2
+        type: customer
+        start_u: 42
+        units: 15
+    rear:
+      - name: R2 16A PDU A
+        type: pdu
+        start_u: 42
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 24
+        units: 1
+      - name: R2 16A PDU B
+        type: pdu
+        start_u: 21
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 6
+        units: 1
+      - name: Graphics Switch 2
+        type: switch
+        start_u: 3
+        units: 1
+      - name: Vertical PDU 2
+        type: pdu
+      - name: Mains in 2
+        type: pdu
+      - name: R2 16A PDU C
+        type: pdu
+        start_u: 12
+        units: 1
+      - name: R2 Patch panel
+        type: Patch panel
+        start_u: 1
+        units: 1
+  - rack:
+      id: rack3
+      name: Rack 3
+      total_u: 42
+    front:
+      - name: Customer 3
+        type: customer
+        start_u: 42
+        units: 15
+      - name: "IG {N}"
+        type: pc
+        start_u: 20
+        units: 4
+        start: 3
+        end: 7
+    rear:
+      - name: R3 16A PDU A
+        type: pdu
+        start_u: 42
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 24
+        units: 1
+      - name: R3 16A PDU B
+        type: pdu
+        start_u: 21
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 6
+        units: 1
+      - name: Graphics Switch 3
+        type: switch
+        start_u: 3
+        units: 1
+      - name: Vertical PDU 3
+        type: pdu
+      - name: Mains in 3
+        type: pdu
+      - name: R3 16A PDU C
+        type: pdu
+        start_u: 12
+        units: 1
+      - name: R3 Patch panel
+        type: Patch panel
+        start_u: 1
+        units: 1
+  - rack:
+      id: rack4
+      name: Rack 4
+      total_u: 42
+    front:
+      - name: Customer 4
+        type: customer
+        start_u: 39
+        units: 1
+      - name: "IG {N}"
+        type: pc
+        start_u: 24
+        units: 4
+        start: 8
+        end: 13
+    rear:
+      - name: R4 16A PDU A
+        type: pdu
+        start_u: 42
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 24
+        units: 1
+      - name: R4 16A PDU B
+        type: pdu
+        start_u: 21
+        units: 1
+      - name: Cable manager
+        type: cable management
+        start_u: 6
+        units: 1
+      - name: Graphics Switch 4
+        type: switch
+        start_u: 3
+        units: 1
+      - name: Vertical PDU 4
+        type: pdu
+      - name: Mains in 4
+        type: pdu
+      - name: R4 16A PDU C
+        type: pdu
+        start_u: 12
+        units: 1
+      - name: R4 Patch panel
+        type: Patch panel
+        start_u: 1
+        units: 1
+
+external_devices:
+  - name: Projectors
+    distance_from_racks: 30
+    devices:
+      - name: "Projector {N}"
+        type: projector
+        start: 1
+        end: 13
+  - name: Operator room
+    distance_from_racks: 20
+    devices:
+      - name: "Operator beltpack {N}"
+        type: beltpack
+        start: 1
+        end: 5
+  - name: Chassis
+    distance_from_racks: 30
+    devices:
+      - name: Driver beltpack
+        type: beltpack
+      - name: "Driver RVD {N}"
+        type: mirror display
+        start: 1
+        end: 3
+  - name: chassis media converters
+    distance_from_racks: 20
+    devices:
+      - name: Audio fibre converter
+        type: fibre converter
+  - name: MCP Cabinet
+    distance_from_racks: 25
+    devices:
+      - name: Ethercat drives
+        type: pc
+
+wiring_layers:
+  - name: Visuals Subnet
+    edge_color: "#b551a9"
+    cable_type: Ethernet
+    connections:
+      - from: "Graphics Switch {N}"
+        to: "Graphics Switch {N+1}"
+        start: 1
+        end: 3
+        via_patch_from: "R{N} Patch panel"
+        via_patch_to: "R{N+1} Patch panel"
+      - from: Graphics Switch 1
+        to: "Operator PC, Physics PC, Spectator IG, Telemetry, dSPACE"
+        to_port: 1
+        to_ip: 192.168.2.81
+      - from: Graphics Switch 2
+        to: "RVD {N}"
+        start: 1
+        end: 3
+        to_ip: "192.168.2.{50+N}"
+      - from: Graphics Switch 2
+        to: "IG {N}"
+        start: 1
+        end: 2
+        to_ip: "192.168.2.{50+N}"
+      - from: Graphics Switch 3
+        to: "IG {N}"
+        start: 3
+        end: 7
+      - from: Graphics Switch 4
+        to: "IG {N}"
+        start: 8
+        end: 13
+  - name: Power Distribution
+    edge_color: "#292929"
+    cable_type: C13-C14
+    connections:
+      - from: UPS
+        to: "KVM Shelf {N}"
+        start: 1
+        end: 3
+      - from: R1 16A PDU B
+        to: "Operator PC, Physics PC, Spectator IG"
+      - from: R1 16A PDU C
+        to: "Telemetry, dSPACE Controller, dSPACE, Graphics Switch 1"
+      - from: Mains in 1
+        to: Vertical PDU 1
+      - from: Vertical PDU 1
+        to: "R1 16A PDU A, R1 16A PDU B, R1 16A PDU C"
+      - from: Vertical PDU 1
+        to: UPS
+      - from: R1 16A PDU A
+        to: "Company Network Switch, CCTV Switch, Audio Switch"
+      - from: R2 16A PDU A
+        to: Customer 2
+      - from: R2 16A PDU B
+        to: "RVD {N}"
+        start: 1
+        end: 3
+      - from: R2 16A PDU C
+        to: "IG {N}"
+        start: 1
+        end: 2
+      - from: Mains in 2
+        to: Vertical PDU 2
+      - from: Vertical PDU 2
+        to: "R2 16A PDU A, R2 16A PDU B, R2 16A PDU C"
+      - from: R2 16A PDU C
+        to: Graphics Switch 2
+      - from: R3 16A PDU A
+        to: Customer 3
+      - from: R3 16A PDU B
+        to: "IG {N}"
+        start: 3
+        end: 5
+      - from: R3 16A PDU C
+        to: "IG {N}"
+        start: 6
+        end: 7
+      - from: Mains in 3
+        to: Vertical PDU 3
+      - from: Vertical PDU 3
+        to: "R3 16A PDU A, R3 16A PDU B, R3 16A PDU C"
+      - from: R3 16A PDU C
+        to: Graphics Switch 3
+      - from: R4 16A PDU A
+        to: Customer 4
+      - from: R4 16A PDU B
+        to: "IG {N}"
+        start: 8
+        end: 10
+      - from: R4 16A PDU C
+        to: "IG {N}"
+        start: 11
+        end: 13
+      - from: Mains in 4
+        to: Vertical PDU 4
+      - from: Vertical PDU 4
+        to: "R4 16A PDU A, R4 16A PDU B, R4 16A PDU C"
+      - from: R4 16A PDU C
+        to: Graphics Switch 4
+  - name: Host Subnet
+    edge_color: "#5192b5"
+    cable_type: Ethernet
+    connections:
+      - from: Operator PC
+        to: dSPACE Controller
+        from_ip: 192.168.3.1
+      - from: dSPACE Controller
+        to: dSPACE
+  - name: Company Network
+    edge_color: "#292929"
+    cable_type: Ethernet
+    connections:
+      - from: Company Network Switch
+        to: Telemetry
+      - from: Company Net in
+        to: Company Network Switch
+        via_patch_to: R1 Patch panel
+      - from: Company Network Switch
+        to: Operator PC
+        to_port: 1
+        to_ip: DHCP
+  - name: Video
+    edge_color: "#ffb35c"
+    cable_type: Display Port
+    connections:
+      - from: "IG {N}"
+        to: "Projector {N}"
+        start: 1
+        end: 13
+      - from: "RVD {N}"
+        to: "Driver RVD {N}"
+        start: 1
+        end: 3
+  - name: Intercom
+    edge_color: "#ffff00"
+    cable_type: Ethernet
+    connections:
+      - from: Spectator IG
+        to: 4-wire interface
+        cable_type: 3.5mm to XLR4
+        edge_color: "#4d4d4d"
+      - from: Audio Switch
+        to: "Operator beltpack {N}"
+        start: 1
+        end: 5
+      - from: Media Converters
+        to: Audio fibre converter
+        cable_type: Fibre
+        edge_color: "#ffffb8"
+      - from: Audio fibre converter
+        to: Driver beltpack
+      - from: Audio Switch
+        to: Media Converters
+        from_port: 7
+      - from: 4-wire interface
+        to: Audio Switch
+  - name: EtherCAT
+    edge_color: "#6678ff"
+    cable_type: Ethernet
+    connections:
+      - from: dSPACE
+        to: Ethercat drives
+        via_patch_from: R1 Patch panel
