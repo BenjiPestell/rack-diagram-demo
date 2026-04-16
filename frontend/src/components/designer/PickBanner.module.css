@@ -1,14 +1,18 @@
 .banner {
+  position: fixed;
+  bottom: 26px; /* sit flush above the 26px status bar */
+  left: 0;
+  right: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 8px 16px;
   background: var(--accent-dim);
-  border-bottom: 1px solid var(--accent);
+  border-top: 1px solid var(--accent);
   font-size: 13px;
   font-family: var(--sans);
   color: var(--text2);
-  flex-shrink: 0;
 }
 
 .text { flex: 1; }

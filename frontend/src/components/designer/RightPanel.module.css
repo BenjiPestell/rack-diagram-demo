@@ -45,3 +45,8 @@
   display: flex;
   flex-direction: column;
 }
+
+/* Wrap each tab so it stays mounted (preserving state) but hidden when inactive.
+   display:contents makes the wrapper transparent to flex layout when visible. */
+.tabVisible { display: contents; }
+.tabHidden  { display: none; }

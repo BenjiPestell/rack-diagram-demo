@@ -1,14 +1,37 @@
+import { useMemo } from 'react'
 import css from './Tabs.module.css'
 import { useDesignerStore } from '../../../store/designerStore'
+import { expandDesignerConnections } from '../../../utils/yaml'
 
 export default function PropertiesTab() {
+  // ── All hooks unconditionally first (Rules of Hooks) ─────────────────────
   const selectedDevRef = useDesignerStore(s => s.selectedDevRef)
   const typeList       = useDesignerStore(s => s.typeEntries)
+  const wiringLayers   = useDesignerStore(s => s.wiringLayers)
   const updateDevice   = useDesignerStore(s => s.updateDevice)
   const removeDevice   = useDesignerStore(s => s.removeDevice)
   const selectDevice   = useDesignerStore(s => s.selectDevice)
   const openPortAssign = useDesignerStore(s => s.openPortAssign)
 
+  // Count ethernet (or untyped) connections to/from the selected device.
+  const autoPortCount = useMemo(() => {
+    if (!selectedDevRef) return 0
+    const devName = selectedDevRef.displayName
+    let n = 0
+    for (const layer of wiringLayers) {
+      for (const exp of expandDesignerConnections(layer.connections)) {
+        const ct = (exp.cable_type ?? layer.cable_type ?? '').toLowerCase()
+        if (ct !== '' && ct !== 'ethernet') continue
+        if (String(exp.from || '') === devName) n++
+        if (String(exp.to   || '') === devName) n++
+        if (exp.via_patch_from === devName) n++
+        if (exp.via_patch_to   === devName) n++
+      }
+    }
+    return n
+  }, [selectedDevRef, wiringLayers])
+
+  // ── Early exit when nothing selected ─────────────────────────────────────
   if (!selectedDevRef) {
     return (
       <div className={css.empty}>
@@ -22,7 +45,7 @@ export default function PropertiesTab() {
 
   // Determine if the type is "ported" (i.e. has a ports count or type.ported)
   const typeEntry = typeList.find(e => e.type === dev.type)
-  const hasPorts  = dev.ports != null || typeEntry?.ported
+  const hasPorts  = dev.ports != null || typeEntry?.ported || autoPortCount > 0
 
   function update(changes: Parameters<typeof updateDevice>[3]) {
     updateDevice(rackId, face, dev.name, changes)
@@ -155,7 +178,7 @@ export default function PropertiesTab() {
             type="number"
             min={0}
             value={dev.ports ?? ''}
-            placeholder="none"
+            placeholder={autoPortCount > 0 ? `auto: ${autoPortCount}` : 'none'}
             onChange={e => update({ ports: e.target.value ? +e.target.value : undefined })}
           />
         </label>

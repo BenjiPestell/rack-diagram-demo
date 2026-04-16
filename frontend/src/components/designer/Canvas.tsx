@@ -94,7 +94,11 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     setDropHint({ rackId, face, rowIdx })
   }
 
-  function handleGridDrop(
+  // Single drop handler on the faceCol container.
+  // Determines grid vs strip by comparing cursor Y to the uGrid element's bounding rect,
+  // avoiding the race where fast mouse movement causes the wrong child to be the last
+  // dragover target.
+  function handleFaceColDrop(
     e: React.DragEvent<HTMLDivElement>,
     rack: DesignerRack,
     face: 'front' | 'rear',
@@ -105,9 +109,27 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     if (!raw) return
     const payload: DragPayload = JSON.parse(raw)
 
+    // Look up the uGrid child by data attribute to get the exact Y boundary.
+    const uGridEl = (e.currentTarget as HTMLElement)
+      .querySelector('[data-ugrid]') as HTMLElement | null
+    const uGridRect  = uGridEl?.getBoundingClientRect()
+    const inGrid     = !uGridRect || e.clientY <= uGridRect.bottom
+
+    if (!inGrid) {
+      // ── Strip area: unposition the device ──────────────────────────────
+      if (payload.kind !== 'device') return
+      const srcRack = racks.find(r => r.id === payload.rackId)
+      if (!srcRack) return
+      const srcDev = srcRack[payload.face].find(d => d.name === payload.devName)
+      if (!srcDev) return
+      moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, undefined)
+      return
+    }
+
+    // ── Grid area: position at specific U ────────────────────────────────
     const totalU  = rack.total_u ?? 42
     const uOrder  = rack.u_order ?? 'bottom_top'
-    const rect    = e.currentTarget.getBoundingClientRect()
+    const rect    = uGridRect ?? e.currentTarget.getBoundingClientRect()
     const rowIdx  = Math.max(0, Math.min(
       Math.floor((e.clientY - rect.top) / U_HEIGHT_PX), totalU - 1,
     ))
@@ -115,7 +137,6 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     const targetU = nums[rowIdx]
 
     if (payload.kind === 'palette') {
-      // Create new device from type palette
       const allDevs = [...rack.front, ...rack.rear]
       const count   = allDevs.filter(d => d.type === payload.typeName).length
       const name    = `${payload.typeName} ${count + 1}`
@@ -124,36 +145,16 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
       addDevice(rack.id, face, dev)
       selectDevice({ dev, rackId: rack.id, face, displayName: name })
     } else {
-      // Move existing device
       const srcRack = racks.find(r => r.id === payload.rackId)
       if (!srcRack) return
       const srcDev  = srcRack[payload.face].find(d => d.name === payload.devName)
       if (!srcDev)  return
-      // Adjust for grab row: if grabbed partway down the device, offset accordingly
       const grabOffset = payload.grabRow
       const newStartU  = uOrder === 'bottom_top'
         ? targetU + grabOffset
         : targetU - grabOffset
       moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, Math.max(1, Math.min(newStartU, totalU)))
     }
-  }
-
-  // Drop on zero-U strip → unposition the device
-  function handleStripDrop(
-    e: React.DragEvent<HTMLDivElement>,
-    rack: DesignerRack,
-    face: 'front' | 'rear',
-  ) {
-    e.preventDefault()
-    const raw = e.dataTransfer.getData(DT_KEY)
-    if (!raw) return
-    const payload: DragPayload = JSON.parse(raw)
-    if (payload.kind !== 'device') return
-    const srcRack = racks.find(r => r.id === payload.rackId)
-    if (!srcRack) return
-    const srcDev = srcRack[payload.face].find(d => d.name === payload.devName)
-    if (!srcDev) return
-    moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, undefined)
   }
 
   // ── Render one face (front or rear) ──────────────────────────────────────
@@ -184,18 +185,22 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     const isDropTarget = dropHint?.rackId === rack.id && dropHint.face === face
 
     return (
-      <div className={css.faceCol}>
+      <div
+        className={css.faceCol}
+        onDragOver={e => { if (e.dataTransfer.types.includes(DT_KEY)) e.preventDefault() }}
+        onDrop={e => handleFaceColDrop(e, rack, face)}
+      >
         <div className={`${css.faceLabel} ${face === 'rear' ? css.faceLabelRight : ''}`}>
           {face === 'front' ? '► FRONT' : 'REAR ◄'}
         </div>
 
-        {/* U slot grid — acts as DnD drop zone */}
+        {/* U slot grid — dragover for visual hint only; drop handled by faceCol */}
         <div
           className={css.uGrid}
+          data-ugrid="true"
           style={{ position: 'relative' }}
           onDragOver={e => handleGridDragOver(e, rack.id, face, totalU)}
           onDragLeave={() => setDropHint(null)}
-          onDrop={e => handleGridDrop(e, rack, face)}
         >
           {nums.map(u => (
             <div key={u} className={css.uRow}>
@@ -267,15 +272,14 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
           })}
         </div>
 
-        {/* Unpositioned strip — also a drop target */}
-        <div
-          className={css.strip}
-          onDragOver={e => { if (e.dataTransfer.types.includes(DT_KEY)) e.preventDefault() }}
-          onDrop={e => handleStripDrop(e, rack, face)}
-        >
+        {/* Unpositioned strip — drop handled by parent faceCol */}
+        <div className={css.strip}>
           <div className={css.stripHeader}>
             UNPOSITIONED {unpositioned.length > 0 ? `(${unpositioned.length})` : ''}
           </div>
+          {unpositioned.length === 0 && (
+            <div className={css.stripEmpty}>drag here to unposition</div>
+          )}
           {unpositioned.map(dev => {
             const color       = typeColors[dev.type ?? ''] ?? '#3a3f47'
             const templateDev = expandedToTemplate.get(dev.name) ?? dev

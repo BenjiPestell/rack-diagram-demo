@@ -30,10 +30,10 @@ export default function RightPanel() {
         ))}
       </div>
       <div className={css.content}>
-        {activeTab === 'properties' && <PropertiesTab />}
-        {activeTab === 'wiring'     && <WiringTab />}
-        {activeTab === 'external'   && <ExternalTab />}
-        {activeTab === 'yaml'       && <YAMLTab />}
+        <div className={activeTab === 'properties' ? css.tabVisible : css.tabHidden}><PropertiesTab /></div>
+        <div className={activeTab === 'wiring'     ? css.tabVisible : css.tabHidden}><WiringTab /></div>
+        <div className={activeTab === 'external'   ? css.tabVisible : css.tabHidden}><ExternalTab /></div>
+        <div className={activeTab === 'yaml'       ? css.tabVisible : css.tabHidden}><YAMLTab /></div>
       </div>
     </div>
   )

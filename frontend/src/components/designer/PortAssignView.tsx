@@ -49,9 +49,9 @@ function computePorts(
   for (let li = 0; li < layers.length; li++) {
     const layer = layers[li]
     for (let ci = 0; ci < layer.connections.length; ci++) {
-      // Only Ethernet connections have assignable ports
+      // Only Ethernet (or untyped) connections have assignable ports
       const resolvedType = (layer.connections[ci].cable_type ?? layer.cable_type ?? '').toLowerCase()
-      if (resolvedType !== 'ethernet') continue
+      if (resolvedType !== '' && resolvedType !== 'ethernet') continue
 
       // Expand the raw connection: resolves {N}/{N+k} templates and comma-separated `to`.
       // All expanded forms share the same layerIdx/connIdx for write-back.
@@ -135,7 +135,25 @@ export default function PortAssignView() {
     return null
   }, [devName, racks])
 
-  const totalPorts = devInfo?.dev.ports ?? 24
+  // If the device has an explicit port count use it; otherwise count ethernet
+  // connections to/from this device across all wiring layers.
+  const autoPortCount = useMemo(() => {
+    if (!devName) return 0
+    let count = 0
+    for (const layer of wiringLayers) {
+      for (const exp of expandDesignerConnections(layer.connections)) {
+        const cableType = (exp.cable_type ?? layer.cable_type ?? '').toLowerCase()
+        if (cableType !== '' && cableType !== 'ethernet') continue
+        if (String(exp.from || '') === devName) count++
+        if (String(exp.to   || '') === devName) count++
+        if (exp.via_patch_from === devName) count++
+        if (exp.via_patch_to   === devName) count++
+      }
+    }
+    return count
+  }, [devName, wiringLayers])
+
+  const totalPorts = devInfo?.dev.ports ?? Math.max(autoPortCount, 1)
   const portNotes  = useMemo<Record<number, string>>(
     () => devInfo?.dev.port_notes ?? {},
     [devInfo],

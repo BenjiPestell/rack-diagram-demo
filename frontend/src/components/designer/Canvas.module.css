@@ -218,6 +218,16 @@
   margin-top: 6px;
   border: 1px solid var(--border);
   background: var(--surface2);
+  min-height: 56px; /* always a valid drop target even when empty */
+}
+
+.stripEmpty {
+  padding: 8px 6px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  font-style: italic;
+  letter-spacing: 0.3px;
 }
 
 .stripHeader {
