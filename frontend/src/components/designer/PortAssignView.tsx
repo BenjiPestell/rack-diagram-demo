@@ -10,7 +10,7 @@ type PortField = 'from_port' | 'to_port' | 'patch_port_from' | 'patch_port_to'
 
 interface PortSlot {
   port:       number
-  peer:       string | null
+  peer:       string | null   // nearest endpoint shown in the grid cell
   peerPort:   number | null
   label:      string | null
   layerName:  string | null
@@ -22,6 +22,11 @@ interface PortSlot {
   portField:  PortField | null
   // annotation from device.port_notes
   note:       string | null
+  // patch panel full-path: both endpoints of the patched connection
+  patchSrc:     string | null
+  patchSrcPort: number | null
+  patchDst:     string | null
+  patchDstPort: number | null
 }
 
 // ─── Port computation ─────────────────────────────────────────────────────────
@@ -59,21 +64,26 @@ function computePorts(
       for (const exp of expandDesignerConnections([layer.connections[ci]])) {
         const expFrom = String(exp.from || '')
         const expTo   = String(exp.to   || '')
+        const noPatch = { patchSrc: null, patchSrcPort: null, patchDst: null, patchDstPort: null }
+        const patchEnds = {
+          patchSrc: expFrom, patchSrcPort: exp.from_port ?? null,
+          patchDst: expTo,   patchDstPort: exp.to_port   ?? null,
+        }
         if (expFrom === devName) {
           record(exp.from_port, { peer: expTo, peerPort: exp.to_port ?? null,
-            label: exp.label ?? null, ip: exp.from_ip ?? null, portField: 'from_port', ...meta })
+            label: exp.label ?? null, ip: exp.from_ip ?? null, portField: 'from_port', ...noPatch, ...meta })
         }
         if (expTo === devName) {
           record(exp.to_port, { peer: expFrom, peerPort: exp.from_port ?? null,
-            label: exp.label ?? null, ip: exp.to_ip ?? null, portField: 'to_port', ...meta })
+            label: exp.label ?? null, ip: exp.to_ip ?? null, portField: 'to_port', ...noPatch, ...meta })
         }
         if (exp.via_patch_from === devName) {
-          record(exp.patch_port_from, { peer: expFrom, peerPort: null,
-            label: null, ip: null, portField: 'patch_port_from', ...meta })
+          record(exp.patch_port_from, { peer: expFrom, peerPort: exp.from_port ?? null,
+            label: exp.label ?? null, ip: null, portField: 'patch_port_from', ...patchEnds, ...meta })
         }
         if (exp.via_patch_to === devName) {
-          record(exp.patch_port_to, { peer: expTo, peerPort: null,
-            label: null, ip: null, portField: 'patch_port_to', ...meta })
+          record(exp.patch_port_to, { peer: expTo, peerPort: exp.to_port ?? null,
+            label: exp.label ?? null, ip: null, portField: 'patch_port_to', ...patchEnds, ...meta })
         }
       }
     }
@@ -90,7 +100,8 @@ function computePorts(
     } else {
       result.push({ port: p, peer: null, peerPort: null, label: null,
         layerName: null, layerColor: null, ip: null,
-        layerIdx: null, connIdx: null, portField: null, note })
+        layerIdx: null, connIdx: null, portField: null, note,
+        patchSrc: null, patchSrcPort: null, patchDst: null, patchDstPort: null })
     }
   }
   return result
@@ -276,9 +287,13 @@ export default function PortAssignView() {
                     onDragEnd={() => { setDragSrc(null); setDragOver(null) }}
                     onDrop={e => { e.preventDefault(); handleDrop(slot) }}
                     onClick={() => setSelectedPort(isSelected ? null : slot.port)}
-                    title={slot.peer
-                      ? `Port ${slot.port}: ${slot.peer}`
-                      : `Port ${slot.port}: empty`}
+                    title={
+                      slot.patchSrc != null
+                        ? `Port ${slot.port}: ${slot.patchSrc} → ${slot.patchDst}`
+                        : slot.peer
+                          ? `Port ${slot.port}: ${slot.peer}`
+                          : `Port ${slot.port}: empty`
+                    }
                   >
                     <span className={css.portNum} translate="no">{slot.port}</span>
                     {slot.peer && (
@@ -288,7 +303,11 @@ export default function PortAssignView() {
                       />
                     )}
                     {slot.peer ? (
-                      <span className={css.portPeer}>{slot.peer}</span>
+                      <span className={css.portPeer}>
+                        {slot.patchSrc != null
+                          ? `${slot.patchSrc} → ${slot.patchDst}`
+                          : slot.peer}
+                      </span>
                     ) : slot.note ? (
                       <span className={css.portNote}>{slot.note}</span>
                     ) : null}
@@ -361,16 +380,44 @@ export default function PortAssignView() {
                 {selectedSlot.peer && (
                   <>
                     <div className={css.detailDivider} />
-                    <div className={css.detailRow}>
-                      <span className={css.detailKey}>Peer</span>
-                      <span className={css.detailVal}>{selectedSlot.peer}</span>
-                    </div>
-                    {selectedSlot.peerPort != null && (
-                      <div className={css.detailRow}>
-                        <span className={css.detailKey}>Peer port</span>
-                        <span className={css.detailVal}>{selectedSlot.peerPort}</span>
-                      </div>
+
+                    {/* Patch panel: show full source → destination path */}
+                    {selectedSlot.patchSrc != null ? (
+                      <>
+                        <div className={css.detailRow}>
+                          <span className={css.detailKey}>Source</span>
+                          <span className={css.detailVal}>
+                            {selectedSlot.patchSrc}
+                            {selectedSlot.patchSrcPort != null && (
+                              <span style={{ opacity: 0.6 }}> :{selectedSlot.patchSrcPort}</span>
+                            )}
+                          </span>
+                        </div>
+                        <div className={css.detailRow}>
+                          <span className={css.detailKey}>Destination</span>
+                          <span className={css.detailVal}>
+                            {selectedSlot.patchDst}
+                            {selectedSlot.patchDstPort != null && (
+                              <span style={{ opacity: 0.6 }}> :{selectedSlot.patchDstPort}</span>
+                            )}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={css.detailRow}>
+                          <span className={css.detailKey}>Peer</span>
+                          <span className={css.detailVal}>{selectedSlot.peer}</span>
+                        </div>
+                        {selectedSlot.peerPort != null && (
+                          <div className={css.detailRow}>
+                            <span className={css.detailKey}>Peer port</span>
+                            <span className={css.detailVal}>{selectedSlot.peerPort}</span>
+                          </div>
+                        )}
+                      </>
                     )}
+
                     <div className={css.detailRow}>
                       <span className={css.detailKey}>Layer</span>
                       <span className={css.detailVal} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
