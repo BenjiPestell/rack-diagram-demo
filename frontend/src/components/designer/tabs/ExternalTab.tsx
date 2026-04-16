@@ -101,12 +101,38 @@ export default function ExternalTab() {
                               })}
                             />
                           </label>
-                          {dev.start != null && dev.end != null && (
-                            <label className={css.connField}>
-                              <span>Range</span>
-                              <span className={css.dimText}>{dev.start}–{dev.end}</span>
-                            </label>
-                          )}
+                          <div className={css.connField}>
+                            <span>Cluster range</span>
+                            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                              <input
+                                key={`start-${dev.name}`}
+                                className={css.input}
+                                type="number"
+                                min={1}
+                                defaultValue={dev.start ?? ''}
+                                placeholder="start"
+                                style={{ width: 54 }}
+                                onBlur={e => updateExternalDevice(gi, dev.name, {
+                                  start: e.target.value ? +e.target.value : undefined,
+                                })}
+                                onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+                              />
+                              <span className={css.dimText}>–</span>
+                              <input
+                                key={`end-${dev.name}`}
+                                className={css.input}
+                                type="number"
+                                min={1}
+                                defaultValue={dev.end ?? ''}
+                                placeholder="end"
+                                style={{ width: 54 }}
+                                onBlur={e => updateExternalDevice(gi, dev.name, {
+                                  end: e.target.value ? +e.target.value : undefined,
+                                })}
+                                onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+                              />
+                            </div>
+                          </div>
                           <button
                             className={css.addConnBtn}
                             style={{ marginTop: 4 }}
@@ -116,15 +142,15 @@ export default function ExternalTab() {
                       ) : (
                         <>
                           <span
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', flex: 1 }}
                             onClick={() => setEditingDev({ gi, name: dev.name })}
                           >
                             {dev.name}
+                            {dev.start != null && dev.end != null && (
+                              <span className={css.dimText}> ×{dev.end - dev.start + 1} ({dev.start}–{dev.end})</span>
+                            )}
                             {dev.type && <span className={css.dimText}> [{dev.type}]</span>}
                           </span>
-                          {dev.start != null && dev.end != null && (
-                            <span className={css.dimText}> ({dev.start}–{dev.end})</span>
-                          )}
                           <button
                             className={css.iconBtn}
                             onClick={() => removeExternalDevice(gi, dev.name)}
