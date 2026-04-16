@@ -67,7 +67,7 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     // Expand template connections so cluster members (e.g. "Encoder 1") are included
     for (const c of expandDesignerConnections(layer.connections)) {
       if (c.from)           names.add(c.from)
-      if (c.to)             names.add(c.to)
+      if (c.to)             names.add(c.to as string)
       if (c.via_patch_from) names.add(c.via_patch_from)
       if (c.via_patch_to)   names.add(c.via_patch_to)
     }

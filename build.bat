@@ -22,6 +22,18 @@ echo Installing / upgrading build dependencies...
 %PIP% install pyinstaller flask qrcode pillow pyyaml --quiet
 
 echo.
+echo Building React frontend...
+pushd frontend
+call npm install --silent
+call npm run build
+popd
+if not exist frontend_dist\index.html (
+    echo ERROR: React build failed - frontend_dist\index.html not found.
+    pause
+    exit /b 1
+)
+
+echo.
 echo Building RackDesigner.exe...
 %PYINSTALLER% RackDesigner.spec --clean --noconfirm
 

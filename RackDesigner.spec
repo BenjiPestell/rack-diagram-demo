@@ -21,6 +21,7 @@ a = Analysis(
         ('rack_designer.html',  '.'),
         ('rack_inspector.html', '.'),
         ('icon.ico', '.'),
+        ('frontend_dist', 'frontend_dist'),
     ] + src_datas,
     hiddenimports=[
         'flask', 'werkzeug', 'werkzeug.serving', 'werkzeug.routing',

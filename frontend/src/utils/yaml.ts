@@ -1,5 +1,5 @@
 import jsYaml from 'js-yaml'
-import type { RawConfig, RawConnection, RawDevice, DesignerRack, DesignerWiringLayer, DesignerExternalGroup, TypeEntry } from '../types'
+import type { RawConfig, RawConnection, RawDevice, DesignerRack, DesignerWiringLayer, DesignerExternalGroup, DesignerConnection, TypeEntry } from '../types'
 
 export function parseConfig(yamlText: string): RawConfig {
   const parsed = jsYaml.load(yamlText)

@@ -64,8 +64,11 @@ def _categorise_dot(filename):
 # When running from source they live alongside server.py (same as BASE_DIR).
 STATIC_DIR = getattr(sys, "_MEIPASS", BASE_DIR)
 
-# React build output — served when present, otherwise falls back to legacy HTML.
-REACT_DIST = os.path.join(BASE_DIR, "frontend_dist")
+# React build output — bundled into _MEIPASS when frozen, or next to server.py in dev.
+if getattr(sys, "frozen", False):
+    REACT_DIST = os.path.join(STATIC_DIR, "frontend_dist")
+else:
+    REACT_DIST = os.path.join(BASE_DIR, "frontend_dist")
 
 # Ensure output directories exist immediately
 os.makedirs(OUTPUT_DIR,     exist_ok=True)
@@ -253,7 +256,7 @@ def _local_ip() -> str:
 LOCAL_IP  = _local_ip()
 LOCAL_URL  = f"http://localhost:{PORT}"
 NET_URL    = f"http://{LOCAL_IP}:{PORT}"
-MOBILE_URL = f"http://{LOCAL_IP}:{PORT}/rack_inspector.html"
+MOBILE_URL = f"http://{LOCAL_IP}:{PORT}/rack_inspector"
 
 
 def _wifi_ssid() -> str:
@@ -303,6 +306,10 @@ def react_assets(filename):
 
 @flask_app.route("/<path:filename>")
 def static_files(filename):
+    # Prefer files from the React dist folder, fall back to bundled STATIC_DIR
+    react_file = os.path.join(REACT_DIST, filename)
+    if os.path.isfile(react_file):
+        return send_from_directory(REACT_DIST, filename)
     return send_from_directory(STATIC_DIR, filename)
 
 @flask_app.route("/yaml", methods=["GET"])
@@ -336,7 +343,7 @@ def status():
 
 @flask_app.route("/output/<path:filename>")
 def get_output(filename):
-    mime_map = {".html": "text/html", ".csv": "text/plain",
+    mime_map = {"": "text/html", ".csv": "text/plain",
                 ".txt": "text/plain", ".json": "application/json"}
     ext = os.path.splitext(filename)[1].lower()
     return send_from_directory(OUTPUT_DIR, filename, mimetype=mime_map.get(ext))
@@ -371,7 +378,7 @@ def _make_qr_image(url: str, size: int = 130):
 # tkinter GUI
 # ---------------------------------------------------------------------------
 
-# Matches rack_designer.html :root palette
+# Matches rack_designer :root palette
 BG      = "#0b0d10"
 CARD    = "#181b20"
 ACCENT  = "#3fdc6f"
@@ -491,7 +498,7 @@ def build_gui():
          lambda: webbrowser.open(LOCAL_URL)
          ).pack(fill="x", pady=(0, 4))
     _btn(rf, "Open Inspector",
-         lambda: webbrowser.open(f"{LOCAL_URL}/rack_inspector.html"),
+         lambda: webbrowser.open(f"{LOCAL_URL}/rack_inspector"),
          color="#6b0a0f", fg="#fff").pack(fill="x")
 
     # Separator
