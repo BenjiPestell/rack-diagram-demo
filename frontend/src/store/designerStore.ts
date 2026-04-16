@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { parseConfig, serializeToYaml } from '../utils/yaml'
+import { parseConfig, serializeToYaml, expandName } from '../utils/yaml'
 import { SAMPLE_DATA } from '../utils/sampleData'
 import type {
   DesignerRack, DesignerDevice, DesignerWiringLayer, DesignerConnection,
@@ -40,6 +40,48 @@ function withHistory<T extends object>(s: DesignerStore, changes: T) {
     past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
     future: [] as HistorySlice[],
   }
+}
+
+// ─── Rename helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Build a map of oldName → newName covering both the template name and every
+ * expanded member name (for cluster devices with start/end/{N}).
+ */
+function buildRenameMap(
+  oldName: string,
+  newName: string,
+  dev: { start?: number; end?: number },
+): Map<string, string> {
+  const map = new Map<string, string>()
+  map.set(oldName, newName)
+  if (dev.start != null && dev.end != null && oldName.includes('{N}')) {
+    for (let n = dev.start; n <= dev.end; n++) {
+      const oldExp = expandName(oldName, n)
+      const newExp = expandName(newName, n)
+      if (oldExp !== newExp) map.set(oldExp, newExp)
+    }
+  }
+  return map
+}
+
+/** Rewrite all connection name references using the supplied rename map. */
+function rewriteConnections(
+  layers: DesignerWiringLayer[],
+  nameMap: Map<string, string>,
+): DesignerWiringLayer[] {
+  if (nameMap.size === 0) return layers
+  const r = (s: string) => nameMap.get(s) ?? s
+  return layers.map(layer => ({
+    ...layer,
+    connections: layer.connections.map(conn => ({
+      ...conn,
+      from:           r(conn.from),
+      to:             Array.isArray(conn.to) ? conn.to.map(r) : r(conn.to as string),
+      via_patch_from: conn.via_patch_from ? r(conn.via_patch_from) : conn.via_patch_from,
+      via_patch_to:   conn.via_patch_to   ? r(conn.via_patch_to)   : conn.via_patch_to,
+    })),
+  }))
 }
 
 // ─── Default type palette ────────────────────────────────────────────────────
@@ -229,16 +271,34 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
     }),
   ),
 
-  updateDevice: (rackId, face, devName, changes) => set(s =>
-    withHistory(s, {
+  updateDevice: (rackId, face, devName, changes) => set(s => {
+    const newName   = changes.name
+    const isRename  = newName !== undefined && newName !== devName
+    const srcDev    = s.racks.find(r => r.id === rackId)?.[face].find(d => d.name === devName)
+    const nameMap   = isRename && srcDev
+      ? buildRenameMap(devName, newName, srcDev)
+      : new Map<string, string>()
+
+    // If portAssignTarget references an old name, follow the rename
+    const pat = s.portAssignTarget
+    const newPat = pat ? (nameMap.get(pat) ?? pat) : pat
+
+    return withHistory(s, {
       racks: s.racks.map(r => r.id !== rackId ? r : {
         ...r, [face]: r[face].map(d => d.name !== devName ? d : { ...d, ...changes }),
       }),
+      wiringLayers: rewriteConnections(s.wiringLayers, nameMap),
+      portAssignTarget: newPat,
       selectedDevRef: s.selectedDevRef?.dev.name === devName
-        ? { ...s.selectedDevRef, dev: { ...s.selectedDevRef.dev, ...changes } }
+        ? { ...s.selectedDevRef,
+            dev:         { ...s.selectedDevRef.dev, ...changes },
+            displayName: isRename
+              ? (nameMap.get(s.selectedDevRef.displayName) ?? s.selectedDevRef.displayName)
+              : s.selectedDevRef.displayName,
+          }
         : s.selectedDevRef,
-    }),
-  ),
+    })
+  }),
 
   moveDevice: (fromRackId, fromFace, dev, toRackId, toFace, newStartU) => set(s => {
     const moved = { ...dev, start_u: newStartU }
@@ -366,13 +426,21 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
       }),
     }),
   ),
-  updateExternalDevice: (groupIdx, devName, changes) => set(s =>
-    withHistory(s, {
+  updateExternalDevice: (groupIdx, devName, changes) => set(s => {
+    const newName  = changes.name
+    const isRename = newName !== undefined && newName !== devName
+    const srcDev   = s.externalGroups[groupIdx]?.devices.find(d => d.name === devName)
+    const nameMap  = isRename && srcDev
+      ? buildRenameMap(devName, newName, srcDev)
+      : new Map<string, string>()
+
+    return withHistory(s, {
       externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : {
         ...g, devices: g.devices.map(d => d.name !== devName ? d : { ...d, ...changes }),
       }),
-    }),
-  ),
+      wiringLayers: rewriteConnections(s.wiringLayers, nameMap),
+    })
+  }),
 
   // ── YAML I/O ──────────────────────────────────────────────────────────────
   generateYaml: () => {

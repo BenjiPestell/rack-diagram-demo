@@ -8,3 +8,6 @@
 - Colour's aren't assigned in rack inspector yet
 - Tab titles & icons need updating
 - Rack inspector should be exposed on LAN for mobile access
+- Unpositioned area can't be dragged into when empty
+- Move the pick active banner to screen bottom to avoid shifting screen content downwards during device pick
+- Auto assign port count to devices based on ethernet connections (Unless defined by users, have port count = no. of ethernet connections to/from device)
