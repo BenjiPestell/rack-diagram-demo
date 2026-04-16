@@ -5,3 +5,7 @@
 - Allow rack duplication to make multi-rack setup easier (e.g. there may be 3 racks where their content is just 5 PCs & switches)
 - Port assignment broken for cluster connections e.g. Intercom routes in Patch panel 1
 - Port schedule missing from rack inspector, and no port assignment outputs yet
+- External devices have no interface for setting cluster range
+- Colour's aren't assigned in rack inspector yet
+- Tab titles & icons need updating
+- Rack inspector should be exposed on LAN for mobile access
