@@ -27,3 +27,8 @@
 .sep   { color: var(--border2); }
 .spacer { flex: 1; }
 .hint  { color: var(--text3); }
+
+.saveUnsaved { color: var(--text3); }
+.saveSaving  { color: var(--text2); }
+.saveSaved   { color: var(--green); }
+.saveError   { color: var(--red); }

@@ -1,60 +1,52 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import css from './Tabs.module.css'
 import { useDesignerStore } from '../../../store/designerStore'
 
 export default function YAMLTab() {
   const generateYaml = useDesignerStore(s => s.generateYaml)
   const loadFromYaml = useDesignerStore(s => s.loadFromYaml)
+  // version increments on every store mutation — drives live YAML recompute
+  const version      = useDesignerStore(s => s.version)
 
-  const [yamlText, setYamlText] = useState(() => generateYaml())
-  const [error, setError]       = useState<string | null>(null)
+  // Live YAML — always reflects current store state
+  const liveYaml = useMemo(() => generateYaml(), [version]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [editMode, setEditMode] = useState(false)
+  const [editText, setEditText] = useState('')
+  const [error,    setError]    = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  function refresh() {
-    setYamlText(generateYaml())
+  // ── Edit mode helpers ───────────────────────────────────────────────────
+
+  function enterEdit() {
+    setEditText(liveYaml)
+    setEditMode(true)
     setError(null)
   }
 
-  function apply() {
+  function applyEdit() {
     try {
-      loadFromYaml(yamlText)
+      loadFromYaml(editText)
+      setEditMode(false)
       setError(null)
     } catch (e) {
       setError(String(e))
     }
   }
 
-  async function saveToServer() {
-    try {
-      const r = await fetch('/yaml', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: yamlText,
-      })
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    } catch (e) {
-      setError(`Save failed: ${e}`)
-    }
+  function discardEdit() {
+    setEditMode(false)
+    setError(null)
   }
 
-  async function loadFromServer() {
-    try {
-      const r = await fetch('/yaml')
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-      const text = await r.text()
-      setYamlText(text)
-      setError(null)
-    } catch (e) {
-      setError(`Load failed: ${e}`)
-    }
-  }
+  // ── Shared helpers ──────────────────────────────────────────────────────
 
   function copyToClipboard() {
-    navigator.clipboard.writeText(yamlText).catch(() => {})
+    navigator.clipboard.writeText(editMode ? editText : liveYaml).catch(() => {})
   }
 
   function downloadFile() {
-    const blob = new Blob([yamlText], { type: 'text/yaml' })
+    const blob = new Blob([editMode ? editText : liveYaml], { type: 'text/yaml' })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
@@ -73,32 +65,74 @@ export default function YAMLTab() {
     const reader = new FileReader()
     reader.onload = ev => {
       const text = ev.target?.result as string
-      setYamlText(text)
+      if (editMode) {
+        // In edit mode: load into the editor
+        setEditText(text)
+      } else {
+        // In live mode: apply immediately to state
+        loadFromYaml(text)
+      }
       setError(null)
     }
     reader.readAsText(file)
-    // Reset so the same file can be picked again
     e.target.value = ''
   }
+
+  async function loadFromServer() {
+    try {
+      const r = await fetch('/yaml')
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      const text = await r.text()
+      loadFromYaml(text)
+      setEditMode(false)
+      setError(null)
+    } catch (e) {
+      setError(`Load failed: ${e}`)
+    }
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────
 
   return (
     <div className={css.yamlTab}>
       <div className={css.yamlToolbar}>
-        <button className={css.yamlBtn} onClick={refresh} title="Regenerate YAML from current state">Refresh</button>
-        <button className={css.yamlBtn} onClick={apply} title="Parse textarea and apply to state">Apply</button>
-        <button className={css.yamlBtn} onClick={loadFromServer}>From server</button>
-        <button className={css.yamlBtn} onClick={saveToServer}>To server</button>
+        {editMode ? (
+          <>
+            <button className={css.yamlBtnPrimary} onClick={applyEdit}
+              title="Parse and apply to state (Ctrl+Enter)">Apply</button>
+            <button className={css.yamlBtn} onClick={discardEdit}>Discard</button>
+          </>
+        ) : (
+          <button className={css.yamlBtn} onClick={enterEdit}
+            title="Edit YAML manually">Edit</button>
+        )}
+        <div className={css.yamlToolbarSep} />
         <button className={css.yamlBtn} onClick={copyToClipboard}>Copy</button>
-        <button className={css.yamlBtn} onClick={openFilePicker}>Open file…</button>
         <button className={css.yamlBtn} onClick={downloadFile}>Download</button>
+        <button className={css.yamlBtn} onClick={openFilePicker}>Open file…</button>
+        <button className={css.yamlBtn} onClick={loadFromServer}>From server</button>
+        {editMode && (
+          <span className={css.yamlEditBadge}>EDITING</span>
+        )}
       </div>
+
       {error && <div className={css.yamlError}>{error}</div>}
+
       <textarea
         className={css.yamlArea}
-        value={yamlText}
-        onChange={e => setYamlText(e.target.value)}
+        value={editMode ? editText : liveYaml}
+        readOnly={!editMode}
+        onChange={editMode ? e => setEditText(e.target.value) : undefined}
+        onKeyDown={editMode ? e => {
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault()
+            applyEdit()
+          }
+          if (e.key === 'Escape') discardEdit()
+        } : undefined}
         spellCheck={false}
       />
+
       <input
         ref={fileInputRef}
         type="file"

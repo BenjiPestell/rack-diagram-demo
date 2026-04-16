@@ -598,6 +598,39 @@
 }
 .yamlBtn:hover { border-color: var(--text3); color: var(--text); }
 
+.yamlBtnPrimary {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.yamlBtnPrimary:hover { background: var(--accent-glow); }
+
+.yamlToolbarSep {
+  width: 1px;
+  background: var(--border2);
+  align-self: stretch;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.yamlEditBadge {
+  margin-left: auto;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  padding: 2px 6px;
+  align-self: center;
+}
+
 .yamlError {
   padding: 7px 12px;
   background: rgba(225, 6, 19, 0.1);

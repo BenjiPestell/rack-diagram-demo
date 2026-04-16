@@ -37,8 +37,9 @@ function snapshot(s: DesignerStore): HistorySlice {
 function withHistory<T extends object>(s: DesignerStore, changes: T) {
   return {
     ...changes,
-    past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
-    future: [] as HistorySlice[],
+    past:    [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+    future:  [] as HistorySlice[],
+    version: s.version + 1,
   }
 }
 
@@ -132,6 +133,10 @@ export interface DesignerStore {
   // Undo / redo history
   past:   HistorySlice[]
   future: HistorySlice[]
+
+  version:    number                                          // increments on every mutation
+  saveStatus: 'idle' | 'unsaved' | 'saving' | 'saved' | 'error'
+  setSaveStatus: (s: DesignerStore['saveStatus']) => void
 
   // Run pipeline state
   isRunning: boolean
@@ -232,6 +237,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   standardUHeight:     0.045,
   past:             [],
   future:           [],
+  version:          0,
+  saveStatus:       'idle',
   selectedDevRef:   null,
   pickState:        null,
   activeLayerIdx:   null,
@@ -562,8 +569,9 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
         selectedDevRef: null,
         activeLayerIdx: wiringLayers.length ? 0 : null,
         vizLayerIdx: null,
-        past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
-        future: [],
+        past:    [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+        future:  [],
+        version: s.version + 1,
       })
     } catch (e) {
       console.error('Failed to load YAML:', e)
@@ -574,7 +582,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   setCableConfig: (changes) => set(s => withHistory(s, changes)),
 
   // ── Tab ───────────────────────────────────────────────────────────────────
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveTab:   (tab)    => set({ activeTab: tab }),
+  setSaveStatus:  (status) => set({ saveStatus: status }),
 
   // ── Port assignment ───────────────────────────────────────────────────────
   openPortAssign:  (devName) => set({ portAssignTarget: devName }),
@@ -630,9 +639,10 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
     const prev = s.past[s.past.length - 1]
     return {
       ...prev,
-      past:         s.past.slice(0, -1),
-      future:       [snapshot(s), ...s.future.slice(0, MAX_HISTORY - 1)],
+      past:           s.past.slice(0, -1),
+      future:         [snapshot(s), ...s.future.slice(0, MAX_HISTORY - 1)],
       selectedDevRef: null,
+      version:        s.version + 1,
     }
   }),
 
@@ -641,9 +651,10 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
     const next = s.future[0]
     return {
       ...next,
-      past:         [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
-      future:       s.future.slice(1),
+      past:           [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+      future:         s.future.slice(1),
       selectedDevRef: null,
+      version:        s.version + 1,
     }
   }),
 

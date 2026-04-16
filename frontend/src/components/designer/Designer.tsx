@@ -20,6 +20,31 @@ export default function Designer() {
   const removeDevice   = useDesignerStore(s => s.removeDevice)
   const undo           = useDesignerStore(s => s.undo)
   const redo           = useDesignerStore(s => s.redo)
+  const version        = useDesignerStore(s => s.version)
+  const setSaveStatus  = useDesignerStore(s => s.setSaveStatus)
+  const generateYaml   = useDesignerStore(s => s.generateYaml)
+
+  // Debounced auto-save to server — fires 1.5 s after the last state change
+  useEffect(() => {
+    if (version === 0) return          // skip initial mount
+    setSaveStatus('unsaved')
+    const timer = setTimeout(async () => {
+      setSaveStatus('saving')
+      try {
+        const yaml = generateYaml()
+        const r = await fetch('/yaml', {
+          method:  'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body:    yaml,
+        })
+        setSaveStatus(r.ok ? 'saved' : 'error')
+      } catch {
+        // Server not reachable — silently revert so we don't alarm the user
+        setSaveStatus('idle')
+      }
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [version]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard shortcuts
   useEffect(() => {

@@ -1,13 +1,11 @@
-- Ensure all changes are captured upon completion (no need to manually update YAML / server / canvas via update buttons)
-- Add ID-based tracking for objects such that names can be updated dynamically (e.g. changing PC name currently breaks all its wiring connections)
-- Add YAML file loading and saving with different names. (Not just system.YAML, instead a given YAML is named after its project and can be edited and saved with that name. YAMLs should have a dedicated directory next to executable)
+- Add YAML file loading and saving with different names. (Not just system.YAML, instead a given YAML is named after its project and can be edited and saved with that name. YAMLs can therefore be part of a project repo for version tracking)
 - Allow rack duplication to make multi-rack setup easier (e.g. there may be 3 racks where their content is just 5 PCs & switches)
 - Port assignment broken for cluster connections e.g. Intercom routes in Patch panel 1
 - Port schedule missing from rack inspector, and no port assignment outputs yet
 - External devices have no interface for setting cluster range
-- Colour's aren't assigned in rack inspector yet
 - Tab titles & icons need updating
 - Rack inspector should be exposed on LAN for mobile access
 - Unpositioned area can't be dragged into when empty
 - Move the pick active banner to screen bottom to avoid shifting screen content downwards during device pick
 - Auto assign port count to devices based on ethernet connections (Unless defined by users, have port count = no. of ethernet connections to/from device)
+- When switching from one tab back to the wiring tab, it always expands just the top layer, instead of retaining the user's previous expansion

@@ -3,9 +3,10 @@ import { useDesignerStore } from '../../store/designerStore'
 import { expandRackDevices, expandDevices } from '../../utils/yaml'
 
 export default function StatusBar() {
-  const racks         = useDesignerStore(s => s.racks)
-  const wiringLayers  = useDesignerStore(s => s.wiringLayers)
+  const racks          = useDesignerStore(s => s.racks)
+  const wiringLayers   = useDesignerStore(s => s.wiringLayers)
   const externalGroups = useDesignerStore(s => s.externalGroups)
+  const saveStatus     = useDesignerStore(s => s.saveStatus)
 
   const deviceCount = racks.reduce((n, r) =>
     n + expandRackDevices(r.front).length + expandRackDevices(r.rear).length, 0)
@@ -30,6 +31,11 @@ export default function StatusBar() {
       <span className={css.sep}>·</span>
       <span className={css.item}>{connCount} connections</span>
       <div className={css.spacer} />
+      {saveStatus === 'unsaved' && <span className={css.saveUnsaved}>● Unsaved</span>}
+      {saveStatus === 'saving'  && <span className={css.saveSaving}>↑ Saving…</span>}
+      {saveStatus === 'saved'   && <span className={css.saveSaved}>✓ Saved</span>}
+      {saveStatus === 'error'   && <span className={css.saveError}>✕ Save failed</span>}
+      {saveStatus !== 'idle' && <span className={css.sep}>·</span>}
       <span className={css.hint}>DEL — delete device</span>
       <span className={css.sep}>·</span>
       <span className={css.hint}>ESC — deselect / cancel pick</span>
