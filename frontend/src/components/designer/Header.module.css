@@ -52,3 +52,26 @@
 }
 .btnPrimary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .btnPrimary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.undoGroup {
+  display: flex;
+  gap: 2px;
+}
+
+.undoBtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.undoBtn:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
+.undoBtn:disabled { opacity: 0.25; cursor: not-allowed; }

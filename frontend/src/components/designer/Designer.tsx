@@ -18,11 +18,19 @@ export default function Designer() {
   const exitPickMode   = useDesignerStore(s => s.exitPickMode)
   const selectDevice   = useDesignerStore(s => s.selectDevice)
   const removeDevice   = useDesignerStore(s => s.removeDevice)
+  const undo           = useDesignerStore(s => s.undo)
+  const redo           = useDesignerStore(s => s.redo)
 
   // Keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Ignore when typing in inputs
+      // Undo / redo — allowed even when an input is focused
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); return }
+        if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) { e.preventDefault(); redo(); return }
+      }
+
+      // Ignore remaining shortcuts when typing in inputs
       const tag = (e.target as HTMLElement).tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
 
@@ -44,7 +52,7 @@ export default function Designer() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [pickState, selectedDevRef, exitPickMode, selectDevice, removeDevice])
+  }, [pickState, selectedDevRef, exitPickMode, selectDevice, removeDevice, undo, redo])
 
   return (
     <div className={css.root}>

@@ -9,6 +9,10 @@ export default function Header() {
   const loadSampleData = useDesignerStore(s => s.loadSampleData)
   const clearAll       = useDesignerStore(s => s.clearAll)
   const loadFromYaml   = useDesignerStore(s => s.loadFromYaml)
+  const undo           = useDesignerStore(s => s.undo)
+  const redo           = useDesignerStore(s => s.redo)
+  const canUndo        = useDesignerStore(s => s.past.length > 0)
+  const canRedo        = useDesignerStore(s => s.future.length > 0)
 
   async function handleLoad() {
     try {
@@ -30,6 +34,20 @@ export default function Header() {
     <div className={css.bar}>
       <div className={css.logo}>RACK <span>DESIGNER</span></div>
       <div className={css.spacer} />
+      <div className={css.undoGroup}>
+        <button
+          className={css.undoBtn}
+          onClick={undo}
+          disabled={!canUndo}
+          title="Undo (Ctrl+Z)"
+        >↩</button>
+        <button
+          className={css.undoBtn}
+          onClick={redo}
+          disabled={!canRedo}
+          title="Redo (Ctrl+Y)"
+        >↪</button>
+      </div>
       <button className={css.btn} onClick={loadSampleData} title="Load example configuration">
         Load example
       </button>

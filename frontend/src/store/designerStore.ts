@@ -7,6 +7,41 @@ import type {
   SelectedDevRef, PickState, RunFiles,
 } from '../types'
 
+// ─── History ─────────────────────────────────────────────────────────────────
+
+/** The data slice that participates in undo/redo (excludes ephemeral UI state). */
+type HistorySlice = Pick<DesignerStore,
+  'racks' | 'wiringLayers' | 'externalGroups' | 'typeEntries' | 'cableTypes' |
+  'interRackDistance' | 'cableSlackLength' | 'frontToBackLength' |
+  'railExtensionLength' | 'standardUHeight'
+>
+
+const MAX_HISTORY = 50
+
+function snapshot(s: DesignerStore): HistorySlice {
+  return {
+    racks:               s.racks,
+    wiringLayers:        s.wiringLayers,
+    externalGroups:      s.externalGroups,
+    typeEntries:         s.typeEntries,
+    cableTypes:          s.cableTypes,
+    interRackDistance:   s.interRackDistance,
+    cableSlackLength:    s.cableSlackLength,
+    frontToBackLength:   s.frontToBackLength,
+    railExtensionLength: s.railExtensionLength,
+    standardUHeight:     s.standardUHeight,
+  }
+}
+
+/** Wraps a partial state update with a history push and future clear. */
+function withHistory<T extends object>(s: DesignerStore, changes: T) {
+  return {
+    ...changes,
+    past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+    future: [] as HistorySlice[],
+  }
+}
+
 // ─── Default type palette ────────────────────────────────────────────────────
 
 const DEFAULT_TYPES: TypeEntry[] = [
@@ -51,6 +86,10 @@ export interface DesignerStore {
   vizLayerIdx: number | null          // which layer to draw on canvas
   activeTab: 'properties' | 'wiring' | 'external' | 'yaml'
   portAssignTarget: string | null     // device name for port assign overlay
+
+  // Undo / redo history
+  past:   HistorySlice[]
+  future: HistorySlice[]
 
   // Run pipeline state
   isRunning: boolean
@@ -127,6 +166,10 @@ export interface DesignerStore {
   startRun: () => Promise<void>
   toggleRunPanel: () => void
 
+  // ── History ──────────────────────────────────────────────────────────────
+  undo: () => void
+  redo: () => void
+
   // ── Workspace ────────────────────────────────────────────────────────────
   clearAll: () => void
   loadSampleData: () => void
@@ -145,6 +188,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   frontToBackLength:   0.5,
   railExtensionLength: 0.5,
   standardUHeight:     0.045,
+  past:             [],
+  future:           [],
   selectedDevRef:   null,
   pickState:        null,
   activeLayerIdx:   null,
@@ -159,39 +204,45 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   // ── Rack ──────────────────────────────────────────────────────────────────
   addRack: () => set(s => {
     const { id, name } = nextRackName(s.racks)
-    return { racks: [...s.racks, { id, name, total_u: 42, u_order: 'bottom_top', front: [], rear: [] }] }
+    return withHistory(s, { racks: [...s.racks, { id, name, total_u: 42, u_order: 'bottom_top', front: [], rear: [] }] })
   }),
 
-  removeRack: (id) => set(s => ({ racks: s.racks.filter(r => r.id !== id) })),
+  removeRack: (id) => set(s =>
+    withHistory(s, { racks: s.racks.filter(r => r.id !== id) }),
+  ),
 
-  updateRackMeta: (id, changes) => set(s => ({
-    racks: s.racks.map(r => r.id === id ? { ...r, ...changes } : r),
-  })),
+  updateRackMeta: (id, changes) => set(s =>
+    withHistory(s, { racks: s.racks.map(r => r.id === id ? { ...r, ...changes } : r) }),
+  ),
 
   // ── Device ────────────────────────────────────────────────────────────────
-  addDevice: (rackId, face, dev) => set(s => ({
-    racks: s.racks.map(r => r.id !== rackId ? r : { ...r, [face]: [...r[face], dev] }),
-  })),
+  addDevice: (rackId, face, dev) => set(s =>
+    withHistory(s, { racks: s.racks.map(r => r.id !== rackId ? r : { ...r, [face]: [...r[face], dev] }) }),
+  ),
 
-  removeDevice: (rackId, face, devName) => set(s => ({
-    racks: s.racks.map(r => r.id !== rackId ? r : {
-      ...r, [face]: r[face].filter(d => d.name !== devName),
+  removeDevice: (rackId, face, devName) => set(s =>
+    withHistory(s, {
+      racks: s.racks.map(r => r.id !== rackId ? r : {
+        ...r, [face]: r[face].filter(d => d.name !== devName),
+      }),
+      selectedDevRef: s.selectedDevRef?.dev.name === devName ? null : s.selectedDevRef,
     }),
-    selectedDevRef: s.selectedDevRef?.dev.name === devName ? null : s.selectedDevRef,
-  })),
+  ),
 
-  updateDevice: (rackId, face, devName, changes) => set(s => ({
-    racks: s.racks.map(r => r.id !== rackId ? r : {
-      ...r, [face]: r[face].map(d => d.name !== devName ? d : { ...d, ...changes }),
+  updateDevice: (rackId, face, devName, changes) => set(s =>
+    withHistory(s, {
+      racks: s.racks.map(r => r.id !== rackId ? r : {
+        ...r, [face]: r[face].map(d => d.name !== devName ? d : { ...d, ...changes }),
+      }),
+      selectedDevRef: s.selectedDevRef?.dev.name === devName
+        ? { ...s.selectedDevRef, dev: { ...s.selectedDevRef.dev, ...changes } }
+        : s.selectedDevRef,
     }),
-    selectedDevRef: s.selectedDevRef?.dev.name === devName
-      ? { ...s.selectedDevRef, dev: { ...s.selectedDevRef.dev, ...changes } }
-      : s.selectedDevRef,
-  })),
+  ),
 
   moveDevice: (fromRackId, fromFace, dev, toRackId, toFace, newStartU) => set(s => {
     const moved = { ...dev, start_u: newStartU }
-    return {
+    return withHistory(s, {
       racks: s.racks.map(r => {
         if (r.id === fromRackId && r.id === toRackId && fromFace === toFace) {
           return { ...r, [fromFace]: r[fromFace].map(d => d.name === dev.name ? moved : d) }
@@ -203,7 +254,7 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
       selectedDevRef: s.selectedDevRef?.dev.name === dev.name
         ? { ...s.selectedDevRef, rackId: toRackId, face: toFace, dev: moved }
         : s.selectedDevRef,
-    }
+    })
   }),
 
   // ── Selection ─────────────────────────────────────────────────────────────
@@ -213,7 +264,7 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   addWiringLayer: () => set(s => {
     const n = s.wiringLayers.length + 1
     const colors = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c']
-    return {
+    return withHistory(s, {
       wiringLayers: [...s.wiringLayers, {
         name: `Layer ${n}`,
         edge_color: colors[(n - 1) % colors.length],
@@ -221,36 +272,44 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
         connections: [],
       }],
       activeLayerIdx: s.wiringLayers.length,
-    }
+    })
   }),
 
-  removeWiringLayer: (idx) => set(s => ({
-    wiringLayers: s.wiringLayers.filter((_, i) => i !== idx),
-    activeLayerIdx: s.activeLayerIdx === idx ? null : s.activeLayerIdx,
-    vizLayerIdx:    s.vizLayerIdx    === idx ? null : s.vizLayerIdx,
-  })),
-
-  updateLayerMeta: (idx, changes) => set(s => ({
-    wiringLayers: s.wiringLayers.map((l, i) => i !== idx ? l : { ...l, ...changes }),
-  })),
-
-  addConnection: (layerIdx) => set(s => ({
-    wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
-      ...l, connections: [...l.connections, { from: '', to: '' }],
+  removeWiringLayer: (idx) => set(s =>
+    withHistory(s, {
+      wiringLayers:   s.wiringLayers.filter((_, i) => i !== idx),
+      activeLayerIdx: s.activeLayerIdx === idx ? null : s.activeLayerIdx,
+      vizLayerIdx:    s.vizLayerIdx    === idx ? null : s.vizLayerIdx,
     }),
-  })),
+  ),
 
-  removeConnection: (layerIdx, connIdx) => set(s => ({
-    wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
-      ...l, connections: l.connections.filter((_, ci) => ci !== connIdx),
-    }),
-  })),
+  updateLayerMeta: (idx, changes) => set(s =>
+    withHistory(s, { wiringLayers: s.wiringLayers.map((l, i) => i !== idx ? l : { ...l, ...changes }) }),
+  ),
 
-  updateConnection: (layerIdx, connIdx, changes) => set(s => ({
-    wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
-      ...l, connections: l.connections.map((c, ci) => ci !== connIdx ? c : { ...c, ...changes }),
+  addConnection: (layerIdx) => set(s =>
+    withHistory(s, {
+      wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
+        ...l, connections: [...l.connections, { from: '', to: '' }],
+      }),
     }),
-  })),
+  ),
+
+  removeConnection: (layerIdx, connIdx) => set(s =>
+    withHistory(s, {
+      wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
+        ...l, connections: l.connections.filter((_, ci) => ci !== connIdx),
+      }),
+    }),
+  ),
+
+  updateConnection: (layerIdx, connIdx, changes) => set(s =>
+    withHistory(s, {
+      wiringLayers: s.wiringLayers.map((l, i) => i !== layerIdx ? l : {
+        ...l, connections: l.connections.map((c, ci) => ci !== connIdx ? c : { ...c, ...changes }),
+      }),
+    }),
+  ),
 
   setActiveLayer: (idx) => set({ activeLayerIdx: idx }),
   setVizLayer:    (idx) => set(s => ({ vizLayerIdx: s.vizLayerIdx === idx ? null : idx })),
@@ -269,43 +328,51 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   },
 
   // ── Type entries ──────────────────────────────────────────────────────────
-  addTypeEntry:    (entry)          => set(s => ({ typeEntries: [...s.typeEntries, entry] })),
-  removeTypeEntry: (type)           => set(s => ({ typeEntries: s.typeEntries.filter(e => e.type !== type) })),
-  updateTypeEntry: (type, changes)  => set(s => ({
-    typeEntries: s.typeEntries.map(e => e.type !== type ? e : { ...e, ...changes }),
-  })),
+  addTypeEntry:    (entry)         => set(s => withHistory(s, { typeEntries: [...s.typeEntries, entry] })),
+  removeTypeEntry: (type)          => set(s => withHistory(s, { typeEntries: s.typeEntries.filter(e => e.type !== type) })),
+  updateTypeEntry: (type, changes) => set(s =>
+    withHistory(s, { typeEntries: s.typeEntries.map(e => e.type !== type ? e : { ...e, ...changes }) }),
+  ),
 
   // ── Cable types ───────────────────────────────────────────────────────────
-  addCableType:    (ct) => set(s => ({ cableTypes: s.cableTypes.includes(ct) ? s.cableTypes : [...s.cableTypes, ct] })),
-  removeCableType: (ct) => set(s => ({ cableTypes: s.cableTypes.filter(c => c !== ct) })),
+  addCableType:    (ct) => set(s => withHistory(s, { cableTypes: s.cableTypes.includes(ct) ? s.cableTypes : [...s.cableTypes, ct] })),
+  removeCableType: (ct) => set(s => withHistory(s, { cableTypes: s.cableTypes.filter(c => c !== ct) })),
 
   // ── External groups ───────────────────────────────────────────────────────
-  addExternalGroup: () => set(s => ({
-    externalGroups: [...s.externalGroups, {
-      name: `External ${s.externalGroups.length + 1}`,
-      distance_from_racks: 10,
-      devices: [],
-    }],
-  })),
-  removeExternalGroup: (idx) => set(s => ({
-    externalGroups: s.externalGroups.filter((_, i) => i !== idx),
-  })),
-  updateGroupMeta: (idx, changes) => set(s => ({
-    externalGroups: s.externalGroups.map((g, i) => i !== idx ? g : { ...g, ...changes }),
-  })),
-  addExternalDevice: (groupIdx, dev) => set(s => ({
-    externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : { ...g, devices: [...g.devices, dev] }),
-  })),
-  removeExternalDevice: (groupIdx, devName) => set(s => ({
-    externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : {
-      ...g, devices: g.devices.filter(d => d.name !== devName),
+  addExternalGroup: () => set(s =>
+    withHistory(s, {
+      externalGroups: [...s.externalGroups, {
+        name: `External ${s.externalGroups.length + 1}`,
+        distance_from_racks: 10,
+        devices: [],
+      }],
     }),
-  })),
-  updateExternalDevice: (groupIdx, devName, changes) => set(s => ({
-    externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : {
-      ...g, devices: g.devices.map(d => d.name !== devName ? d : { ...d, ...changes }),
+  ),
+  removeExternalGroup: (idx) => set(s =>
+    withHistory(s, { externalGroups: s.externalGroups.filter((_, i) => i !== idx) }),
+  ),
+  updateGroupMeta: (idx, changes) => set(s =>
+    withHistory(s, { externalGroups: s.externalGroups.map((g, i) => i !== idx ? g : { ...g, ...changes }) }),
+  ),
+  addExternalDevice: (groupIdx, dev) => set(s =>
+    withHistory(s, {
+      externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : { ...g, devices: [...g.devices, dev] }),
     }),
-  })),
+  ),
+  removeExternalDevice: (groupIdx, devName) => set(s =>
+    withHistory(s, {
+      externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : {
+        ...g, devices: g.devices.filter(d => d.name !== devName),
+      }),
+    }),
+  ),
+  updateExternalDevice: (groupIdx, devName, changes) => set(s =>
+    withHistory(s, {
+      externalGroups: s.externalGroups.map((g, i) => i !== groupIdx ? g : {
+        ...g, devices: g.devices.map(d => d.name !== devName ? d : { ...d, ...changes }),
+      }),
+    }),
+  ),
 
   // ── YAML I/O ──────────────────────────────────────────────────────────────
   generateYaml: () => {
@@ -415,17 +482,20 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
 
       const cableTypes = Array.isArray(r['cable_types']) ? (r['cable_types'] as unknown[]).map(String) : get().cableTypes
 
+      const s = get()
       set({
         racks, wiringLayers, externalGroups, cableTypes,
-        typeEntries: typeEntries.length ? typeEntries : get().typeEntries,
-        interRackDistance:   Number(r['inter_rack_distance']   ?? get().interRackDistance),
-        cableSlackLength:    Number(r['cable_slack_length']    ?? get().cableSlackLength),
-        frontToBackLength:   Number(r['front_to_back_length']  ?? get().frontToBackLength),
-        railExtensionLength: Number(r['rail_extension_length'] ?? get().railExtensionLength),
-        standardUHeight:     Number(r['standard_u_height']     ?? get().standardUHeight),
+        typeEntries: typeEntries.length ? typeEntries : s.typeEntries,
+        interRackDistance:   Number(r['inter_rack_distance']   ?? s.interRackDistance),
+        cableSlackLength:    Number(r['cable_slack_length']    ?? s.cableSlackLength),
+        frontToBackLength:   Number(r['front_to_back_length']  ?? s.frontToBackLength),
+        railExtensionLength: Number(r['rail_extension_length'] ?? s.railExtensionLength),
+        standardUHeight:     Number(r['standard_u_height']     ?? s.standardUHeight),
         selectedDevRef: null,
         activeLayerIdx: wiringLayers.length ? 0 : null,
         vizLayerIdx: null,
+        past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+        future: [],
       })
     } catch (e) {
       console.error('Failed to load YAML:', e)
@@ -433,7 +503,7 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   },
 
   // ── Cable config ──────────────────────────────────────────────────────────
-  setCableConfig: (changes) => set(changes),
+  setCableConfig: (changes) => set(s => withHistory(s, changes)),
 
   // ── Tab ───────────────────────────────────────────────────────────────────
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -486,12 +556,37 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
 
   toggleRunPanel: () => set(s => ({ showRunPanel: !s.showRunPanel })),
 
+  // ── History ───────────────────────────────────────────────────────────────
+  undo: () => set(s => {
+    if (!s.past.length) return {}
+    const prev = s.past[s.past.length - 1]
+    return {
+      ...prev,
+      past:         s.past.slice(0, -1),
+      future:       [snapshot(s), ...s.future.slice(0, MAX_HISTORY - 1)],
+      selectedDevRef: null,
+    }
+  }),
+
+  redo: () => set(s => {
+    if (!s.future.length) return {}
+    const next = s.future[0]
+    return {
+      ...next,
+      past:         [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+      future:       s.future.slice(1),
+      selectedDevRef: null,
+    }
+  }),
+
   // ── Workspace ─────────────────────────────────────────────────────────────
-  clearAll: () => set({
+  clearAll: () => set(s => ({
     racks: [], wiringLayers: [], externalGroups: [],
     selectedDevRef: null, activeLayerIdx: null, vizLayerIdx: null,
     pickState: null, portAssignTarget: null,
-  }),
+    past:   [...s.past.slice(-(MAX_HISTORY - 1)), snapshot(s)],
+    future: [],
+  })),
 
   loadSampleData: () => {
     get().loadFromYaml(SAMPLE_DATA)
