@@ -109,27 +109,39 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
     if (!raw) return
     const payload: DragPayload = JSON.parse(raw)
 
-    // Look up the uGrid child by data attribute to get the exact Y boundary.
-    const uGridEl = (e.currentTarget as HTMLElement)
-      .querySelector('[data-ugrid]') as HTMLElement | null
-    const uGridRect  = uGridEl?.getBoundingClientRect()
-    const inGrid     = !uGridRect || e.clientY <= uGridRect.bottom
+    // Check whether the drop landed inside the strip by walking the target's
+    // ancestor chain. This is robust even when the page is served stale
+    // (no attribute-searching required on re-renders).
+    const inStrip = !!(e.target as HTMLElement).closest('[data-strip]')
 
-    if (!inGrid) {
-      // ── Strip area: unposition the device ──────────────────────────────
-      if (payload.kind !== 'device') return
-      const srcRack = racks.find(r => r.id === payload.rackId)
-      if (!srcRack) return
-      const srcDev = srcRack[payload.face].find(d => d.name === payload.devName)
-      if (!srcDev) return
-      moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, undefined)
+    if (inStrip) {
+      // ── Strip area ────────────────────────────────────────────────────
+      if (payload.kind === 'palette') {
+        // Create a new device with no start_u (unpositioned)
+        const allDevs = [...rack.front, ...rack.rear]
+        const count   = allDevs.filter(d => d.type === payload.typeName).length
+        const name    = `${payload.typeName} ${count + 1}`
+        const units   = getTypeUnits(payload.typeName)
+        const dev: DesignerDevice = { name, type: payload.typeName, units }
+        addDevice(rack.id, face, dev)
+        selectDevice({ dev, rackId: rack.id, face, displayName: name })
+      } else {
+        // Move existing device to unpositioned
+        const srcRack = racks.find(r => r.id === payload.rackId)
+        if (!srcRack) return
+        const srcDev = srcRack[payload.face].find(d => d.name === payload.devName)
+        if (!srcDev) return
+        moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, undefined)
+      }
       return
     }
 
     // ── Grid area: position at specific U ────────────────────────────────
     const totalU  = rack.total_u ?? 42
     const uOrder  = rack.u_order ?? 'bottom_top'
-    const rect    = uGridRect ?? e.currentTarget.getBoundingClientRect()
+    // Use the uGrid's rect if available; fall back to faceCol
+    const uGridEl = (e.currentTarget as HTMLElement).querySelector('[data-ugrid]') as HTMLElement | null
+    const rect    = uGridEl?.getBoundingClientRect() ?? e.currentTarget.getBoundingClientRect()
     const rowIdx  = Math.max(0, Math.min(
       Math.floor((e.clientY - rect.top) / U_HEIGHT_PX), totalU - 1,
     ))
@@ -149,11 +161,15 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
       if (!srcRack) return
       const srcDev  = srcRack[payload.face].find(d => d.name === payload.devName)
       if (!srcDev)  return
+      // Ensure units is set — default from type registry, then 1
+      const devWithUnits = srcDev.units != null
+        ? srcDev
+        : { ...srcDev, units: getTypeUnits(srcDev.type ?? '') }
       const grabOffset = payload.grabRow
       const newStartU  = uOrder === 'bottom_top'
         ? targetU + grabOffset
         : targetU - grabOffset
-      moveDevice(payload.rackId, payload.face, srcDev, rack.id, face, Math.max(1, Math.min(newStartU, totalU)))
+      moveDevice(payload.rackId, payload.face, devWithUnits, rack.id, face, Math.max(1, Math.min(newStartU, totalU)))
     }
   }
 
@@ -179,8 +195,8 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
       }
     }
 
-    const positioned   = expandedDevs.filter(d => d.start_u != null && d.units != null)
-    const unpositioned = expandedDevs.filter(d => d.start_u == null || d.units == null)
+    const positioned   = expandedDevs.filter(d => d.start_u != null)
+    const unpositioned = expandedDevs.filter(d => d.start_u == null)
 
     const isDropTarget = dropHint?.rackId === rack.id && dropHint.face === face
 
@@ -273,7 +289,7 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
         </div>
 
         {/* Unpositioned strip — drop handled by parent faceCol */}
-        <div className={css.strip}>
+        <div className={css.strip} data-strip="true">
           <div className={css.stripHeader}>
             UNPOSITIONED {unpositioned.length > 0 ? `(${unpositioned.length})` : ''}
           </div>

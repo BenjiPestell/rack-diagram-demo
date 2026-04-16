@@ -3,7 +3,6 @@
 - Port assignment broken for cluster connections e.g. Intercom routes in Patch panel 1
 - Port schedule missing from rack inspector, and no port assignment outputs yet
 - External devices have no interface for setting cluster range
-- Unpositioned area can't be dragged into when empty
 - Colouring bug in rack inspector
 - External devices missing from rack inspector
 - Patch panels should show source & destination devices in the port assignment popup
