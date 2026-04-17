@@ -27,6 +27,9 @@ interface PortSlot {
   patchSrcPort: number | null
   patchDst:     string | null
   patchDstPort: number | null
+  // cluster expansion offset (N - start); 0 for non-cluster connections.
+  // The YAML stores the base port; visual port = base + clusterOffset.
+  clusterOffset: number
 }
 
 // ─── Port computation ─────────────────────────────────────────────────────────
@@ -54,37 +57,55 @@ function computePorts(
   for (let li = 0; li < layers.length; li++) {
     const layer = layers[li]
     for (let ci = 0; ci < layer.connections.length; ci++) {
+      const rawConn = layer.connections[ci]
       // Only Ethernet (or untyped) connections have assignable ports
-      const resolvedType = (layer.connections[ci].cable_type ?? layer.cable_type ?? '').toLowerCase()
+      const resolvedType = (rawConn.cable_type ?? layer.cable_type ?? '').toLowerCase()
       if (resolvedType !== '' && resolvedType !== 'ethernet') continue
 
-      // Expand the raw connection: resolves {N}/{N+k} templates and comma-separated `to`.
-      // All expanded forms share the same layerIdx/connIdx for write-back.
+      // For cluster connections (start/end), each expansion N gets numeric port fields
+      // offset by (N - start) so every member lands on a distinct explicit port.
+      // The YAML stores only the BASE port; visual port = base + expansionIdx.
+      const isCluster = rawConn.start != null && rawConn.end != null
       const meta = { layerName: layer.name, layerColor: layer.edge_color ?? null, layerIdx: li, connIdx: ci }
-      for (const exp of expandDesignerConnections([layer.connections[ci]])) {
+
+      let expansionIdx = 0
+      for (const exp of expandDesignerConnections([rawConn])) {
+        const clusterOffset = isCluster ? expansionIdx : 0
         const expFrom = String(exp.from || '')
         const expTo   = String(exp.to   || '')
+
+        // Effective port numbers — shift cluster members by their expansion index
+        const effFromPort      = exp.from_port       != null ? exp.from_port       + clusterOffset : undefined
+        const effToPort        = exp.to_port         != null ? exp.to_port         + clusterOffset : undefined
+        const effPatchPortFrom = exp.patch_port_from != null ? exp.patch_port_from + clusterOffset : undefined
+        const effPatchPortTo   = exp.patch_port_to   != null ? exp.patch_port_to   + clusterOffset : undefined
+
         const noPatch = { patchSrc: null, patchSrcPort: null, patchDst: null, patchDstPort: null }
         const patchEnds = {
-          patchSrc: expFrom, patchSrcPort: exp.from_port ?? null,
-          patchDst: expTo,   patchDstPort: exp.to_port   ?? null,
+          patchSrc: expFrom, patchSrcPort: effFromPort ?? null,
+          patchDst: expTo,   patchDstPort: effToPort   ?? null,
         }
         if (expFrom === devName) {
-          record(exp.from_port, { peer: expTo, peerPort: exp.to_port ?? null,
-            label: exp.label ?? null, ip: exp.from_ip ?? null, portField: 'from_port', ...noPatch, ...meta })
+          record(effFromPort, { peer: expTo, peerPort: effToPort ?? null,
+            label: exp.label ?? null, ip: exp.from_ip ?? null, portField: 'from_port',
+            clusterOffset, ...noPatch, ...meta })
         }
         if (expTo === devName) {
-          record(exp.to_port, { peer: expFrom, peerPort: exp.from_port ?? null,
-            label: exp.label ?? null, ip: exp.to_ip ?? null, portField: 'to_port', ...noPatch, ...meta })
+          record(effToPort, { peer: expFrom, peerPort: effFromPort ?? null,
+            label: exp.label ?? null, ip: exp.to_ip ?? null, portField: 'to_port',
+            clusterOffset, ...noPatch, ...meta })
         }
         if (exp.via_patch_from === devName) {
-          record(exp.patch_port_from, { peer: expFrom, peerPort: exp.from_port ?? null,
-            label: exp.label ?? null, ip: null, portField: 'patch_port_from', ...patchEnds, ...meta })
+          record(effPatchPortFrom, { peer: expFrom, peerPort: effFromPort ?? null,
+            label: exp.label ?? null, ip: null, portField: 'patch_port_from',
+            clusterOffset, ...patchEnds, ...meta })
         }
         if (exp.via_patch_to === devName) {
-          record(exp.patch_port_to, { peer: expTo, peerPort: exp.to_port ?? null,
-            label: exp.label ?? null, ip: null, portField: 'patch_port_to', ...patchEnds, ...meta })
+          record(effPatchPortTo, { peer: expTo, peerPort: effToPort ?? null,
+            label: exp.label ?? null, ip: null, portField: 'patch_port_to',
+            clusterOffset, ...patchEnds, ...meta })
         }
+        expansionIdx++
       }
     }
   }
@@ -101,7 +122,8 @@ function computePorts(
       result.push({ port: p, peer: null, peerPort: null, label: null,
         layerName: null, layerColor: null, ip: null,
         layerIdx: null, connIdx: null, portField: null, note,
-        patchSrc: null, patchSrcPort: null, patchDst: null, patchDstPort: null })
+        patchSrc: null, patchSrcPort: null, patchDst: null, patchDstPort: null,
+        clusterOffset: 0 })
     }
   }
   return result
@@ -193,7 +215,8 @@ export default function PortAssignView() {
     if (!Number.isFinite(n)) return
     const clamped = Math.max(1, Math.min(totalPorts, n))
     if (clamped === slot.port) return
-    assignPort(slot, clamped)
+    // Write back the base (visual port minus cluster offset) so this member lands at clamped
+    assignPort(slot, clamped - slot.clusterOffset)
     setSelectedPort(clamped)
   }
 
@@ -215,11 +238,20 @@ export default function PortAssignView() {
     if (dragSrc == null || dragSrc === dstSlot.port) return
     const srcSlot = slots.find(s => s.port === dragSrc)
     if (!srcSlot?.peer || srcSlot.layerIdx == null || !srcSlot.portField) return
-    // Move src → dst port
-    updateConnection(srcSlot.layerIdx, srcSlot.connIdx!, { [srcSlot.portField]: dstSlot.port })
-    // If dst is occupied, swap it back to src's old port
-    if (dstSlot.peer && dstSlot.layerIdx != null && dstSlot.connIdx != null && dstSlot.portField) {
-      updateConnection(dstSlot.layerIdx, dstSlot.connIdx, { [dstSlot.portField]: srcSlot.port })
+
+    // For cluster connections, write back the BASE (visual port - offset) so this
+    // member lands exactly at dstSlot.port and the whole cluster shifts accordingly.
+    const srcNewBase = dstSlot.port - srcSlot.clusterOffset
+    updateConnection(srcSlot.layerIdx, srcSlot.connIdx!, { [srcSlot.portField]: srcNewBase })
+
+    // Swap: only if dst is occupied by a DIFFERENT template connection.
+    // If both slots come from the same cluster, shifting the cluster already
+    // vacated the src port — no second write needed.
+    const sameTemplate =
+      srcSlot.layerIdx === dstSlot.layerIdx && srcSlot.connIdx === dstSlot.connIdx
+    if (!sameTemplate && dstSlot.peer && dstSlot.layerIdx != null && dstSlot.connIdx != null && dstSlot.portField) {
+      const dstNewBase = srcSlot.port - dstSlot.clusterOffset
+      updateConnection(dstSlot.layerIdx, dstSlot.connIdx, { [dstSlot.portField]: dstNewBase })
     }
     setSelectedPort(dstSlot.port)
   }
