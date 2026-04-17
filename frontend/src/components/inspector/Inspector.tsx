@@ -58,8 +58,19 @@ export default function Inspector() {
 
       const dm = buildDeviceMap(parsed)
       setDeviceMap(dm)
-      setTypeColors({ ...DEFAULT_TYPE_COLORS })
-      setConnIndex(buildConnectionIndex(parsed, DEFAULT_TYPE_COLORS))
+
+      // Merge YAML type_colors over the hardcoded defaults
+      const rawAny = parsed as Record<string, unknown>
+      const mergedColors = { ...DEFAULT_TYPE_COLORS }
+      const yamlTypeColors = rawAny['type_colors']
+      if (yamlTypeColors && typeof yamlTypeColors === 'object') {
+        for (const [typeName, typeDef] of Object.entries(yamlTypeColors as Record<string, unknown>)) {
+          const color = (typeDef as Record<string, unknown>)?.['color']
+          if (typeof color === 'string') mergedColors[typeName] = color
+        }
+      }
+      setTypeColors(mergedColors)
+      setConnIndex(buildConnectionIndex(parsed, mergedColors))
     } catch (e) {
       setConnected(false)
       setError(String(e))

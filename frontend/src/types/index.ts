@@ -50,6 +50,7 @@ export interface RawWiringLayer {
 
 export interface RawExternalDevice {
   name: string
+  type?: string
   start?: number
   end?: number
 }

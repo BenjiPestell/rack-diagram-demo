@@ -15,7 +15,8 @@
       "Bash(npm run:*)",
       "mcp__Claude_Preview__preview_start",
       "Bash(find frontend/src -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) -exec grep -l \"port.*[Nn]ote\" {} \\\\;)",
-      "Bash(python -c \"import sys, json; lines = sys.stdin.read\\(\\).strip\\(\\).split\\('\\\\n'\\); [print\\(json.loads\\(l\\).get\\('message', {}\\).get\\('content', ''\\)\\) for l in lines[-20:] if l]\")"
+      "Bash(python -c \"import sys, json; lines = sys.stdin.read\\(\\).strip\\(\\).split\\('\\\\n'\\); [print\\(json.loads\\(l\\).get\\('message', {}\\).get\\('content', ''\\)\\) for l in lines[-20:] if l]\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\benji\\\\Documents\\\\Dynisma\\\\rack-diagram-demo\\\\frontend\\\\src\\\\types*\")"
     ]
   }
 }

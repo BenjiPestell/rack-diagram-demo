@@ -43,6 +43,7 @@ export function buildDeviceMap(config: RawConfig): DeviceMap {
     for (const dev of expanded) {
       map[dev.name] = {
         name: dev.name,
+        type: dev.type,
         rackId: 'external',
         rackName: groupName,
         rackIdx: -1,

@@ -1,6 +1,6 @@
 import css from './CanvasArea.module.css'
 import type { RawConfig, DeviceInfo, DeviceMap } from '../../types'
-import { expandRackDevices } from '../../utils/yaml'
+import { expandRackDevices, expandDevices } from '../../utils/yaml'
 
 const U_HEIGHT_PX = 14
 
@@ -118,6 +118,36 @@ export default function CanvasArea({ config, deviceMap, typeColors, selectedDev,
                 ))}
               </div>
             )}
+          </div>
+        )
+      })}
+
+      {/* External device groups */}
+      {(config.external_devices || []).map((group, gi) => {
+        const expanded = expandDevices(group.devices)
+        if (!expanded.length) return null
+        return (
+          <div key={gi} className={css.rackCol}>
+            <div className={css.rackLabel}>
+              {group.name || `External ${gi + 1}`}
+              {group.distance_from_racks ? ` (${group.distance_from_racks}m)` : ''}
+            </div>
+            <div className={css.strip} style={{ minWidth: 140 }}>
+              <div className={css.stripHeader}>EXTERNAL</div>
+              {expanded.map(dev => (
+                <div
+                  key={dev.name}
+                  className={`${css.stripItem} ${selectedDev === dev.name ? css.stripItemSelected : ''}`}
+                  onClick={() => onSelect(dev.name)}
+                >
+                  <div
+                    className={css.stripDot}
+                    style={{ background: typeColors[dev.type ?? ''] ?? '#3a3f47' }}
+                  />
+                  {dev.name}
+                </div>
+              ))}
+            </div>
           </div>
         )
       })}
