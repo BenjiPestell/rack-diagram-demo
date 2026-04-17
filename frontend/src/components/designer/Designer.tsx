@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import css from './Designer.module.css'
 import Header from './Header'
 import LeftPanel from './LeftPanel'
@@ -23,10 +23,27 @@ export default function Designer() {
   const version        = useDesignerStore(s => s.version)
   const setSaveStatus  = useDesignerStore(s => s.setSaveStatus)
   const generateYaml   = useDesignerStore(s => s.generateYaml)
+  const loadFromYaml   = useDesignerStore(s => s.loadFromYaml)
+
+  // Suppress the auto-save that would otherwise fire immediately after loading from server
+  const skipNextSave = useRef(false)
+
+  // Load latest YAML from server on first mount
+  useEffect(() => {
+    fetch('/yaml')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(text => {
+        skipNextSave.current = true
+        loadFromYaml(text)
+        setSaveStatus('saved')
+      })
+      .catch(() => {})  // server not reachable — start with empty state
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounced auto-save to server — fires 1.5 s after the last state change
   useEffect(() => {
     if (version === 0) return          // skip initial mount
+    if (skipNextSave.current) { skipNextSave.current = false; return }
     setSaveStatus('unsaved')
     const timer = setTimeout(async () => {
       setSaveStatus('saving')

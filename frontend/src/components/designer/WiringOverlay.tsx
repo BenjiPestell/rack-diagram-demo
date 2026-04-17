@@ -188,10 +188,6 @@ export default function WiringOverlay({ canvasRef }: Props) {
 
   if (vizLayerIdx == null || paths.length === 0) return null
 
-  const layer      = wiringLayers[vizLayerIdx]
-  const layerColor = layer?.edge_color ?? '#888888'
-  const markerId   = `arrow-${vizLayerIdx}`
-
   return (
     <>
       <svg
@@ -207,16 +203,16 @@ export default function WiringOverlay({ canvasRef }: Props) {
         height={svgSize.h}
       >
         <defs>
-          {/* Arrow marker */}
+          {/* Single shared marker — fill inherits the referencing path's stroke color */}
           <marker
-            id={markerId}
+            id="wiring-arrow"
             markerWidth="6"
             markerHeight="6"
             refX="5"
             refY="3"
             orient="auto"
           >
-            <path d="M0,0 L0,6 L6,3 z" fill={layerColor} fillOpacity={0.95} />
+            <path d="M0,0 L0,6 L6,3 z" fill="context-stroke" />
           </marker>
         </defs>
 
@@ -253,7 +249,7 @@ export default function WiringOverlay({ canvasRef }: Props) {
                 strokeWidth={hovered ? 2.5 : 1.5}
                 strokeOpacity={hovered ? 1.0 : 0.95}
                 strokeDasharray={p.isDash ? '6,4' : undefined}
-                markerEnd={p.isDash ? undefined : `url(#${markerId})`}
+                markerEnd={p.isDash ? undefined : 'url(#wiring-arrow)'}
                 style={{ pointerEvents: 'none', transition: 'stroke-width 0.12s, stroke-opacity 0.12s' }}
               />
 
