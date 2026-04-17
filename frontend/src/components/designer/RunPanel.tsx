@@ -93,11 +93,11 @@ export default function RunPanel() {
               })}
 
               {/* Other output files */}
-              {runFiles.output.length > 0 && (
+              {runFiles.output.filter(f => !f.endsWith('.dot')).length > 0 && (
                 <div className={css.pngSection}>
                   <div className={css.pngSectionTitle}>Data Files</div>
                   <div className={css.dataFiles}>
-                    {runFiles.output.map(f => {
+                    {runFiles.output.filter(f => !f.endsWith('.dot')).map(f => {
                       const ext = f.split('.').pop()?.toLowerCase() ?? ''
                       const icon = ext === 'csv' ? '📊' : ext === 'html' ? '🌐' : ext === 'pdf' ? '📄' : '📁'
                       return (

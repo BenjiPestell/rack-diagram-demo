@@ -57,6 +57,8 @@ def _collect_usages(device_name, all_expanded_conns):
                 "explicit_port": conn.get("patch_port_from"),
                 "peer_device":   frm,
                 "peer_port":     conn.get("from_port"),
+                "patch_src":     frm,
+                "patch_dst":     to,
                 "layer_name":    layer_name,
                 "layer_color":   layer_color,
                 "ip":            None,
@@ -68,6 +70,8 @@ def _collect_usages(device_name, all_expanded_conns):
                 "explicit_port": conn.get("patch_port_to"),
                 "peer_device":   to,
                 "peer_port":     conn.get("to_port"),
+                "patch_src":     frm,
+                "patch_dst":     to,
                 "layer_name":    layer_name,
                 "layer_color":   layer_color,
                 "ip":            None,
@@ -127,6 +131,8 @@ def build_port_schedule(device_name, device, all_expanded_conns):
                 "ip_address":            u["ip"],
                 "layer_name":            u["layer_name"],
                 "layer_color":           u["layer_color"],
+                "patch_src":             u.get("patch_src"),
+                "patch_dst":             u.get("patch_dst"),
                 "overflow":              (p > total_ports and total_ports > 0),
             }
         else:

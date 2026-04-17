@@ -60,7 +60,7 @@ export default function Inspector() {
       setDeviceMap(dm)
 
       // Merge YAML type_colors over the hardcoded defaults
-      const rawAny = parsed as Record<string, unknown>
+      const rawAny = parsed as unknown as Record<string, unknown>
       const mergedColors = { ...DEFAULT_TYPE_COLORS }
       const yamlTypeColors = rawAny['type_colors']
       if (yamlTypeColors && typeof yamlTypeColors === 'object') {
@@ -120,6 +120,7 @@ export default function Inspector() {
         connIndex={connIndex}
         deviceMap={deviceMap}
         cfg={cableCfg}
+        config={config}
         onClose={() => setSelectedDev(null)}
       />
     </div>

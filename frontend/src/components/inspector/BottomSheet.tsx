@@ -1,13 +1,100 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import css from './BottomSheet.module.css'
-import type { DeviceInfo, ConnIndex, CableConfig, CableSegment } from '../../types'
+import type { DeviceInfo, ConnIndex, CableConfig, CableSegment, RawConfig } from '../../types'
 import { calcPatchedCableLength } from '../../utils/cableLength'
+import { expandConnections } from '../../utils/yaml'
+
+// ─── Port schedule computation ────────────────────────────────────────────────
+
+interface PortSlot {
+  port:       number
+  peer:       string | null
+  layerColor: string | null
+  patchSrc:   string | null
+  patchDst:   string | null
+  note:       string | null
+}
+
+function computePortSlots(
+  devName:    string,
+  totalPorts: number,
+  portNotes:  Record<number, string>,
+  config:     RawConfig,
+): PortSlot[] {
+  const explicit   = new Map<number, Omit<PortSlot, 'port' | 'note'>>()
+  const unassigned: Omit<PortSlot, 'port' | 'note'>[] = []
+
+  function record(portNum: number | undefined, slot: Omit<PortSlot, 'port' | 'note'>) {
+    if (portNum != null && portNum >= 1 && !explicit.has(portNum)) {
+      explicit.set(portNum, slot)
+    } else {
+      unassigned.push(slot)
+    }
+  }
+
+  for (const layer of config.wiring_layers ?? []) {
+    const layerColor = layer.edge_color ?? '#888'
+    for (const rawConn of layer.connections ?? []) {
+      const cable = ((rawConn as unknown as Record<string,unknown>)['cable_type'] as string ?? layer.cable_type ?? '').toLowerCase()
+      if (cable && cable !== 'ethernet') continue
+
+      const rawAny    = rawConn as unknown as Record<string, unknown>
+      const isCluster = rawAny['start'] != null && rawAny['end'] != null
+      const connColor = (rawAny['edge_color'] as string | undefined) ?? layerColor
+
+      // expandConnections handles {N} template expansion
+      const expanded = expandConnections([rawConn])
+      let idx = 0
+      for (const exp of expanded) {
+        const off    = isCluster ? idx : 0
+        const expFrom = String(exp.from || '')
+        const expTo   = String(exp.to   || '')
+
+        const effFromPort      = exp.from_port       != null ? exp.from_port       + off : undefined
+        const effToPort        = exp.to_port         != null ? exp.to_port         + off : undefined
+        const effPatchPortFrom = exp.patch_port_from != null ? exp.patch_port_from + off : undefined
+        const effPatchPortTo   = exp.patch_port_to   != null ? exp.patch_port_to   + off : undefined
+
+        if (expFrom === devName)
+          record(effFromPort, { peer: expTo,   layerColor: connColor, patchSrc: null,    patchDst: null })
+        if (expTo === devName)
+          record(effToPort,   { peer: expFrom, layerColor: connColor, patchSrc: null,    patchDst: null })
+        if (exp.via_patch_from === devName)
+          record(effPatchPortFrom, { peer: expFrom, layerColor: connColor, patchSrc: expFrom, patchDst: expTo })
+        if (exp.via_patch_to === devName)
+          record(effPatchPortTo,   { peer: expTo,   layerColor: connColor, patchSrc: expFrom, patchDst: expTo })
+
+        idx++
+      }
+    }
+  }
+
+  const maxPort = Math.max(
+    totalPorts,
+    explicit.size > 0 ? Math.max(...explicit.keys()) : 0,
+    unassigned.length,
+  )
+  const result: PortSlot[] = []
+  let ui = 0
+  for (let p = 1; p <= maxPort; p++) {
+    const note = portNotes[p] ?? null
+    if (explicit.has(p)) {
+      result.push({ port: p, note, ...explicit.get(p)! })
+    } else if (ui < unassigned.length) {
+      result.push({ port: p, note, ...unassigned[ui++] })
+    } else {
+      result.push({ port: p, peer: null, layerColor: null, patchSrc: null, patchDst: null, note })
+    }
+  }
+  return result
+}
 
 interface Props {
   dev: DeviceInfo | null
   connIndex: ConnIndex
   deviceMap: Record<string, DeviceInfo>
   cfg: CableConfig
+  config: RawConfig | null
   onClose: () => void
 }
 
@@ -27,7 +114,7 @@ function BreakdownLine({ seg }: { seg: CableSegment }) {
   return <>{parts.join('  ·  ')}</>
 }
 
-export default function BottomSheet({ dev, connIndex, deviceMap, cfg, onClose }: Props) {
+export default function BottomSheet({ dev, connIndex, deviceMap, cfg, config, onClose }: Props) {
   const isOpen = dev != null
   const sheetRef = useRef<HTMLDivElement>(null)
 
@@ -48,6 +135,17 @@ export default function BottomSheet({ dev, connIndex, deviceMap, cfg, onClose }:
     if (dy > 80) onClose()
     dragStart.current = null
   }
+
+  // Port schedule — computed unconditionally (Rules of Hooks)
+  const hasPorts = !!(dev && (dev.isPatchPanel || (dev.ports != null && dev.ports > 0)))
+  const portSlots = useMemo(() => {
+    if (!dev || !hasPorts || !config) return []
+    const total = dev.ports ?? 0
+    const notes = dev.port_notes ?? {}
+    return computePortSlots(dev.name, total, notes, config)
+  }, [dev?.name, dev?.ports, dev?.port_notes, hasPorts, config]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const portCols = portSlots.length <= 12 ? 6 : portSlots.length <= 24 ? 12 : 16
 
   if (!dev) {
     return (
@@ -110,6 +208,48 @@ export default function BottomSheet({ dev, connIndex, deviceMap, cfg, onClose }:
             {metaBadges.map((b, i) => <span key={i} className={css.badge}>{b}</span>)}
           </div>
         </div>
+
+        {/* Port grid */}
+        {portSlots.length > 0 && (
+          <div className={css.portSection}>
+            <div className={css.portSectionTitle}>PORT ASSIGNMENT</div>
+            <div className={css.portGridWrap}>
+              <div
+                className={css.portGrid}
+                style={{ gridTemplateColumns: `repeat(${portCols}, 1fr)` }}
+              >
+                {portSlots.map(slot => (
+                  <div
+                    key={slot.port}
+                    className={`${css.portCell} ${slot.peer ? css.portCellOccupied : ''}`}
+                    style={slot.peer ? {
+                      borderColor: slot.layerColor ?? '#888',
+                      boxShadow:   `inset 0 2px 0 ${slot.layerColor ?? '#888'}`,
+                    } : undefined}
+                  >
+                    <span className={css.portCellNum}>{slot.port}</span>
+                    {slot.peer && (
+                      <>
+                        <span
+                          className={css.portCellDot}
+                          style={{ background: slot.layerColor ?? '#888' }}
+                        />
+                        <span className={css.portCellText}>
+                          {slot.patchSrc != null
+                            ? `${slot.patchSrc} → ${slot.patchDst}`
+                            : slot.peer}
+                        </span>
+                      </>
+                    )}
+                    {slot.note && (
+                      <span className={css.portCellNote}>{slot.note}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Connections */}
         <div className={css.scroll}>

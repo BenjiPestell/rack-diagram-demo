@@ -201,7 +201,10 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
             to_list = [to_field]
         
         # -- Step 1 & 2: {N} cluster expansion -------------------------------
-        # Tuple: (from, to, via_patch_from, via_patch_to, from_ip, to_ip)
+        # Tuple: (from, to, via_patch_from, via_patch_to, from_ip, to_ip, port_offset)
+        # port_offset is (n - start) for cluster connections so that numeric port
+        # fields (from_port, to_port, patch_port_from, patch_port_to) are shifted
+        # to unique values — one per cluster member.
         base_conns = []
 
         if "start" in conn and "end" in conn:
@@ -229,13 +232,14 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
                         _sub(via_patch_to)   if via_patch_to   else "",
                         _sub(from_ip)        if from_ip is not None else None,
                         _sub(to_ip)          if to_ip   is not None else None,
+                        n - start,  # port_offset
                     ))
         else:
             for to_template in to_list:
-                base_conns.append((from_template, to_template, via_patch_from, via_patch_to, from_ip, to_ip))
+                base_conns.append((from_template, to_template, via_patch_from, via_patch_to, from_ip, to_ip, 0))
 
         # -- Step 3: build connection dicts and expand patch hops -------------
-        for (frm, to, vpf, vpt, fip, tip) in base_conns:
+        for (frm, to, vpf, vpt, fip, tip, port_offset) in base_conns:
             base = {"from": frm, "to": to}
             if label:       base["label"]      = label
             if color:       base["color"]      = color
@@ -245,10 +249,11 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
             if cable_type:  base["cable_type"] = cable_type
             if vpf:         base["via_patch_from"] = vpf
             if vpt:         base["via_patch_to"]   = vpt
-            if from_port is not None:       base["from_port"]       = from_port
-            if to_port is not None:         base["to_port"]         = to_port
-            if patch_port_from is not None: base["patch_port_from"] = patch_port_from
-            if patch_port_to is not None:   base["patch_port_to"]   = patch_port_to
+            # Offset numeric port fields so each cluster member gets a unique port
+            if from_port is not None:       base["from_port"]       = from_port + port_offset
+            if to_port is not None:         base["to_port"]         = to_port + port_offset
+            if patch_port_from is not None: base["patch_port_from"] = patch_port_from + port_offset
+            if patch_port_to is not None:   base["patch_port_to"]   = patch_port_to + port_offset
             if fip is not None:             base["from_ip"]         = fip
             if tip is not None:             base["to_ip"]           = tip
 

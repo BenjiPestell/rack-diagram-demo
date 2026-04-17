@@ -1,6 +1,4 @@
 - Add YAML file loading and saving with different names. (Not just system.YAML, instead a given YAML is named after its project and can be edited and saved with that name. YAMLs can therefore be part of a project repo for version tracking)
 - Allow rack duplication to make multi-rack setup easier (e.g. there may be 3 racks where their content is just 5 PCs & switches)
-- Port assignment broken for cluster connections e.g. Intercom routes in Patch panel 1
 - Port schedule missing from rack inspector, and no port assignment outputs yet
-- Arrow heads should respect their connection's colour override
-- Call 'from server' on launch so UI is populated with latest
+- Rename tab for rack inspector to Rack Inspector (currently designer)
