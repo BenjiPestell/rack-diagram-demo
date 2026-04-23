@@ -137,13 +137,12 @@ export default function BottomSheet({ dev, connIndex, deviceMap, cfg, config, on
   }
 
   // Port schedule — computed unconditionally (Rules of Hooks)
-  const hasPorts = !!(dev && (dev.isPatchPanel || (dev.ports != null && dev.ports > 0)))
   const portSlots = useMemo(() => {
-    if (!dev || !hasPorts || !config) return []
+    if (!dev || !config) return []
     const total = dev.ports ?? 0
     const notes = dev.port_notes ?? {}
     return computePortSlots(dev.name, total, notes, config)
-  }, [dev?.name, dev?.ports, dev?.port_notes, hasPorts, config]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dev?.name, dev?.ports, dev?.port_notes, config]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const portCols = portSlots.length <= 12 ? 6 : portSlots.length <= 24 ? 12 : 16
 
@@ -210,7 +209,7 @@ export default function BottomSheet({ dev, connIndex, deviceMap, cfg, config, on
         </div>
 
         {/* Port grid */}
-        {portSlots.length > 0 && (
+        {portSlots.some(s => s.peer !== null) && (
           <div className={css.portSection}>
             <div className={css.portSectionTitle}>PORT ASSIGNMENT</div>
             <div className={css.portGridWrap}>

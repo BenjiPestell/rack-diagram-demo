@@ -192,13 +192,13 @@ def expand_wiring_clusters(connections, layer_cable_type="", layer_edge_color="#
         from_ip         = conn.get("from_ip")
         to_ip           = conn.get("to_ip")
         
-        # Normalize to_field to always be a list
-        if isinstance(to_field, str):
-            to_list = [to_field]
-        elif isinstance(to_field, list):
+        # Normalize to_field to always be a list; split comma-separated strings
+        if isinstance(to_field, list):
             to_list = to_field
+        elif isinstance(to_field, str):
+            to_list = [t.strip() for t in to_field.split(',') if t.strip()]
         else:
-            to_list = [to_field]
+            to_list = [str(to_field)]
         
         # -- Step 1 & 2: {N} cluster expansion -------------------------------
         # Tuple: (from, to, via_patch_from, via_patch_to, from_ip, to_ip, port_offset)

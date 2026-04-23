@@ -17,24 +17,24 @@ cable_types:
 
 type_colors:
   pc:
-    color: "#E8F4F8"
+    color: "#949494"
     units: 4
     ported: true
   pdu:
     color: "#AAAAAA"
   Shelf:
-    color: "#ced3db"
+    color: "#94a9cc"
   realtime:
-    color: "#FFE8D8"
+    color: "#ff974d"
     units: 4
     ported: true
   cable management:
-    color: "#C4C4C4"
+    color: "#616161"
   switch:
-    color: "#B8D6D6"
+    color: "#82b0b0"
     ported: true
   customer:
-    color: "#ffd9d6"
+    color: "#d58a58"
   projector:
     color: "#d194b3"
   beltpack:
@@ -154,6 +154,7 @@ racks:
         type: switch
         start_u: 3
         units: 1
+        ports: 24
       - name: Vertical PDU 1
         type: pdu
       - name: Mains in 1
@@ -214,6 +215,7 @@ racks:
         type: switch
         start_u: 3
         units: 1
+        ports: 24
       - name: Vertical PDU 2
         type: pdu
       - name: Mains in 2
@@ -262,6 +264,7 @@ racks:
         type: switch
         start_u: 3
         units: 1
+        ports: 24
       - name: Vertical PDU 3
         type: pdu
       - name: Mains in 3
@@ -310,6 +313,7 @@ racks:
         type: switch
         start_u: 3
         units: 1
+        ports: 24
       - name: Vertical PDU 4
         type: pdu
       - name: Mains in 4
@@ -372,7 +376,6 @@ wiring_layers:
       - from: Graphics Switch 1
         to: "Operator PC, Physics PC, Spectator IG, Telemetry, dSPACE"
         to_port: 1
-        to_ip: 192.168.2.81
       - from: Graphics Switch 2
         to: "RVD {N}"
         start: 1
@@ -482,7 +485,7 @@ wiring_layers:
         to_port: 1
         to_ip: DHCP
   - name: Video
-    edge_color: "#ffb35c"
+    edge_color: "#fea034"
     cable_type: Display Port
     connections:
       - from: "IG {N}"
