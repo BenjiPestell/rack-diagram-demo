@@ -3,10 +3,93 @@ from collections import defaultdict
 from utils import get_device_color
 from clusters import expand_wiring_clusters
 
+
+def _html_escape(text):
+    """Escape characters that are special inside a Graphviz HTML-like label."""
+    return (
+        str(text)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )
+
+
+def _key_row(color, text, font_size):
+    """One swatch + caption row of the key table."""
+    return (
+        f"<TR><TD BGCOLOR=\"{color}\" WIDTH=\"22\"> </TD>"
+        f"<TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"{font_size}\" FACE=\"Sinkin Sans 400 Regular\">"
+        f"{_html_escape(text)}</FONT></TD></TR>"
+    )
+
+
+def _key_heading(text, font_size):
+    """A section heading row spanning the key table."""
+    return (
+        f"<TR><TD COLSPAN=\"2\" BGCOLOR=\"#E8E8E8\">"
+        f"<FONT POINT-SIZE=\"{font_size}\" FACE=\"Sinkin Sans 400 Regular\"><B>"
+        f"{_html_escape(text)}</B></FONT></TD></TR>"
+    )
+
+
+def _build_key_cluster(used_types, type_colors, layer_colors, font_size):
+    """
+    Build the key cluster mapping colours to their meaning.
+
+    used_types   : device type names actually appearing in this diagram
+    type_colors  : the config's type_colors mapping
+    layer_colors : [(layer_name, edge_color), ...] for the unified diagram, or
+                   None for a single-layer diagram (where one colour says nothing)
+
+    Returns a list of DOT lines, empty when there is nothing worth showing.
+    """
+    type_rows = []
+    for type_name in sorted(used_types, key=str.lower):
+        entry = type_colors.get(type_name)
+        # type_colors values are either {color: "#hex", ...} or a plain hex string
+        color = entry.get("color") if isinstance(entry, dict) else entry
+        if color:
+            type_rows.append((color, type_name))
+
+    if not type_rows and not layer_colors:
+        return []
+
+    row_font = max(font_size - 1, 6)
+
+    lines = []
+    lines.append("  subgraph cluster_key {")
+    lines.append("    label=\"Key\";")
+    lines.append("    style=filled;")
+    lines.append("    color=\"#FFFFFF\";")
+    lines.append("    fontname=\"Sinkin Sans 400 Regular\";")
+    lines.append("")
+    lines.append("    \"__key__\" [")
+    lines.append("      shape=plain,")
+    lines.append("      label=<")
+    lines.append("<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">")
+
+    if type_rows:
+        lines.append(_key_heading("Hardware", row_font))
+        for color, type_name in type_rows:
+            lines.append(_key_row(color, type_name, row_font))
+
+    if layer_colors:
+        lines.append(_key_heading("Wiring layer", row_font))
+        for layer_name, edge_color in layer_colors:
+            lines.append(_key_row(edge_color, layer_name, row_font))
+
+    lines.append("</TABLE>")
+    lines.append("      >")
+    lines.append("    ];")
+    lines.append("  }")
+    lines.append("")
+    return lines
+
+
 # -------------------------------------------------
 # Generate Wiring Diagram with Radial Layout
 # -------------------------------------------------
-def generate_wiring_diagram(layer, all_devices, type_colors):
+def generate_wiring_diagram(layer, all_devices, type_colors, show_key=True, layer_colors=None):
     """
     Generate a radial wiring diagram grouped by rack.
 
@@ -18,6 +101,10 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     Patch panel devices appear as normal nodes in their rack cluster and get the
     "central node" bold treatment when they have more than one connection, just
     like any other device.
+
+    show_key adds a "Key" cluster listing the hardware type colours used in this
+    diagram. layer_colors, when given, adds a wiring-layer section to that key --
+    used by the unified diagram, where edge colour identifies the source layer.
     """
     layer_name = layer["name"]
     connections_raw = layer.get("connections", [])
@@ -72,6 +159,14 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
     rack_devices = defaultdict(set)
     rack_connection_count = defaultdict(lambda: defaultdict(int))
     inter_rack_connections = []
+
+    # rack_id -> display name, taken from the rack's configured name
+    rack_names = {}
+    for dev_info in all_devices.values():
+        dev_rack_id = dev_info.get("rack_id")
+        dev_rack_name = dev_info.get("rack_name")
+        if dev_rack_id and dev_rack_name:
+            rack_names[dev_rack_id] = dev_rack_name
 
     for conn in connections:
         from_dev = conn["from"]
@@ -130,7 +225,8 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
         devices = rack_devices[rack_id]
 
         lines.append(f"  subgraph cluster_{rack_id} {{")
-        rack_label = (
+        # Prefer the rack's configured name; fall back to a tidied id
+        rack_label = rack_names.get(rack_id) or (
             f"Rack {rack_id.replace('rack', '').replace('_front', '').replace('_rear', '').strip('_')}"
         )
         lines.append(f"    label=\"{rack_label}\";")
@@ -205,6 +301,24 @@ def generate_wiring_diagram(layer, all_devices, type_colors):
 
         lines.append("  }")
         lines.append("")
+
+    # ------------------------------------------------------------------
+    # Key -- colour swatches for the hardware types shown in this diagram
+    # ------------------------------------------------------------------
+    if show_key:
+        used_types = set()
+        for devices in rack_devices.values():
+            for dev_name in devices:
+                dev_info = all_devices.get(dev_name) or {}
+                # Devices with an explicit colour override aren't type-driven,
+                # so listing their type would misrepresent the swatch
+                if "color" in dev_info:
+                    continue
+                dev_type = dev_info.get("type")
+                if dev_type:
+                    used_types.add(dev_type)
+
+        lines.extend(_build_key_cluster(used_types, type_colors, layer_colors, font_size))
 
     # ------------------------------------------------------------------
     # Edges

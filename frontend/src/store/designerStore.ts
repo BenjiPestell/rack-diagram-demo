@@ -13,7 +13,7 @@ import type {
 type HistorySlice = Pick<DesignerStore,
   'racks' | 'wiringLayers' | 'externalGroups' | 'typeEntries' | 'cableTypes' |
   'interRackDistance' | 'cableSlackLength' | 'frontToBackLength' |
-  'railExtensionLength' | 'standardUHeight'
+  'railExtensionLength' | 'standardUHeight' | 'projectTitle' | 'showTypeKey'
 >
 
 const MAX_HISTORY = 50
@@ -30,6 +30,8 @@ function snapshot(s: DesignerStore): HistorySlice {
     frontToBackLength:   s.frontToBackLength,
     railExtensionLength: s.railExtensionLength,
     standardUHeight:     s.standardUHeight,
+    projectTitle:        s.projectTitle,
+    showTypeKey:         s.showTypeKey,
   }
 }
 
@@ -122,6 +124,10 @@ export interface DesignerStore {
   railExtensionLength: number
   standardUHeight: number
 
+  // Project config
+  projectTitle: string      // title + filename of the combined all-layers diagram
+  showTypeKey: boolean      // draw the hardware colour key on wiring diagrams
+
   // UI state
   selectedDevRef: SelectedDevRef | null
   pickState: PickState | null
@@ -202,6 +208,11 @@ export interface DesignerStore {
     'interRackDistance' | 'cableSlackLength' | 'frontToBackLength' | 'railExtensionLength' | 'standardUHeight'
   >>) => void
 
+  // ── Project config ──────────────────────────────────────────────────────
+  setProjectConfig: (changes: Partial<Pick<DesignerStore,
+    'projectTitle' | 'showTypeKey'
+  >>) => void
+
   // ── Tab ─────────────────────────────────────────────────────────────────
   setActiveTab: (tab: DesignerStore['activeTab']) => void
 
@@ -235,6 +246,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
   frontToBackLength:   0.5,
   railExtensionLength: 0.5,
   standardUHeight:     0.045,
+  projectTitle:     'Unified Wiring',
+  showTypeKey:      true,
   past:             [],
   future:           [],
   version:          0,
@@ -463,6 +476,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
       frontToBackLength:   s.frontToBackLength,
       railExtensionLength: s.railExtensionLength,
       standardUHeight:     s.standardUHeight,
+      projectTitle:        s.projectTitle,
+      showTypeKey:         s.showTypeKey,
     })
   },
 
@@ -566,6 +581,8 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
         frontToBackLength:   Number(r['front_to_back_length']  ?? s.frontToBackLength),
         railExtensionLength: Number(r['rail_extension_length'] ?? s.railExtensionLength),
         standardUHeight:     Number(r['standard_u_height']     ?? s.standardUHeight),
+        projectTitle:        r['project_title']  != null ? String(r['project_title'])   : s.projectTitle,
+        showTypeKey:         r['show_type_key']  != null ? Boolean(r['show_type_key'])  : s.showTypeKey,
         selectedDevRef: null,
         activeLayerIdx: wiringLayers.length ? 0 : null,
         vizLayerIdx: null,
@@ -580,6 +597,9 @@ export const useDesignerStore = create<DesignerStore>((set, get) => ({
 
   // ── Cable config ──────────────────────────────────────────────────────────
   setCableConfig: (changes) => set(s => withHistory(s, changes)),
+
+  // ── Project config ────────────────────────────────────────────────────────
+  setProjectConfig: (changes) => set(s => withHistory(s, changes)),
 
   // ── Tab ───────────────────────────────────────────────────────────────────
   setActiveTab:   (tab)    => set({ activeTab: tab }),

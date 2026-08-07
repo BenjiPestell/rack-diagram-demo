@@ -39,6 +39,8 @@ export interface RawConnection {
   patch_port_to?: number
   from_port?: number
   to_port?: number
+  from_ip?: string
+  to_ip?: string
 }
 
 export interface RawWiringLayer {
@@ -70,6 +72,8 @@ export interface RawConfig {
   front_to_back_length?: number
   inter_rack_distance?: number
   rail_extension_length?: number
+  project_title?: string
+  show_type_key?: boolean
 }
 
 // ─── Expanded / processed types (after cluster expansion) ────────────────────

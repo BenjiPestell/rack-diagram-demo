@@ -274,7 +274,8 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
                 onClick={e => {
                   e.stopPropagation()
                   if (pickState) {
-                    handleDevicePick(dev.name)
+                    // Use template name so cluster connections get "{N}" form
+                    handleDevicePick(templateDev.name)
                   } else {
                     // Select the template device; display the expanded name
                     selectDevice({ dev: templateDev, rackId: rack.id, face, displayName: dev.name })
@@ -325,7 +326,8 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
                 onClick={e => {
                   e.stopPropagation()
                   if (pickState) {
-                    handleDevicePick(dev.name)
+                    // Use template name so cluster connections get "{N}" form
+                    handleDevicePick(templateDev.name)
                   } else {
                     selectDevice({ dev: templateDev, rackId: rack.id, face, displayName: dev.name })
                   }
@@ -348,6 +350,13 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
       <div className={css.extColumn}>
         {externalGroups.map((group, gi) => {
           const expanded = expandDevices(group.devices)
+          // Map expanded member names back to their template (for cluster pick)
+          const extExpandedToTemplate = new Map<string, typeof group.devices[number]>()
+          for (const raw of group.devices) {
+            for (const m of expandDevices([raw])) {
+              extExpandedToTemplate.set(m.name, raw)
+            }
+          }
           return (
             <div key={gi} className={css.extWidget}>
               <div className={css.extWidgetHeader}>
@@ -367,7 +376,10 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
                       style={isWired && vizColor ? { borderLeft: `3px solid ${vizColor}` } : undefined}
                       onClick={e => {
                         e.stopPropagation()
-                        if (pickState) handleDevicePick(dev.name)
+                        if (pickState) {
+                          const tmpl = extExpandedToTemplate.get(dev.name)
+                          handleDevicePick(tmpl?.name ?? dev.name)
+                        }
                       }}
                     >
                       <span className={css.extDevDot} style={{ background: color }} />
@@ -406,16 +418,16 @@ const Canvas = forwardRef<HTMLDivElement>((_, _ref) => {
               onClick={e => e.stopPropagation()}
               title="Rack name"
             />
-            <select
+            <input
               className={css.rackSelect}
+              type="number"
+              min={1}
+              step={1}
               value={rack.total_u}
-              onChange={e => updateRackMeta(rack.id, { total_u: +e.target.value })}
+              onChange={e => updateRackMeta(rack.id, { total_u: Number(e.target.value) || 0 })}
+              onClick={e => e.stopPropagation()}
               title="Total U"
-            >
-              {[12, 18, 24, 32, 42, 48].map(u => (
-                <option key={u} value={u}>{u}U</option>
-              ))}
-            </select>
+            />
             <select
               className={css.rackSelect}
               value={rack.u_order}

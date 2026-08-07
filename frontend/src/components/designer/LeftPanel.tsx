@@ -10,6 +10,9 @@ export default function LeftPanel() {
   const frontToBackLength   = useDesignerStore(s => s.frontToBackLength)
   const railExtensionLength = useDesignerStore(s => s.railExtensionLength)
   const standardUHeight     = useDesignerStore(s => s.standardUHeight)
+  const projectTitle        = useDesignerStore(s => s.projectTitle)
+  const showTypeKey         = useDesignerStore(s => s.showTypeKey)
+  const setProjectConfig    = useDesignerStore(s => s.setProjectConfig)
   const addRack             = useDesignerStore(s => s.addRack)
   const addTypeEntry        = useDesignerStore(s => s.addTypeEntry)
   const removeTypeEntry     = useDesignerStore(s => s.removeTypeEntry)
@@ -23,6 +26,7 @@ export default function LeftPanel() {
   const [newCableType, setNewCableType] = useState('')
   const [showConfig,   setShowConfig]   = useState(false)
   const [showCables,   setShowCables]   = useState(false)
+  const [showProject,  setShowProject]  = useState(true)
 
   function addType() {
     const t = newTypeName.trim()
@@ -41,6 +45,39 @@ export default function LeftPanel() {
   return (
     <div className={css.panel}>
       <button className={css.addRackBtn} onClick={addRack}>+ Add Rack</button>
+
+      {/* Project config — kept above the device list so it stays reachable
+          without scrolling past a long palette */}
+      <div className={css.collapsible}>
+        <button
+          className={css.collapsibleHeader}
+          onClick={() => setShowProject(v => !v)}
+        >
+          <span>Project</span>
+          <span>{showProject ? '▲' : '▼'}</span>
+        </button>
+        {showProject && (
+          <div className={css.configGrid}>
+            <label>
+              Project title
+              <input
+                type="text"
+                value={projectTitle}
+                placeholder="Unified Wiring"
+                onChange={e => setProjectConfig({ projectTitle: e.target.value })}
+              />
+            </label>
+            <label className={css.checkRow}>
+              <input
+                type="checkbox"
+                checked={showTypeKey}
+                onChange={e => setProjectConfig({ showTypeKey: e.target.checked })}
+              />
+              Show colour key
+            </label>
+          </div>
+        )}
+      </div>
 
       <div className={css.sectionHeader}>Device Types</div>
       <div className={css.typeList}>

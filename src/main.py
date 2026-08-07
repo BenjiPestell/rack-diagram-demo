@@ -18,6 +18,20 @@ from port_schedule_png import generate_port_schedule_dot
 
 
 # -------------------------------------------------
+# Filename helpers
+# -------------------------------------------------
+def slugify(text, fallback="diagram"):
+    """
+    Turn a user-supplied title into a filesystem-safe lowercase slug.
+
+    Unlike the per-layer naming (which only swaps spaces and slashes), this has
+    to cope with arbitrary punctuation because the project title is free text.
+    """
+    slug = re.sub(r"[^a-z0-9]+", "_", str(text).lower()).strip("_")
+    return slug or fallback
+
+
+# -------------------------------------------------
 # Clean output directory
 # -------------------------------------------------
 def clean_output():
@@ -117,12 +131,14 @@ def main():
         # Add rack devices
         for rack_config in racks_config:
             rack_id = rack_config["rack"].get("id", "rack")
-            
+            rack_name = rack_config["rack"].get("name", rack_id)
+
             for side in ['front', 'rear']:
                 if side in rack_config:
                     devices = expand_clusters(rack_config[side])
                     for dev in devices:
                         dev["rack_id"] = rack_id
+                        dev["rack_name"] = rack_name
                         dev["side"] = side
                         all_devices[dev["name"]] = dev
         
@@ -142,16 +158,67 @@ def main():
         print(f"Device map built with {len(all_devices)} devices ({external_device_count} external)")
 
         layers = config.get("wiring_layers", [])
+        show_type_key = config.get("show_type_key", True)
+        project_title = config.get("project_title") or "Unified Wiring"
+
         for layer in layers:
             layer_name = layer["name"]
             safe_name = layer_name.replace(" ", "_").replace("/", "_").lower()
             filename = f"output/{safe_name}.dot"
-            
-            wiring_dot = generate_wiring_diagram(layer, all_devices, type_colors)
+
+            wiring_dot = generate_wiring_diagram(
+                layer, all_devices, type_colors, show_key=show_type_key
+            )
             with open(filename, "w") as f:
                 f.write(wiring_dot)
             print(f"Generated {filename}")
-        
+
+        # ── Unified diagram — every layer merged into a single graph ────────
+        # Each connection keeps its own layer's edge colour, so the key's
+        # "Wiring layer" section is what makes the merged graph readable.
+        if layers:
+            unified_conns = []
+            layer_colors  = []
+
+            for layer in layers:
+                layer_color = layer.get("edge_color", "#323232")
+                layer_cable = layer.get("cable_type", "")
+                layer_colors.append((layer["name"], layer_color))
+
+                for conn in layer.get("connections", []):
+                    # Copy so the per-layer configs (reused below for cable
+                    # lengths) are left untouched
+                    merged = dict(conn)
+                    merged["edge_color"] = conn.get("edge_color", layer_color)
+                    if layer_cable and not conn.get("cable_type"):
+                        merged["cable_type"] = layer_cable
+                    unified_conns.append(merged)
+
+            unified_dot = generate_wiring_diagram(
+                {"name": project_title, "connections": unified_conns},
+                all_devices,
+                type_colors,
+                show_key=show_type_key,
+                layer_colors=layer_colors,
+            )
+
+            # A project title that slugs to the same name as a layer's diagram
+            # would silently overwrite it, so disambiguate instead
+            unified_slug = slugify(project_title, "unified_wiring")
+            layer_slugs = {
+                layer["name"].replace(" ", "_").replace("/", "_").lower()
+                for layer in layers
+            }
+            if unified_slug in layer_slugs:
+                print(f"Warning: project_title '{project_title}' clashes with a wiring layer diagram name")
+                unified_slug = f"{unified_slug}_combined"
+
+            unified_path = f"output/{unified_slug}.dot"
+            with open(unified_path, "w") as f:
+                f.write(unified_dot)
+            print(f"Generated {unified_path} ({len(unified_conns)} connections from {len(layers)} layers)")
+
+
         # Generate cable length tables (use build_cable_devices for full u_order/cable_exit data)
         cable_all_devices = build_cable_devices(racks_config, external_devices_config)
         generate_cable_length_table(cable_all_devices, racks_config, layers, cable_config)

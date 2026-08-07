@@ -175,6 +175,23 @@
 }
 .configGrid input:focus { outline: 1px solid var(--accent); }
 
+/* Free-text settings need more room than the numeric fields */
+.configGrid input[type="text"] {
+  width: 130px;
+  text-align: left;
+  font-family: inherit;
+}
+
+.checkRow {
+  justify-content: flex-start;
+  gap: 8px;
+}
+.checkRow input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
 .cableItem {
   display: flex;
   align-items: center;

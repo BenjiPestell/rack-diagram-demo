@@ -41,7 +41,7 @@ export default function PropertiesTab() {
   }
 
   const { dev, rackId, face } = selectedDevRef
-  const isCluster = dev.name.includes('{N}') && dev.start != null && dev.end != null
+  const isCluster = dev.name.includes('{N}')
 
   // Determine if the type is "ported" (i.e. has a ports count or type.ported)
   const typeEntry = typeList.find(e => e.type === dev.type)
@@ -132,42 +132,47 @@ export default function PropertiesTab() {
         </label>
       </div>
 
-      {isCluster && (
-        <div className={css.section}>
-          <div className={css.sectionTitle}>Cluster</div>
+      <div className={css.section}>
+        <div className={css.sectionTitle}>Cluster</div>
 
-          <label className={css.field}>
-            <span>Start N</span>
-            <input
-              className={css.input}
-              type="number"
-              value={dev.start ?? ''}
-              onChange={e => update({ start: e.target.value ? +e.target.value : undefined })}
-            />
-          </label>
+        {!isCluster && (
+          <div className={css.hint}>Add <code>{'{N}'}</code> to the name to enable clustering.</div>
+        )}
 
-          <label className={css.field}>
-            <span>End N</span>
-            <input
-              className={css.input}
-              type="number"
-              value={dev.end ?? ''}
-              onChange={e => update({ end: e.target.value ? +e.target.value : undefined })}
-            />
-          </label>
+        <label className={css.field}>
+          <span>Start N</span>
+          <input
+            className={css.input}
+            type="number"
+            disabled={!isCluster}
+            value={dev.start ?? ''}
+            onChange={e => update({ start: e.target.value ? +e.target.value : undefined })}
+          />
+        </label>
 
-          <label className={css.field}>
-            <span>Spacing (U)</span>
-            <input
-              className={css.input}
-              type="number"
-              min={0}
-              value={dev.spacing ?? 0}
-              onChange={e => update({ spacing: +e.target.value || undefined })}
-            />
-          </label>
-        </div>
-      )}
+        <label className={css.field}>
+          <span>End N</span>
+          <input
+            className={css.input}
+            type="number"
+            disabled={!isCluster}
+            value={dev.end ?? ''}
+            onChange={e => update({ end: e.target.value ? +e.target.value : undefined })}
+          />
+        </label>
+
+        <label className={css.field}>
+          <span>Spacing (U)</span>
+          <input
+            className={css.input}
+            type="number"
+            min={0}
+            disabled={!isCluster}
+            value={dev.spacing ?? 0}
+            onChange={e => update({ spacing: +e.target.value || undefined })}
+          />
+        </label>
+      </div>
 
       <div className={css.section}>
         <div className={css.sectionTitle}>Ports</div>

@@ -97,7 +97,9 @@ export function expandDesignerConnections(connections: DesignerConnection[]): De
       N_RE.test(fromStr) ||
       targets.some(t => N_RE.test(t)) ||
       (c.via_patch_from ? N_RE.test(c.via_patch_from) : false) ||
-      (c.via_patch_to   ? N_RE.test(c.via_patch_to)   : false)
+      (c.via_patch_to   ? N_RE.test(c.via_patch_to)   : false) ||
+      (c.from_ip        ? N_RE.test(c.from_ip)         : false) ||
+      (c.to_ip          ? N_RE.test(c.to_ip)           : false)
 
     if (hasN && c.start != null && c.end != null) {
       for (let n = c.start; n <= c.end; n++) {
@@ -109,6 +111,8 @@ export function expandDesignerConnections(connections: DesignerConnection[]): De
             to:             exp(t),
             via_patch_from: c.via_patch_from ? exp(c.via_patch_from) : undefined,
             via_patch_to:   c.via_patch_to   ? exp(c.via_patch_to)   : undefined,
+            from_ip:        c.from_ip        ? exp(c.from_ip)        : undefined,
+            to_ip:          c.to_ip          ? exp(c.to_ip)          : undefined,
           })
         }
       }
@@ -135,12 +139,14 @@ export function expandConnections(connections: RawConnection[], layerCableType?:
     const start = connAny['start'] as number | undefined
     const end   = connAny['end']   as number | undefined
 
-    // Detect any {N…} expression in from, any target, or via_patch fields
+    // Detect any {N…} expression in from, any target, via_patch, or IP fields
     const hasN =
       N_RE.test(fromStr) ||
       toArr.some(t => N_RE.test(t)) ||
       (conn.via_patch_from ? N_RE.test(conn.via_patch_from) : false) ||
-      (conn.via_patch_to   ? N_RE.test(conn.via_patch_to)   : false)
+      (conn.via_patch_to   ? N_RE.test(conn.via_patch_to)   : false) ||
+      (conn.from_ip        ? N_RE.test(conn.from_ip)        : false) ||
+      (conn.to_ip          ? N_RE.test(conn.to_ip)          : false)
 
     if (hasN && start != null && end != null) {
       for (let n = start; n <= end; n++) {
@@ -148,11 +154,13 @@ export function expandConnections(connections: RawConnection[], layerCableType?:
         for (const t of toArr) {
           out.push({
             ...conn,
-            from:          exp(fromStr),
-            to:            exp(t),
+            from:           exp(fromStr),
+            to:             exp(t),
             via_patch_from: conn.via_patch_from ? exp(conn.via_patch_from) : conn.via_patch_from,
             via_patch_to:   conn.via_patch_to   ? exp(conn.via_patch_to)   : conn.via_patch_to,
-            cable_type:    conn.cable_type || layerCableType,
+            from_ip:        conn.from_ip        ? exp(conn.from_ip)        : conn.from_ip,
+            to_ip:          conn.to_ip          ? exp(conn.to_ip)          : conn.to_ip,
+            cable_type:     conn.cable_type || layerCableType,
           })
         }
       }
@@ -178,6 +186,8 @@ interface SerialiseInput {
   frontToBackLength: number
   railExtensionLength: number
   standardUHeight: number
+  projectTitle: string
+  showTypeKey: boolean
 }
 
 function indent(s: string, n: number) {
@@ -202,6 +212,13 @@ export function serializeToYaml(input: SerialiseInput): string {
   lines.push(`front_to_back_length: ${input.frontToBackLength}`)
   lines.push(`rail_extension_length: ${input.railExtensionLength}`)
   lines.push(`standard_u_height: ${input.standardUHeight}`)
+  lines.push('')
+
+  // Project config — the pipeline reads these when building the combined diagram
+  lines.push(`show_type_key: ${input.showTypeKey}`)
+  if (input.projectTitle.trim()) {
+    lines.push(`project_title: ${yamlStr(input.projectTitle)}`)
+  }
   lines.push('')
 
   // Cable types

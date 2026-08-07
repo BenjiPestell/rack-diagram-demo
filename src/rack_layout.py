@@ -16,6 +16,7 @@ def build_device_map(racks_config, external_devices_config=None):
     # Add rack devices
     for rack_config in racks_config:
         rack_id = rack_config["rack"].get("id", "rack")
+        rack_name = rack_config["rack"].get("name", rack_id)
 
         for side in ['front', 'rear']:
             if side in rack_config:
@@ -25,6 +26,7 @@ def build_device_map(racks_config, external_devices_config=None):
                 for dev in devices:
                     dev_copy = dev.copy()
                     dev_copy["rack_id"] = rack_id
+                    dev_copy["rack_name"] = rack_name
                     dev_copy["side"] = side
                     all_devices[dev["name"]] = dev_copy
 

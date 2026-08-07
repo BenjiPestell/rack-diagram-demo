@@ -1,3 +1,14 @@
 - Add YAML file loading and saving with different names. (Not just system.YAML, instead a given YAML is named after its project and can be edited and saved with that name. YAMLs can therefore be part of a project repo for version tracking)
 - Allow rack duplication to make multi-rack setup easier (e.g. there may be 3 racks where their content is just 5 PCs & switches)
 - Rename tab for rack inspector to Rack Inspector (currently designer)
+
+
+From RIJ:
+
+Been using rack designer more this week and have found some other bugs (sorry)
+I had the same issue again as above, think it might be related to making two devices with the same name? 
+Moving devices from front to rear they just disappear lol
+Any chance of changing the device colours for individual devices? E.g. having Real Time Machines default blue but individually able to change colours (i have 8 CCRT bits of hardware and I'd like to differentiate a bit) I am being lazy, I could make a new default type 
+Having numbers in the name (AutoHawk 16) seems to cause some odd behaviour
+Would love to shift + drag to copy a device
+Otherwise... a big fan
